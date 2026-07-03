@@ -1,0 +1,40 @@
+name: Vitalicast iOS Certification
+
+on:
+  workflow_dispatch:
+
+# Sprint 2 remains CONDITIONAL PASS until this workflow passes.
+# No secrets are required for this certification job.
+# Do not add Mapbox tokens.
+
+jobs:
+  certify-ios:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies and Typecheck
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npx tsc --noEmit
+        
+      - name: Install iOS Shell Dependencies and Sync
+        working-directory: ./apps/vitalicast-ios-shell
+        run: |
+          npm ci
+          npx cap sync ios
+          
+      - name: Run Xcodebuild Certification
+        working-directory: ./apps/vitalicast-ios-shell/ios/App
+        run: |
+          xcodebuild -workspace App.xcworkspace -scheme App -sdk iphonesimulator clean build

@@ -1,10 +1,10 @@
 # Sprint 2 Frontend Drift Log
 
 ## Verification Status
-**App build status**: PASS
+**App build status**: TYPECHECK PASS / RUNTIME BUILD BLOCKED (Windows native module constraint)
 **Typecheck status**: FAIL (isolated strictly to `tests/` test-harness)
 
-The Next.js Turbopack application build compiles successfully and cleanly passes all Server/Client boundary checks. The overarching Next.js build and `npx tsc` fail due to widespread typing drift in the pre-existing `tests/` and test-harness files, which are outside the Vitalicast Sprint 2 scope. 
+The Next.js Turbopack application build compiles successfully and cleanly passes all Server/Client boundary checks at the TypeScript level. The overarching `npx tsc` fails due to widespread typing drift in the pre-existing `tests/` and test-harness files, which are explicitly outside the Vitalicast Sprint 2 scope. The subsequent static page collection phase of the build fails due to a pre-existing native `leveldb` (PouchDB) compilation error on Windows.
 
 ## Test-Harness Drift Resolution Status
 **Phase A (Database Accessors): EXECUTED**
@@ -17,10 +17,11 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 - Catch blocks narrowed from `unknown` to `Error` without masking logical execution paths.
 - Phase D successfully and cleanly eliminated all strict TS hygiene errors without introducing new drift.
 
-**Phase E (SignalID & Literals): EXECUTED**
-- Test harness template literals like `` `signal_${i % 10}` `` and `'signal_1'` statically typed to safe constants from `SignalID[] = ['kp_index', 'seismic_count', 'solar_flux', 'hrv']`.
+**Phase E (SignalID & Literals): EXECUTED & RECONCILED**
+- Test harness template literals statically typed to safe constants from `SignalID[]`.
 - No broad casts or `as any as SignalID` overrides were used.
 - All 4 specific `SignalID` TS failures resolved.
+- Phase E Build Reconciliation occurred: The Next.js production build was decoupled from the `tests/` scope by creating a dedicated `tsconfig.build.json`. Production leakages caused by test-drift (e.g., `snapshot.ts` values mapping, `queue.ts` typings) were correctly patched to restore the production type-check pass.
 
 **Remaining Phases (B, C): PENDING**
 
@@ -44,8 +45,6 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 ### 5. Catch Narrowing Issues (Class D) & Implicit Any (Class E)
 - **RESOLVED & RECONCILED** via Phase D.
 
-Exact remaining `npx tsc` error lines: 58 lines of compiler output.
-
-These test-harness failures are explicitly quarantined as external to the Sprint 2 secure-storage implementation scope. 
+Exact remaining `npx tsc` error lines: 45 lines of compiler output strictly isolated to `tests/`.
 
 **Sprint 2 remains CONDITIONAL PASS until xcodebuild passes on macOS/Xcode.**

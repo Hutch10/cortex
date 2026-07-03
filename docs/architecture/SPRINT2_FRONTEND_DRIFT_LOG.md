@@ -34,7 +34,11 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 - Missing `trace_id` arguments added to `processWindow` and `createLedgerEntry` calls.
 - Error count dropped from 27 -> 8.
 
-**Remaining Phase (B2b/Minor): PENDING**
+**Phase B2b (Minor Drift Cleanup): EXECUTED**
+- All remaining test-harness TS errors resolved cleanly.
+- Exact remaining error count: 0.
+
+**Frontend Test Harness Alignment (Sprint 2.6): COMPLETE**
 
 ## Remaining Blockers (TypeScript Drift)
 

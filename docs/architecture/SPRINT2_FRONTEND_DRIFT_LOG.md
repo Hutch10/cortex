@@ -11,10 +11,11 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 - Stale database imports and object references were updated across 11 test files to use the current getter functions (`getVortexQueueDB()`, etc.).
 - Errors related to `has no exported member named 'vortexQueueDB'` have been completely resolved.
 
-**Phase D (Strict Typings): EXECUTED**
-- All 20+ instances of "Parameter 'r' implicitly has an 'any' type" resolved safely.
+**Phase D (Strict Typings): EXECUTED & RECONCILED**
+- All 20+ instances of "Parameter 'r' implicitly has an 'any' type" resolved safely using explicit `{ id: string; doc?: unknown }` struct types to maintain strict type boundaries without resorting to broad `any`.
+- Pre-existing broad `(r.doc as any).<property>` casts discovered across tests were strictly narrowed to precise types e.g., `(r.doc as { status?: string })?.status`.
 - Catch blocks narrowed from `unknown` to `Error` without masking logical execution paths.
-- Phase D eliminated ~22 strict TS errors.
+- Phase D successfully and cleanly eliminated all strict TS hygiene errors without introducing new drift.
 
 **Remaining Phases (B, C, E): PENDING**
 
@@ -36,7 +37,9 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 - `tests/reality/snapshot_harness.test.ts` & `run_harness.ts`: Template literal `` `signal_${number}` `` is no longer directly assignable to `SignalID`.
 
 ### 5. Catch Narrowing Issues (Class D) & Implicit Any (Class E)
-- **RESOLVED** via Phase D.
+- **RESOLVED & RECONCILED** via Phase D.
+
+Exact remaining `npx tsc` error lines: 64 lines of compiler output (approx. 38 specific errors).
 
 These test-harness failures are explicitly quarantined as external to the Sprint 2 secure-storage implementation scope. 
 

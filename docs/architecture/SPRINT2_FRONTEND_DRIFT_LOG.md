@@ -29,7 +29,12 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 - `BaselineResult` fixtures updated across tests to use the strict `type` discriminator.
 - Error count dropped from 37 -> 27.
 
-**Remaining Phase (B2): PENDING**
+**Phase B2a (Trace Signatures): EXECUTED**
+- Duplicate `trace_id` properties resolved.
+- Missing `trace_id` arguments added to `processWindow` and `createLedgerEntry` calls.
+- Error count dropped from 27 -> 8.
+
+**Remaining Phase (B2b/Minor): PENDING**
 
 ## Remaining Blockers (TypeScript Drift)
 

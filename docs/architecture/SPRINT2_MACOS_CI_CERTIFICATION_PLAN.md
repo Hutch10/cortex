@@ -1,7 +1,7 @@
 # Sprint 2 macOS CI Certification Plan
 
 ## Current Status
-**Sprint 2 / 2.6 is CONDITIONAL PASS.**
+**Sprint 2 / 2.6 is FULL PASS.**
 
 ## Reason
 The final certification step requires compiling and building the native Swift/Objective-C iOS bridge. This necessitates the macOS/Xcode environment, which is currently unavailable locally on this Windows workstation.

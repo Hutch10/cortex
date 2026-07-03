@@ -17,7 +17,12 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 - Catch blocks narrowed from `unknown` to `Error` without masking logical execution paths.
 - Phase D successfully and cleanly eliminated all strict TS hygiene errors without introducing new drift.
 
-**Remaining Phases (B, C, E): PENDING**
+**Phase E (SignalID & Literals): EXECUTED**
+- Test harness template literals like `` `signal_${i % 10}` `` and `'signal_1'` statically typed to safe constants from `SignalID[] = ['kp_index', 'seismic_count', 'solar_flux', 'hrv']`.
+- No broad casts or `as any as SignalID` overrides were used.
+- All 4 specific `SignalID` TS failures resolved.
+
+**Remaining Phases (B, C): PENDING**
 
 ## Remaining Blockers (TypeScript Drift)
 
@@ -34,12 +39,12 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 - `tests/reality/persistence.test.ts` & `identity.test.ts`: `trace_id` is missing but required by `ComputationResult`.
 
 ### 4. Template Literal Mismatches (Class F / E)
-- `tests/reality/snapshot_harness.test.ts` & `run_harness.ts`: Template literal `` `signal_${number}` `` is no longer directly assignable to `SignalID`.
+- **RESOLVED** via Phase E.
 
 ### 5. Catch Narrowing Issues (Class D) & Implicit Any (Class E)
 - **RESOLVED & RECONCILED** via Phase D.
 
-Exact remaining `npx tsc` error lines: 64 lines of compiler output (approx. 38 specific errors).
+Exact remaining `npx tsc` error lines: 58 lines of compiler output.
 
 These test-harness failures are explicitly quarantined as external to the Sprint 2 secure-storage implementation scope. 
 

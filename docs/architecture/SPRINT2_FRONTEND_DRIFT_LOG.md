@@ -7,12 +7,16 @@
 The Next.js Turbopack application build compiles successfully and cleanly passes all Server/Client boundary checks. The overarching Next.js build and `npx tsc` fail due to widespread typing drift in the pre-existing `tests/` and test-harness files, which are outside the Vitalicast Sprint 2 scope. 
 
 ## Test-Harness Drift Resolution Status
-Some stale imports and DB initializations were updated (e.g. migrating `vortexQueueDB` to `getVortexQueueDB()`). However, deeply nested structural schema changes remain.
+**Phase A (Database Accessors): EXECUTED**
+- Stale database imports and object references were updated across 11 test files to use the current getter functions (`getVortexQueueDB()`, etc.).
+- Errors related to `has no exported member named 'vortexQueueDB'` have been completely resolved.
+
+**Remaining Phases (B, C, D, E): PENDING**
 
 ## Remaining Blockers (TypeScript Drift)
 
 ### 1. Database Client Export Mismatches (Class A)
-- `tests/integration/determinism.test.ts`: Still missing `vortexQueueDB`, `pulseLedgerDB`, `quarantineDB` imports.
+- **RESOLVED** via Phase A.
 
 ### 2. Type/Signature Mismatches (Class B)
 - `tests/integration/crash_recovery.test.ts`: `ledger_write_failure` not assignable to strict error types.

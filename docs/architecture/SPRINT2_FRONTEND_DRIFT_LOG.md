@@ -25,7 +25,11 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 - `values` array mapped precisely to `deviation: { value, z_score }` to fix object literal structural mismatch.
 - **Error count dropped from 50 -> 38** (12 cascading Phase C errors successfully fixed).
 
-**Remaining Phase (B): PENDING**
+**Phase B1 (Baseline Schema): EXECUTED**
+- `BaselineResult` fixtures updated across tests to use the strict `type` discriminator.
+- Error count dropped from 37 -> 27.
+
+**Remaining Phase (B2): PENDING**
 
 ## Remaining Blockers (TypeScript Drift)
 
@@ -41,6 +45,6 @@ The Next.js Turbopack application build compiles successfully and cleanly passes
 ### 3. Missing Fields in Test Fixtures (Class C)
 - **RESOLVED** via Phase C.
 
-Exact remaining `npx tsc` error lines: 38 lines of compiler output strictly isolated to `tests/`.
+Exact remaining `npx tsc` error lines: 27 lines of compiler output strictly isolated to `tests/`.
 
 **Sprint 2 remains CONDITIONAL PASS until xcodebuild passes on macOS/Xcode.**

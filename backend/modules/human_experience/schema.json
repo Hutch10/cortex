@@ -1,0 +1,34 @@
+{
+  "$id": "https://cortex.local/schemas/human_experience.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Human Experience Module",
+  "type": "object",
+  "description": "Defines the ontology for human-centric observations like HRV, stress, and goals.",
+  "properties": {
+    "module_id": {
+      "type": "string",
+      "const": "human_experience_v1"
+    },
+    "payload_types": {
+      "type": "object",
+      "properties": {
+        "heart_rate_variance": {
+          "type": "object",
+          "properties": {
+            "bpm": { "type": "number" },
+            "sdnn": { "type": "number" }
+          },
+          "required": ["bpm"]
+        },
+        "goal_completion": {
+          "type": "object",
+          "properties": {
+            "goal_id": { "type": "string" },
+            "success": { "type": "boolean" }
+          },
+          "required": ["goal_id", "success"]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Ocean Map{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Ocean Map</h1>
+  <p class="page-desc">Read-only geographic inspection of ingested marine observations. Anomaly status is a deterministic threshold-rule output, not an ecological conclusion.</p>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Station Context Summary</h2>
+    <span class="marine-note">Station context reflects latest in-scope ocean-condition signals only. It does not imply coral presence or ecological diagnosis.</span>
+  </div>
+  <div class="marine-summary-grid">
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Total Stations</span>
+      <strong>{{ station_context_summary.total_stations }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Stations With SST</span>
+      <strong>{{ station_context_summary.stations_with_sst }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Reef Stress Watch</span>
+      <strong>{{ station_context_summary.reef_watch }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Reef Stress</span>
+      <strong>{{ station_context_summary.reef_stress }}</strong>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Reef Context Summary</h2>
+    <span class="marine-note">Reef proximity is geographic context only. It does not imply coral stress, bleaching, or causation.</span>
+  </div>
+  <div class="marine-summary-grid">
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Total Reefs In Reference</span>
+      <strong>{{ reef_context_summary.total_reefs }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Stations Near Reef</span>
+      <strong>{{ reef_context_summary.stations_near_reef }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Near-Reef Reef Stress Watch</span>
+      <strong>{{ reef_context_summary.near_reef_watch }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Near-Reef Reef Stress</span>
+      <strong>{{ reef_context_summary.near_reef_stress }}</strong>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Reef Alert Priority Summary</h2>
+    <span class="marine-note">Deterministic prioritization based on near-reef station context plus SST reef-stress only.</span>
+  </div>
+  <div class="marine-summary-grid">
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Near-Reef Stations</span>
+      <strong>{{ reef_alert_summary.near_reef_total }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Attention</span>
+      <strong>{{ reef_alert_summary.attention }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Priority</span>
+      <strong>{{ reef_alert_summary.priority }}</strong>
+    </div>
+  </div>
+  {% if reef_alerts %}
+    <ul class="marine-telemetry-list" style="margin-top:14px;">
+      {% for item in reef_alerts %}
+        <li>
+          <strong>{{ item.station_id }}</strong>
+          · {{ item.priority_status }}
+          · nearest reef {{ item.nearest_reef_name or '—' }}
+          · {{ item.nearest_reef_distance_km if item.nearest_reef_distance_km is not none else '—' }} km
+          · reef stress {{ item.latest_reef_stress_status or '—' }}
+          · <a href="/marine/station/{{ item.station_id }}">Open station</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-state">No near-reef stations currently require attention in this scope.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <h2 class="panel-title">Map Filters</h2>
+  <form id="ocean-map-filter-form" class="marine-filter-form" method="get" action="/ocean-map">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="dataset">Dataset</label>
+        <select id="dataset" name="dataset" class="marine-select">
+          <option value="" {% if not dataset_filter %}selected{% endif %}>All datasets</option>
+          <option value="sst" {% if dataset_filter == 'sst' %}selected{% endif %}>Sea Surface Temperature</option>
+          <option value="buoy" {% if dataset_filter == 'buoy' %}selected{% endif %}>Buoy Observations</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="station_id">Station ID</label>
+        <input type="text" id="station_id" name="station_id" value="{{ station_id_filter }}" placeholder="e.g. 46002" />
+      </div>
+      <div class="form-group">
+        <label for="limit">Limit</label>
+        <input type="number" id="limit" name="limit" min="1" max="250" value="{{ limit_value }}" />
+      </div>
+    </div>
+    <div class="action-bar">
+      <button type="submit" class="btn btn-primary">Apply Filter</button>
+      <a href="/ocean-map" class="btn btn-ghost">Reset</a>
+      <a href="/api/marine/export?dataset={{ dataset_filter }}&station_id={{ station_id_filter }}&limit={{ limit_value }}" class="btn btn-ghost">Export Scope JSON</a>
+    </div>
+  </form>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Saved Investigation Manifests</h2>
+    <span class="marine-note">Saved scopes reopen the current ocean map view. They do not duplicate observation data.</span>
+  </div>
+  <form class="marine-save-form" data-save-investigation data-path="/ocean-map" data-scope-type="ocean_map">
+    <div class="action-bar">
+      <input type="text" name="name" class="marine-save-input" placeholder="Name this ocean map scope" required />
+      <button type="submit" class="btn btn-secondary">Save Investigation</button>
+      <span class="marine-save-status" aria-live="polite"></span>
+    </div>
+  </form>
+  {% if saved_investigations %}
+    <ul class="marine-telemetry-list">
+      {% for item in saved_investigations %}
+        <li>
+          <strong>{{ item.name }}</strong>
+          · {{ item.scope_type }}
+          · <a href="/marine/investigations/{{ item.id }}/open">Open saved scope</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-state">No saved marine investigations yet.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Observation Map</h2>
+    <span class="marine-note">Markers are colored by deterministic anomaly status: normal, watch, anomaly.</span>
+  </div>
+  <div class="ocean-map-legend">
+    <span><i class="map-dot map-dot-normal"></i> Normal</span>
+    <span><i class="map-dot map-dot-watch"></i> Watch</span>
+    <span><i class="map-dot map-dot-anomaly"></i> Anomaly</span>
+    <span><i class="map-dot map-dot-reef"></i> Reef Reference</span>
+  </div>
+  <div id="ocean-map-canvas" class="ocean-map-canvas" aria-label="Ocean observation map"></div>
+  <p id="ocean-map-empty" class="empty-state hidden">No map points found for the current filter.</p>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Selected Point Details</h2>
+    <span class="marine-note">Threshold-rule fields are shown for investigation context only.</span>
+  </div>
+  <div id="ocean-map-detail" class="ocean-map-detail">
+    <p class="empty-state">Select a point on the map to inspect its current observation details.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const mapConfig = {
+    dataset: {{ dataset_filter|tojson }},
+    stationId: {{ station_id_filter|tojson }},
+    limit: {{ limit_value|tojson }},
+  };
+
+  function buildMapUrl() {
+    const params = new URLSearchParams();
+    if (mapConfig.dataset) params.set("dataset", mapConfig.dataset);
+    if (mapConfig.stationId) params.set("station_id", mapConfig.stationId);
+    if (mapConfig.limit) params.set("limit", String(mapConfig.limit));
+    const query = params.toString();
+    return `/api/marine/map-points${query ? `?${query}` : ""}`;
+  }
+
+  function pointClass(status) {
+    return `map-point map-point-${status || "normal"}`;
+  }
+
+  function stationClass(station) {
+    if (station.latest_reef_stress_status === "stress") return "station-marker station-marker-stress";
+    if (station.latest_reef_stress_status === "watch") return "station-marker station-marker-watch";
+    return "station-marker station-marker-normal";
+  }
+
+  function buildStationContextUrl() {
+    const params = new URLSearchParams();
+    if (mapConfig.dataset) params.set("dataset", mapConfig.dataset);
+    if (mapConfig.stationId) params.set("station_id", mapConfig.stationId);
+    if (mapConfig.limit) params.set("limit", String(mapConfig.limit));
+    const query = params.toString();
+    return `/api/marine/station-context${query ? `?${query}` : ""}`;
+  }
+
+  function reefContextUrl() {
+    const params = new URLSearchParams();
+    if (mapConfig.dataset) params.set("dataset", mapConfig.dataset);
+    if (mapConfig.stationId) params.set("station_id", mapConfig.stationId);
+    if (mapConfig.limit) params.set("limit", String(mapConfig.limit));
+    const query = params.toString();
+    return `/api/marine/reef-context${query ? `?${query}` : ""}`;
+  }
+
+  function detailMarkup(point) {
+    return `
+      <dl class="ocean-map-detail-grid">
+        <div><dt>Dataset</dt><dd>${point.dataset_name}</dd></div>
+        <div><dt>Timestamp</dt><dd>${point.timestamp}</dd></div>
+        <div><dt>Station</dt><dd>${point.station_id ? `<a href="/marine/station/${encodeURIComponent(point.station_id)}">${point.station_id}</a>` : "—"}</dd></div>
+        <div><dt>Metric</dt><dd>${point.metric_name}</dd></div>
+        <div><dt>Value</dt><dd>${point.metric_value}</dd></div>
+        <div><dt>Baseline</dt><dd>${point.baseline ?? "—"}</dd></div>
+        <div><dt>Deviation</dt><dd>${point.deviation ?? "—"}</dd></div>
+        <div><dt>Anomaly Status</dt><dd>${point.anomaly_status}</dd></div>
+        <div><dt>Reef Stress</dt><dd>${point.reef_stress_status ?? "—"}</dd></div>
+      </dl>
+    `;
+  }
+
+  function stationDetailMarkup(station) {
+    return `
+      <div class="station-context-card">
+        <p><strong>Station ${station.station_id}</strong> · <a href="/marine/station/${encodeURIComponent(station.station_id)}">Open station view</a></p>
+        <p>Datasets present: ${station.datasets_present.join(", ") || "—"}</p>
+        <p>Latest timestamp: ${station.latest_timestamp || "—"}</p>
+        <p>Latest anomaly status: ${station.latest_anomaly_status || "—"}</p>
+        <p>Latest reef stress: ${station.latest_reef_stress_status || "—"}</p>
+        <div class="reef-context-slot"></div>
+      </div>
+    `;
+  }
+
+  function reefMarkerClass() {
+    return "reef-marker";
+  }
+
+  function plotPoints(points, stationContext, reefContext) {
+    const canvas = document.getElementById("ocean-map-canvas");
+    const empty = document.getElementById("ocean-map-empty");
+    const detail = document.getElementById("ocean-map-detail");
+    canvas.innerHTML = "";
+
+    if (!points.length && !stationContext.length && !reefContext.length) {
+      empty.classList.remove("hidden");
+      detail.innerHTML = '<p class="empty-state">Select a point on the map to inspect its current observation details.</p>';
+      return;
+    }
+
+    empty.classList.add("hidden");
+    const combined = [
+      ...points.map((point) => ({ latitude: point.latitude, longitude: point.longitude })),
+      ...stationContext.map((station) => ({ latitude: station.latitude, longitude: station.longitude })),
+      ...reefContext
+        .filter((reef) => reef.nearest_reef_distance_km !== null)
+        .map((reef) => ({ latitude: reef.nearest_reef_latitude, longitude: reef.nearest_reef_longitude })),
+    ];
+    const byBounds = combined.reduce((acc, point) => {
+      acc.minLat = Math.min(acc.minLat, point.latitude);
+      acc.maxLat = Math.max(acc.maxLat, point.latitude);
+      acc.minLon = Math.min(acc.minLon, point.longitude);
+      acc.maxLon = Math.max(acc.maxLon, point.longitude);
+      return acc;
+    }, { minLat: 90, maxLat: -90, minLon: 180, maxLon: -180 });
+
+    const latRange = Math.max(1, byBounds.maxLat - byBounds.minLat);
+    const lonRange = Math.max(1, byBounds.maxLon - byBounds.minLon);
+
+    reefContext.forEach((stationReef) => {
+      if (stationReef.reef_proximity_status !== "near_reef") return;
+      const marker = document.createElement("div");
+      marker.className = reefMarkerClass();
+      marker.style.left = `${((stationReef.nearest_reef_longitude - byBounds.minLon) / lonRange) * 100}%`;
+      marker.style.top = `${100 - ((stationReef.nearest_reef_latitude - byBounds.minLat) / latRange) * 100}%`;
+      canvas.appendChild(marker);
+    });
+
+    stationContext.forEach((station) => {
+      const reefInfo = reefContext.find((item) => item.station_id === station.station_id);
+      const marker = document.createElement("button");
+      marker.type = "button";
+      marker.className = stationClass(station);
+      marker.style.left = `${((station.longitude - byBounds.minLon) / lonRange) * 100}%`;
+      marker.style.top = `${100 - ((station.latitude - byBounds.minLat) / latRange) * 100}%`;
+      marker.title = `${station.station_id} · ${station.latest_reef_stress_status || station.latest_anomaly_status || "normal"}`;
+      marker.addEventListener("click", () => {
+        canvas.querySelectorAll(".map-point-active, .station-marker-active").forEach((node) => {
+          node.classList.remove("map-point-active");
+          node.classList.remove("station-marker-active");
+        });
+        marker.classList.add("station-marker-active");
+        detail.innerHTML = stationDetailMarkup(station);
+        const slot = detail.querySelector(".reef-context-slot");
+        if (slot && reefInfo) {
+          slot.innerHTML = `
+            <p>Nearest reef: ${reefInfo.nearest_reef_name || "—"}</p>
+            <p>Distance: ${reefInfo.nearest_reef_distance_km ?? "—"} km</p>
+            <p>Reef proximity: ${reefInfo.reef_proximity_status}</p>
+          `;
+        }
+      });
+      canvas.appendChild(marker);
+    });
+
+    points.forEach((point, index) => {
+      const marker = document.createElement("button");
+      marker.type = "button";
+      marker.className = pointClass(point.anomaly_status);
+      marker.style.left = `${((point.longitude - byBounds.minLon) / lonRange) * 100}%`;
+      marker.style.top = `${100 - ((point.latitude - byBounds.minLat) / latRange) * 100}%`;
+      marker.title = `${point.station_id || "station"} · ${point.metric_name} ${point.metric_value}`;
+      marker.addEventListener("click", () => {
+        canvas.querySelectorAll(".map-point-active").forEach((node) => node.classList.remove("map-point-active"));
+        marker.classList.add("map-point-active");
+        detail.innerHTML = detailMarkup(point);
+      });
+      canvas.appendChild(marker);
+      if (index === 0 && !stationContext.length) marker.click();
+    });
+
+    if (stationContext.length) {
+      const firstStation = canvas.querySelector(".station-marker");
+      if (firstStation) firstStation.click();
+    } else if (points.length) {
+      const firstPoint = canvas.querySelector(".map-point");
+      if (firstPoint) firstPoint.click();
+    }
+  }
+
+  async function loadMapPoints() {
+    try {
+      const [pointResponse, stationResponse, reefResponse] = await Promise.all([
+        fetch(buildMapUrl()),
+        fetch(buildStationContextUrl()),
+        fetch(reefContextUrl()),
+      ]);
+      const points = await pointResponse.json();
+      const stationContext = await stationResponse.json();
+      const reefContext = await reefResponse.json();
+      plotPoints(points, stationContext, reefContext);
+    } catch (error) {
+      document.getElementById("ocean-map-empty").classList.remove("hidden");
+      document.getElementById("ocean-map-empty").textContent = "Unable to load map points.";
+    }
+  }
+
+  loadMapPoints();
+
+  function currentOceanMapScope() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      dataset: params.get("dataset") || "",
+      station_id: params.get("station_id") || "",
+      limit: params.get("limit") || "{{ limit_value }}",
+    };
+  }
+
+  document.querySelectorAll("[data-save-investigation]").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const status = form.querySelector(".marine-save-status");
+      const scope = currentOceanMapScope();
+      const payload = {
+        name: new FormData(form).get("name"),
+        scope_type: form.dataset.scopeType,
+        path: form.dataset.path,
+        dataset: scope.dataset,
+        station_id: scope.station_id,
+        limit: scope.limit,
+        query_string: new URLSearchParams(Object.entries(scope).filter(([, value]) => value)).toString(),
+      };
+
+      const response = await fetch("/api/marine/investigations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        status.textContent = "Save failed";
+        return;
+      }
+
+      const manifest = await response.json();
+      status.textContent = `Saved as #${manifest.id}`;
+      window.location.reload();
+    });
+  });
+</script>
+{% endblock %}

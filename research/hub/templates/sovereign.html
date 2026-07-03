@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Sovereign Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Sovereign Dashboard</h1>
+  <p class="page-desc">Global Fleet View for aggregate organizational usage only. No private tenant telemetry is exposed.</p>
+</div>
+
+<div class="panel sovereign-panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Global Fleet View</h2>
+    <span class="hint" id="sovereign-period">Period: {{ snapshot.period }}</span>
+  </div>
+
+  <div class="sovereign-kpi-grid">
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Organizations</span>
+      <span class="sovereign-kpi-value" id="sovereign-org-count">{{ snapshot.totals.organization_count }}</span>
+    </div>
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Oracle API Calls</span>
+      <span class="sovereign-kpi-value" id="sovereign-oracle-total">{{ snapshot.totals.oracle_api_calls }}</span>
+    </div>
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Navigator Logs</span>
+      <span class="sovereign-kpi-value" id="sovereign-navigator-total">{{ snapshot.totals.navigator_logs }}</span>
+    </div>
+  </div>
+
+  <div class="sovereign-table-wrap">
+    <table class="sovereign-table" id="sovereign-usage-table">
+      <thead>
+        <tr>
+          <th>Organization</th>
+          <th>Oracle API Calls</th>
+          <th>Navigator Logs</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if snapshot.organizations %}
+          {% for row in snapshot.organizations %}
+          <tr>
+            <td>{{ row.organization_id }}</td>
+            <td>{{ row.oracle_api_calls }}</td>
+            <td>{{ row.navigator_logs }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="3" class="sovereign-empty">No metered usage recorded for this period.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel sovereign-panel sovereign-panel--risk">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Insurance Risk API</h2>
+    <span class="hint" id="risk-generated-at">Generated: {{ risk_score.generated_at }}</span>
+  </div>
+
+  <div class="sovereign-kpi-grid">
+    <div class="sovereign-kpi-card sovereign-kpi-card--risk">
+      <span class="sovereign-kpi-label">Risk Score</span>
+      <span class="sovereign-kpi-value" id="risk-score-value">{{ risk_score.risk_score }}</span>
+      <span class="sovereign-kpi-subcopy" id="risk-score-label">{{ risk_score.risk_label }}</span>
+    </div>
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Average Time-to-Action</span>
+      <span class="sovereign-kpi-value" id="risk-tta-label">{{ risk_score.average_time_to_action_label }}</span>
+      <span class="sovereign-kpi-subcopy" id="risk-tta-target">Target {{ risk_score.target_time_to_action_seconds }}s</span>
+    </div>
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Failure-Rate Reduction Signal</span>
+      <span class="sovereign-kpi-value" id="risk-reduction-value">{{ risk_score.failure_rate_reduction_signal_pct }}%</span>
+      <span class="sovereign-kpi-subcopy" id="risk-coverage-label">Coverage {{ risk_score.coverage_pct }}%</span>
+    </div>
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Open Pulses</span>
+      <span class="sovereign-kpi-value" id="risk-open-pulses">{{ risk_score.open_pulse_count }}</span>
+      <span class="sovereign-kpi-subcopy" id="risk-mesh-count">Mesh Orgs {{ risk_score.mesh_org_count }}</span>
+    </div>
+  </div>
+
+  <p class="sovereign-risk-note" id="risk-score-note">{{ risk_score.label }}</p>
+</div>
+
+<div class="panel sovereign-panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Franchise Provisioner View</h2>
+    <span class="hint" id="franchise-period">Aggregate child stats only. No private telemetry.</span>
+  </div>
+
+  <div class="sovereign-kpi-grid">
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Visible Orgs</span>
+      <span class="sovereign-kpi-value" id="franchise-org-count">{{ franchise_stats.totals.organization_count }}</span>
+    </div>
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Child Orgs</span>
+      <span class="sovereign-kpi-value" id="franchise-child-count">{{ franchise_stats.totals.child_organization_count }}</span>
+    </div>
+    <div class="sovereign-kpi-card">
+      <span class="sovereign-kpi-label">Privacy Scope</span>
+      <span class="sovereign-kpi-value" id="franchise-privacy-flag">Aggregate Only</span>
+    </div>
+  </div>
+
+  <div class="sovereign-table-wrap">
+    <table class="sovereign-table" id="franchise-stats-table">
+      <thead>
+        <tr>
+          <th>Organization</th>
+          <th>Parent</th>
+          <th>Relationship</th>
+          <th>Children</th>
+          <th>Oracle API Calls</th>
+          <th>Navigator Logs</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if franchise_stats.organizations %}
+          {% for row in franchise_stats.organizations %}
+          <tr>
+            <td>{{ row.organization_id }}</td>
+            <td>{{ row.parent_org_id or "—" }}</td>
+            <td>{{ row.relationship_type }}</td>
+            <td>{{ row.child_count }}</td>
+            <td>{{ row.oracle_api_calls }}</td>
+            <td>{{ row.navigator_logs }}</td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" class="sovereign-empty">No franchise relationships recorded yet.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.sovereign-panel {
+  border: 1px solid #cbd5e1;
+  background: linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+}
+.sovereign-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  margin: 0.8rem 0 1rem;
+}
+.sovereign-kpi-card {
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.85rem;
+}
+.sovereign-kpi-card--risk {
+  border-color: #0f766e;
+  background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+}
+.sovereign-kpi-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.sovereign-kpi-value {
+  display: block;
+  margin-top: 0.22rem;
+  font-size: 1.35rem;
+  color: #1e3a8a;
+  font-weight: 700;
+}
+.sovereign-kpi-subcopy {
+  display: block;
+  margin-top: 0.28rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+.sovereign-panel--risk {
+  border-color: #99f6e4;
+  background: linear-gradient(180deg, #f0fdfa 0%, #ecfeff 100%);
+}
+.sovereign-risk-note {
+  margin: 0;
+  color: #0f172a;
+  font-size: 0.9rem;
+}
+.sovereign-table-wrap {
+  overflow-x: auto;
+}
+.sovereign-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+}
+.sovereign-table th,
+.sovereign-table td {
+  padding: 0.62rem 0.7rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  font-size: 0.85rem;
+}
+.sovereign-table th {
+  color: #1e3a8a;
+  background: #eff6ff;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.sovereign-empty {
+  color: #64748b;
+}
+</style>
+<script>
+async function refreshSovereignFleet() {
+  try {
+    const res = await fetch('/api/sovereign/fleet?tenant_slug=internal&user_role=Admin');
+    const data = await res.json();
+    if (!res.ok) {
+      return;
+    }
+
+    const periodEl = document.getElementById('sovereign-period');
+    if (periodEl) {
+      periodEl.textContent = 'Period: ' + (data.period || 'unknown');
+    }
+
+    const totals = data.totals || {};
+    const orgCountEl = document.getElementById('sovereign-org-count');
+    const oracleEl = document.getElementById('sovereign-oracle-total');
+    const navigatorEl = document.getElementById('sovereign-navigator-total');
+    if (orgCountEl) orgCountEl.textContent = String(totals.organization_count || 0);
+    if (oracleEl) oracleEl.textContent = String(totals.oracle_api_calls || 0);
+    if (navigatorEl) navigatorEl.textContent = String(totals.navigator_logs || 0);
+
+    const table = document.getElementById('sovereign-usage-table');
+    if (!table || !table.tBodies || !table.tBodies[0]) return;
+    const body = table.tBodies[0];
+    body.innerHTML = '';
+    const rows = Array.isArray(data.organizations) ? data.organizations : [];
+    if (!rows.length) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 3;
+      td.className = 'sovereign-empty';
+      td.textContent = 'No metered usage recorded for this period.';
+      tr.appendChild(td);
+      body.appendChild(tr);
+      return;
+    }
+
+    rows.forEach(function(row) {
+      const tr = document.createElement('tr');
+      const org = document.createElement('td');
+      const oracle = document.createElement('td');
+      const nav = document.createElement('td');
+      org.textContent = String(row.organization_id || 'unknown');
+      oracle.textContent = String(row.oracle_api_calls || 0);
+      nav.textContent = String(row.navigator_logs || 0);
+      tr.appendChild(org);
+      tr.appendChild(oracle);
+      tr.appendChild(nav);
+      body.appendChild(tr);
+    });
+  } catch (_) {
+    // Keep existing server-rendered snapshot if refresh fails.
+  }
+}
+
+refreshSovereignFleet();
+
+async function refreshRiskScore() {
+  try {
+    const res = await fetch('/api/sovereign/risk-score?tenant_slug=internal&user_role=Admin');
+    const data = await res.json();
+    if (!res.ok) {
+      return;
+    }
+
+    const generatedAtEl = document.getElementById('risk-generated-at');
+    const scoreValueEl = document.getElementById('risk-score-value');
+    const scoreLabelEl = document.getElementById('risk-score-label');
+    const ttaLabelEl = document.getElementById('risk-tta-label');
+    const ttaTargetEl = document.getElementById('risk-tta-target');
+    const reductionValueEl = document.getElementById('risk-reduction-value');
+    const coverageLabelEl = document.getElementById('risk-coverage-label');
+    const openPulsesEl = document.getElementById('risk-open-pulses');
+    const meshCountEl = document.getElementById('risk-mesh-count');
+    const noteEl = document.getElementById('risk-score-note');
+
+    if (generatedAtEl) generatedAtEl.textContent = 'Generated: ' + (data.generated_at || 'unknown');
+    if (scoreValueEl) scoreValueEl.textContent = String(data.risk_score || 0);
+    if (scoreLabelEl) scoreLabelEl.textContent = String(data.risk_label || 'Awaiting Evidence');
+    if (ttaLabelEl) ttaLabelEl.textContent = String(data.average_time_to_action_label || 'Awaiting action evidence');
+    if (ttaTargetEl) ttaTargetEl.textContent = 'Target ' + String(data.target_time_to_action_seconds || 300) + 's';
+    if (reductionValueEl) reductionValueEl.textContent = String(data.failure_rate_reduction_signal_pct || 0) + '%';
+    if (coverageLabelEl) coverageLabelEl.textContent = 'Coverage ' + String(data.coverage_pct || 0) + '%';
+    if (openPulsesEl) openPulsesEl.textContent = String(data.open_pulse_count || 0);
+    if (meshCountEl) meshCountEl.textContent = 'Mesh Orgs ' + String(data.mesh_org_count || 0);
+    if (noteEl) noteEl.textContent = String(data.label || 'Risk Score unavailable.');
+  } catch (_) {
+    // Preserve the server-rendered score if refresh fails.
+  }
+}
+
+refreshRiskScore();
+
+async function refreshFranchiseStats() {
+  try {
+    const res = await fetch('/api/sovereign/franchise-stats?tenant_slug=internal&user_role=Admin');
+    const data = await res.json();
+    if (!res.ok) {
+      return;
+    }
+
+    const totals = data.totals || {};
+    const orgCountEl = document.getElementById('franchise-org-count');
+    const childCountEl = document.getElementById('franchise-child-count');
+    const privacyFlagEl = document.getElementById('franchise-privacy-flag');
+    if (orgCountEl) orgCountEl.textContent = String(totals.organization_count || 0);
+    if (childCountEl) childCountEl.textContent = String(totals.child_organization_count || 0);
+    if (privacyFlagEl) privacyFlagEl.textContent = data.private_data_included ? 'Private Data Present' : 'Aggregate Only';
+
+    const table = document.getElementById('franchise-stats-table');
+    if (!table || !table.tBodies || !table.tBodies[0]) return;
+    const body = table.tBodies[0];
+    body.innerHTML = '';
+    const rows = Array.isArray(data.organizations) ? data.organizations : [];
+    if (!rows.length) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 6;
+      td.className = 'sovereign-empty';
+      td.textContent = 'No franchise relationships recorded yet.';
+      tr.appendChild(td);
+      body.appendChild(tr);
+      return;
+    }
+
+    rows.forEach(function(row) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = [
+        row.organization_id || 'unknown',
+        row.parent_org_id || '—',
+        row.relationship_type || 'root',
+        String(row.child_count || 0),
+        String(row.oracle_api_calls || 0),
+        String(row.navigator_logs || 0),
+      ].map(function(value) { return '<td>' + value + '</td>'; }).join('');
+      body.appendChild(tr);
+    });
+  } catch (_) {
+    // Keep server-rendered table when refresh is unavailable.
+  }
+}
+
+refreshFranchiseStats();
+</script>
+{% endblock %}

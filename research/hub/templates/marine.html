@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Marine Workspace{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Marine Workspace</h1>
+  <p class="page-desc">Read-only inspection of ingested NOAA observations and deterministic anomaly indicators.</p>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Latest Monitoring Snapshot</h2>
+    <span class="marine-note">Deterministic monitoring summary only. It does not imply ecological diagnosis.</span>
+  </div>
+  {% if latest_snapshot %}
+    <div class="marine-summary-grid">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Snapshot Timestamp</span>
+        <strong>{{ latest_snapshot.generated_at }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Datasets Run</span>
+        <strong>{{ latest_snapshot.datasets_run|join(', ') if latest_snapshot.datasets_run else '—' }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Attention</span>
+        <strong>{{ latest_snapshot.reef_alert_summary.attention }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Priority</span>
+        <strong>{{ latest_snapshot.reef_alert_summary.priority }}</strong>
+      </div>
+    </div>
+    <div class="action-bar" style="margin-top:14px;">
+      <a href="/marine/snapshots" class="btn btn-ghost">Open Snapshot Details</a>
+    </div>
+  {% else %}
+    <p class="empty-state">No snapshot available yet. Run `python scripts/run_marine_snapshot.py` to generate the latest deterministic monitoring summary.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Latest Monitoring Change Event</h2>
+    <span class="marine-note">Deterministic snapshot-change notification based on reef-alert priority rules only.</span>
+  </div>
+  {% if latest_alert_event %}
+    <div class="marine-summary-grid">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Event Timestamp</span>
+        <strong>{{ latest_alert_event.generated_at }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Priority Increased</span>
+        <strong>{{ 'Yes' if latest_alert_event.priority_increased else 'No' }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">New Priority Stations</span>
+        <strong>{{ latest_alert_event.new_priority_station_ids|length }}</strong>
+      </div>
+    </div>
+    <div class="action-bar" style="margin-top:14px;">
+      <a href="/marine/snapshots" class="btn btn-ghost">Open Snapshot Details</a>
+    </div>
+  {% else %}
+    <p class="empty-state">No monitoring change event is available yet.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Latest Ingest Summary</h2>
+    <span class="marine-note">Rule-based only — threshold outputs, not ecological conclusions.</span>
+  </div>
+  {% if latest_ingest %}
+    <div class="marine-summary-grid">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Dataset</span>
+        <strong>{{ latest_ingest.payload.dataset }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Rows Ingested</span>
+        <strong>{{ latest_ingest.payload.rows_ingested }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Timestamp</span>
+        <strong>{{ latest_ingest.payload.timestamp }}</strong>
+      </div>
+    </div>
+  {% else %}
+    <p class="empty-state">No marine ingest telemetry found yet. Run the ingestion nerve first.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Anomaly Summary In Current Scope</h2>
+    <span class="marine-note">Counts reflect deterministic threshold-rule outputs for the currently filtered observations.</span>
+  </div>
+  {% if anomaly_summary.total > 0 %}
+    <div class="marine-summary-grid">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Total Observations</span>
+        <strong>{{ anomaly_summary.total }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Normal</span>
+        <strong>{{ anomaly_summary.normal }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Watch</span>
+        <strong>{{ anomaly_summary.watch }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Anomaly</span>
+        <strong>{{ anomaly_summary.anomaly }}</strong>
+      </div>
+    </div>
+  {% else %}
+    <p class="empty-state">No anomaly summary is available because the current marine observation scope is empty.</p>
+  {% endif %}
+  {% if reef_stress_summary.sst_rows > 0 %}
+    <div class="marine-summary-grid" style="margin-top:14px;">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">SST Reef Stress Rows</span>
+        <strong>{{ reef_stress_summary.sst_rows }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Reef Stress Watch</span>
+        <strong>{{ reef_stress_summary.watch }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Reef Stress</span>
+        <strong>{{ reef_stress_summary.stress }}</strong>
+      </div>
+    </div>
+    <p class="marine-note" style="margin-top:10px;">Reef-stress values are SST-only early-warning indicators derived from deterministic deviation thresholds. They do not imply bleaching or mortality.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <h2 class="panel-title">Observation Filters</h2>
+  <form class="marine-filter-form" method="get" action="/marine">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="dataset">Dataset</label>
+        <select id="dataset" name="dataset" class="marine-select">
+          <option value="" {% if not dataset_filter %}selected{% endif %}>All datasets</option>
+          <option value="sst" {% if dataset_filter == 'sst' %}selected{% endif %}>Sea Surface Temperature</option>
+          <option value="buoy" {% if dataset_filter == 'buoy' %}selected{% endif %}>Buoy Observations</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="station_id">Station ID</label>
+        <input type="text" id="station_id" name="station_id" value="{{ station_id_filter }}" placeholder="e.g. 46002" />
+      </div>
+      <div class="form-group">
+        <label for="limit">Limit</label>
+        <input type="number" id="limit" name="limit" min="1" max="100" value="{{ limit_value }}" />
+      </div>
+    </div>
+    <div class="action-bar">
+      <button type="submit" class="btn btn-primary">Apply Filter</button>
+      <a href="/marine" class="btn btn-ghost">Reset</a>
+      <a href="/api/marine/export?dataset={{ dataset_filter }}&station_id={{ station_id_filter }}&limit={{ limit_value }}" class="btn btn-ghost">Export Scope JSON</a>
+    </div>
+  </form>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Saved Investigation Manifests</h2>
+    <span class="marine-note">Saved scopes are navigation aids only. Use JSON export for reproducible handoff.</span>
+  </div>
+  <form class="marine-save-form" data-save-investigation data-path="/marine" data-scope-type="marine">
+    <div class="action-bar">
+      <input type="text" name="name" class="marine-save-input" placeholder="Name this marine scope" required />
+      <button type="submit" class="btn btn-secondary">Save Investigation</button>
+      <span class="marine-save-status" aria-live="polite"></span>
+    </div>
+  </form>
+  {% if saved_investigations %}
+    <ul class="marine-telemetry-list">
+      {% for item in saved_investigations %}
+        <li>
+          <strong>{{ item.name }}</strong>
+          · {{ item.scope_type }}
+          · <a href="/marine/investigations/{{ item.id }}/open">Open saved scope</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-state">No saved marine investigations yet.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Reef Alert Priority Summary</h2>
+    <span class="marine-note">Deterministic review-priority layer based on reef proximity plus SST reef-stress. It is not an ecological diagnosis.</span>
+  </div>
+  <div class="marine-summary-grid">
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Near-Reef Stations</span>
+      <strong>{{ reef_alert_summary.near_reef_total }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Attention</span>
+      <strong>{{ reef_alert_summary.attention }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Priority</span>
+      <strong>{{ reef_alert_summary.priority }}</strong>
+    </div>
+  </div>
+  {% if reef_alerts %}
+    <ul class="marine-telemetry-list" style="margin-top:14px;">
+      {% for item in reef_alerts %}
+        <li>
+          <strong>{{ item.station_id }}</strong>
+          · {{ item.priority_status }}
+          · nearest reef {{ item.nearest_reef_name or '—' }}
+          · {{ item.nearest_reef_distance_km if item.nearest_reef_distance_km is not none else '—' }} km
+          · reef stress {{ item.latest_reef_stress_status or '—' }}
+          · <a href="/marine/station/{{ item.station_id }}">Open station</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-state">No near-reef stations currently require attention in this scope.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Recent Dataset Ingest Telemetry</h2>
+  </div>
+  {% if telemetry %}
+    <ul class="marine-telemetry-list">
+      {% for item in telemetry %}
+        <li>
+          <strong>{{ item.payload.dataset }}</strong>
+          ingested
+          <strong>{{ item.payload.rows_ingested }}</strong>
+          rows at
+          <strong>{{ item.payload.timestamp }}</strong>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-state">No `dataset_ingest` events available.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Latest Marine Observations</h2>
+    <span class="marine-note">Anomaly fields are deterministic rule outputs derived from stored baselines and thresholds.</span>
+  </div>
+  {% if observations %}
+    <div class="marine-table-wrap">
+      <table class="marine-table">
+        <thead>
+          <tr>
+            <th>Dataset</th>
+            <th>Timestamp</th>
+            <th>Station</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Baseline</th>
+            <th>Deviation</th>
+            <th>Anomaly Status</th>
+            <th>Reef Stress</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in observations %}
+            <tr>
+              <td>{{ row.dataset_name }}</td>
+              <td>{{ row.timestamp }}</td>
+              <td>
+                {% if row.station_id %}
+                  <a href="/marine/station/{{ row.station_id }}">{{ row.station_id }}</a>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>{{ "%.3f"|format(row.latitude) }}</td>
+              <td>{{ "%.3f"|format(row.longitude) }}</td>
+              <td>{{ row.metric_name }}</td>
+              <td>{{ row.metric_value }}</td>
+              <td>{{ row.baseline if row.baseline is not none else '—' }}</td>
+              <td>{{ row.deviation if row.deviation is not none else '—' }}</td>
+              <td><span class="marine-status marine-status-{{ row.anomaly_status }}">{{ row.anomaly_status }}</span></td>
+              <td>
+                {% if row.reef_stress_status %}
+                  <span class="marine-status marine-status-reef-{{ row.reef_stress_status }}">{{ row.reef_stress_status }}</span>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty-state">No marine observations found for the current filter. Run `python nerves/marine-data-ingestion/main.py --dataset sst` to populate data.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function currentMarineScope() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      dataset: params.get("dataset") || "",
+      station_id: params.get("station_id") || "",
+      limit: params.get("limit") || "{{ limit_value }}",
+    };
+  }
+
+  document.querySelectorAll("[data-save-investigation]").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const status = form.querySelector(".marine-save-status");
+      const scope = currentMarineScope();
+      const payload = {
+        name: new FormData(form).get("name"),
+        scope_type: form.dataset.scopeType,
+        path: form.dataset.path,
+        dataset: scope.dataset,
+        station_id: scope.station_id,
+        limit: scope.limit,
+        query_string: new URLSearchParams(Object.entries(scope).filter(([, value]) => value)).toString(),
+      };
+
+      const response = await fetch("/api/marine/investigations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        status.textContent = "Save failed";
+        return;
+      }
+
+      const manifest = await response.json();
+      status.textContent = `Saved as #${manifest.id}`;
+      window.location.reload();
+    });
+  });
+</script>
+{% endblock %}

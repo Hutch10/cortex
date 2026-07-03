@@ -1,0 +1,1302 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Business Workflow{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Business Workflow</h1>
+  <p class="page-desc">Run the Drift Optimizer and generate your Flow &amp; Grow client report.</p>
+</div>
+
+<style id="org-theme-styles"></style>
+
+<!-- ── Morning Briefing Card ─────────────────────────────────────────────── -->
+<div class="morning-card" id="morning-card">
+  <div class="mc-header">
+    <span class="mc-title">&#127749; Morning Briefing</span>
+    <span class="mc-badge" id="mc-alert-badge">—</span>
+    <span class="mc-ts" id="mc-generated-at"></span>
+  </div>
+  <div class="mc-grid">
+    <div class="mc-cell">
+      <span class="mc-label" id="mc-aviation-label">Sentinel — N6424P</span>
+      <span class="mc-value" id="mc-sentinel-status">—</span>
+      <span class="mc-detail" id="mc-role">Role: —</span>
+      <span class="mc-detail" id="mc-system-status">System Status: —</span>
+      <span class="mc-detail" id="mc-days-remaining">—</span>
+      <span class="mc-detail" id="mc-expeditions">Recent Expeditions: —</span>
+      <span class="mc-detail" id="mc-specimen-alert">High-Yield Specimen: —</span>
+      <span class="mc-detail" id="mc-restock-alert">Restock: —</span>
+      <span class="mc-detail" id="mc-fuel-market">Fuel Market: —</span>
+      <span class="mc-detail" id="mc-edge-sync">Edge Sync: —</span>
+      <span class="mc-detail mc-launch-badge" id="mc-suggested-launch" role="button" tabindex="0">Suggested Launch: —</span>
+      <span class="mc-detail mc-launch-breakdown mc-launch-breakdown--hidden" id="mc-suggested-launch-breakdown">Clear Skies + Low Fuel Prices + Low Consulting Drift.</span>
+      <span class="mc-detail mc-discovery-forecast" id="mc-discovery-forecast">Discovery Forecast: —</span>
+      <span class="mc-detail mc-discovery-route" id="mc-discovery-route">Mission Route: —</span>
+      <span class="mc-detail mc-fleet-readiness" id="mc-fleet-readiness">Fleet Readiness: —</span>
+      <div class="mc-readiness-track" aria-hidden="true">
+        <span class="mc-readiness-fill" id="mc-fleet-readiness-fill"></span>
+      </div>
+      <span class="mc-detail mc-readiness-meta" id="mc-fleet-readiness-meta">Gauge: awaiting telemetry.</span>
+      <span class="mc-detail mc-strategy-badge" id="mc-strategy-badge">Strategy: —</span>
+      <span class="mc-detail mc-strategy-rationale" id="mc-strategy-rationale">Yield Velocity > Operational Cost.</span>
+      <span class="mc-detail mc-architect-mode" id="mc-architect-mode">Architect Mode: —</span>
+      <span class="mc-detail mc-proposed-automation" id="mc-proposed-automation">Proposed Automation: —</span>
+      <span class="mc-detail mc-system-longevity" id="mc-system-longevity">Lighthouse Status: —</span>
+      <span class="mc-detail mc-pruned-today" id="mc-pruned-today">Pruned Today: —</span>
+      <span class="mc-detail mc-professional-ecology" id="mc-professional-ecology">Professional Ecology: —</span>
+      <span class="mc-detail" id="mc-fleet-status-gold">Fleet Status: —</span>
+      <button type="button" class="btn btn-primary btn-sm mc-service-btn mc-service-btn--hidden" id="mc-schedule-service">Schedule Service</button>
+      <span class="mc-detail" id="mc-vault-health">Vault Health: —</span>
+      <span class="mc-detail" id="mc-lighthouse-governance">Lighthouse Governance: —</span>
+      <span class="mc-detail" id="mc-billing-preview">Billing Preview: —</span>
+    </div>
+    <div class="mc-cell">
+      <span class="mc-label">24h Billable</span>
+      <span class="mc-value" id="mc-investment">—</span>
+      <span class="mc-detail" id="mc-pulse-count">—</span>
+    </div>
+    <div class="mc-cell mc-cell--wide">
+      <span class="mc-label">Intelligence</span>
+      <span class="mc-detail" id="mc-narrative">Loading&#8230;</span>
+    </div>
+    <div class="mc-cell mc-cell--wide">
+      <span class="mc-label">Global Discovery Feed</span>
+      <span class="mc-detail" id="mc-global-pulse">Global Pulse: —</span>
+      <span class="mc-detail" id="mc-mesh-integrity">Mesh Integrity: —</span>
+      <span class="mc-detail" id="mc-mesh-radar">Mesh Radar: —</span>
+      <span class="mc-detail mc-network-health" id="mc-network-health">Network Health: —</span>
+      <div class="mc-network-track" aria-hidden="true">
+        <span class="mc-network-fill" id="mc-network-health-fill"></span>
+      </div>
+      <span class="mc-detail mc-guest-nodes" id="mc-guest-nodes">Guest Nodes: —</span>
+      <span class="mc-detail mc-network-status" id="mc-network-status">Network Status: —</span>
+      <ul class="mc-feed-list" id="mc-global-feed">
+        <li class="mc-feed-empty">No external discovery signals yet.</li>
+      </ul>
+    </div>
+    <div class="mc-cell mc-cell--wide">
+      <span class="mc-label">Strategic Briefing</span>
+      <span class="mc-detail mc-intel-synthesis-label" id="mc-intel-synthesis-label">Intelligence Synthesis: —</span>
+      <span class="mc-detail mc-strategic-summary" id="mc-strategic-global-pulse">Global Pulse summary unavailable.</span>
+      <span class="mc-detail mc-strategic-action" id="mc-strategic-local-action">Local Action: continue mission monitoring.</span>
+    </div>
+    <div class="mc-cell mc-cell--wide">
+      <span class="mc-label">Systems-Thinking Reflection</span>
+      <span class="mc-detail mc-systems-oracle-label" id="mc-systems-oracle-label">Systems Oracle: —</span>
+      <span class="mc-detail mc-systems-reflection" id="mc-systems-reflection">Systems-Thinking Reflection: awaiting synthesis.</span>
+      <span class="mc-detail mc-philosophical-synthesis" id="mc-philosophical-synthesis">Philosophical Synthesis: awaiting manuscript lens.</span>
+    </div>
+  </div>
+  <div class="mc-footer">
+    <span class="mc-detail" id="mc-tenant-id">Tenant ID: —</span>
+  </div>
+</div>
+
+<!-- ── Input Panel ───────────────────────────────────────────────────────── -->
+<div class="panel">
+  <h2 class="panel-title">Client Signal Inputs</h2>
+
+  <div class="form-grid">
+
+    <div class="form-group">
+      <label for="client_name">Client Name <span class="req">*</span></label>
+      <input type="text" id="client_name" placeholder="e.g. Acme Corp" />
+    </div>
+
+    <div class="form-group">
+      <label for="tenant_slug">
+        Tenant Slug
+        <span class="hint">(e.g. lakeside-legal)</span>
+      </label>
+      <input type="text" id="tenant_slug" placeholder="default" />
+    </div>
+
+    <div class="form-group">
+      <label for="revenue_trend">
+        Revenue Trend
+        <span class="hint">Month-over-month (−1.0 to +1.0)</span>
+      </label>
+      <input type="number" id="revenue_trend" value="0.00" step="0.01" min="-1" max="1" />
+    </div>
+
+    <div class="form-group">
+      <label for="process_score">
+        Process Score
+        <span class="hint">0 – 100</span>
+      </label>
+      <input type="number" id="process_score" value="50" step="1" min="0" max="100" />
+      <input type="range" id="process_score_range" value="50" min="0" max="100"
+             title="Process Score slider"
+             oninput="syncRange('process_score', this.value)" />
+    </div>
+
+    <div class="form-group">
+      <label for="team_alignment">
+        Team Alignment
+        <span class="hint">0 – 100</span>
+      </label>
+      <input type="number" id="team_alignment" value="50" step="1" min="0" max="100" />
+      <input type="range" id="team_alignment_range" value="50" min="0" max="100"
+             title="Team Alignment slider"
+             oninput="syncRange('team_alignment', this.value)" />
+    </div>
+
+    <div class="form-group">
+      <label for="market_response">
+        Market Response
+        <span class="hint">0 – 100</span>
+      </label>
+      <input type="number" id="market_response" value="50" step="1" min="0" max="100" />
+      <input type="range" id="market_response_range" value="50" min="0" max="100"
+             title="Market Response slider"
+             oninput="syncRange('market_response', this.value)" />
+    </div>
+
+    <!-- Custom Signals -->
+    <div class="form-group full">
+      <label>Custom Signals <span class="hint">(optional — label: 0–100)</span></label>
+      <div id="custom-signals-container"></div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="addCustomSignal()">+ Add Signal</button>
+    </div>
+
+  </div><!-- /form-grid -->
+
+  <div class="action-bar">
+    <button type="button" id="btn-analyse" class="btn btn-secondary" onclick="runAnalysis()">
+      Run Drift Analysis
+    </button>
+    <button type="button" id="btn-report" class="btn btn-primary" onclick="generateReport()" disabled>
+      Generate Client Report
+    </button>
+  </div>
+</div>
+
+<!-- ── Automation Lab ────────────────────────────────────────────────────── -->
+<div class="panel" id="automation-lab">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Automation Lab</h2>
+    <button type="button" class="btn btn-ghost btn-sm" onclick="loadMorningCard()">Sync Suggestions</button>
+  </div>
+  <p class="page-desc" id="al-architect-mode">Architect Mode: Enabled. Suggestions Pending.</p>
+  <p class="page-desc" id="al-proposed">Proposed Automation: awaiting pattern recognition.</p>
+  <p class="page-desc" id="al-collective">Mesh Bottlenecks: gathering systems-oracle bottlenecks.</p>
+  <div class="action-bar">
+    <button type="button" id="al-dry-run-btn" class="btn btn-secondary" onclick="dryRunSuggestedAutomation()" disabled>
+      Dry-Run Suggested Pruner
+    </button>
+    <button type="button" id="al-deploy-btn" class="btn btn-primary" onclick="deploySuggestedAutomation()" disabled>
+      Deploy Suggested Pruner
+    </button>
+    <span class="mc-detail" id="al-deploy-status">No deployment run yet.</span>
+  </div>
+</div>
+
+<!-- ── Results Panel ─────────────────────────────────────────────────────── -->
+<div id="results-panel" class="panel hidden">
+
+  <h2 class="panel-title">Drift Analysis Results</h2>
+
+  <!-- Pulse Badge + Score -->
+  <div class="score-row">
+    <div id="pulse-badge" class="pulse-badge">—</div>
+    <div class="score-display">
+      <span class="score-label">Drift Score</span>
+      <span id="score-value" class="score-number">—</span>
+      <span class="score-max">/ 100</span>
+    </div>
+  </div>
+
+  <!-- Score bar -->
+  <div class="score-bar-wrap">
+    <div id="score-bar" class="score-bar"></div>
+  </div>
+
+  <!-- Observations -->
+  <h3 class="section-title">Client Observations</h3>
+  <ul id="observations-list" class="obs-list"></ul>
+
+  <!-- Recommendations -->
+  <h3 class="section-title">Systemic Recommendations</h3>
+  <ul id="recommendations-list" class="rec-list"></ul>
+
+</div>
+
+<!-- ── Saved Reports ─────────────────────────────────────────────────────── -->
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Saved Reports</h2>
+    <button type="button" class="btn btn-ghost btn-sm" onclick="loadReportList()">Refresh</button>
+  </div>
+  <ul id="reports-list" class="reports-list">
+    <li class="empty-state">No reports generated yet.</li>
+  </ul>
+</div>
+
+<!-- ── Recent Sessions (Tenant Billing Timeline) ────────────────────────── -->
+<div class="panel" id="sessions-panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Recent Sessions</h2>
+    <button type="button" class="btn btn-ghost btn-sm" onclick="loadSessionTimeline()">Refresh</button>
+  </div>
+  <p class="page-desc" style="margin:0 0 0.75rem">
+    Last 5 engagement sessions for the active tenant — billable time, duration, and key activities.
+  </p>
+  <div id="sessions-timeline">
+    <p class="empty-state">Enter a Tenant Slug above and run an analysis to generate sessions.</p>
+  </div>
+</div>
+
+<!-- ── Spinner overlay ───────────────────────────────────────────────────── -->
+<div id="spinner" class="spinner-overlay hidden">
+  <div class="spinner-box">
+    <div class="spinner"></div>
+    <p id="spinner-msg">Generating report…</p>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<style>
+/* ── Sentinel glow: sessions panel pulses when a shadow:snapshot exists ───── */
+<script>
+// ── Morning Briefing Card ───────────────────────────────────────────────────
+window.__architectSuggestion = null;
+window.__architectUserId = 1;
+
+async function loadMorningCard() {
+  const slug = (document.getElementById("tenant_slug").value || "").trim() || "default";
+  const tenantId = slug === "default" ? "internal" : slug;
+  try {
+    const res  = await fetch(`/api/briefing/daily?tenant_slug=${encodeURIComponent(slug)}&tenant_id=${encodeURIComponent(tenantId)}`);
+    const data = await res.json();
+    const av   = data.aviation || {};
+    const role = data.role || {};
+    const fleet = data.fleet || {};
+    const bl   = data.billing  || {};
+    const specimen = data.high_yield_specimen_alert || {};
+    const restock = data.restock_alert || {};
+    const autoRestock = data.auto_restock || {};
+    const fuelMarket = data.fuel_market || {};
+    const fleetReadiness = data.fleet_readiness || {};
+    const optimizationPivot = data.optimization_pivot || {};
+    const edgeSync = data.edge_sync || {};
+    const systemStatus = data.system_status || {};
+    const globalNode = data.global_node || {};
+    const meshRadar = data.mesh_radar || {};
+    const networkHealth = data.network_health || {};
+    const systemLongevity = data.system_longevity || {};
+    const automationArchitect = data.automation_architect || {};
+    const intelligenceSynthesis = data.intelligence_synthesis || {};
+    const systemsOracle = data.systems_thinking_overlay || {};
+    const maintenanceForecast = data.maintenance_forecast || {};
+    const globalFeed = Array.isArray(globalNode.signals) ? globalNode.signals : [];
+    const missionForecast = data.mission_forecast || {};
+    const discoveryForecast = data.discovery_forecast || {};
+    const pacPruning = data.pac_pruning || {};
+    const vault = data.vault_health || {};
+    const lighthouseGovernance = data.lighthouse_governance || {};
+    const billingPreview = data.billing_preview || {};
+    const orgTheme = data.org_theme || {};
+    const alertColours = { WARNING: "#F97316", CRITICAL: "#EF4444", OK: "#26A69A" };
+    const badge = document.getElementById("mc-alert-badge");
+    const fleetMode = (fleet.active_tail_count || 0) > 1;
+
+    badge.textContent     = data.overall_alert || "—";
+    badge.style.background = alertColours[data.overall_alert] || "#9E9E9E";
+
+    if (fleetMode) {
+      document.getElementById("mc-aviation-label").textContent = "Fleet Health";
+      document.getElementById("mc-sentinel-status").textContent =
+        `${fleet.fleet_alert || "UNKNOWN"} (${fleet.active_tail_count || 0} tails)`;
+      document.getElementById("mc-sentinel-status").style.color = fleet.fleet_colour || "inherit";
+      const detail = (fleet.tails || [])
+        .filter(t => t && t.has_data)
+        .map(t => `${t.tail_number}: ${t.status}`)
+        .join(" | ");
+      document.getElementById("mc-days-remaining").textContent = detail || "Multiple tails active";
+    } else {
+      document.getElementById("mc-aviation-label").textContent = "Sentinel — N6424P";
+      document.getElementById("mc-sentinel-status").textContent  = av.status || "—";
+      document.getElementById("mc-sentinel-status").style.color  = av.colour || "inherit";
+      document.getElementById("mc-days-remaining").textContent   =
+        av.days_remaining != null
+          ? `${av.days_remaining} Days Remaining`
+          : av.last_analysis_date ? `Last: ${av.last_analysis_date}` : "—";
+    }
+
+    const roleEl = document.getElementById("mc-role");
+    roleEl.textContent = role.label || "Role: Administrator (Hutch).";
+
+    const systemStatusEl = document.getElementById("mc-system-status");
+    systemStatusEl.textContent = systemStatus.label || "System Status: Digital Guardian Active. Ready for the Mass Market.";
+    systemStatusEl.style.color = "#065F46";
+
+    const tenantEl = document.getElementById("mc-tenant-id");
+    const tenant = data.tenant || {};
+    tenantEl.textContent = tenant.label || `Tenant ID: ${tenantId}`;
+
+    document.getElementById("mc-expeditions").textContent =
+      `Recent Expeditions: ${data.recent_expeditions_count || 0}`;
+    const specimenEl = document.getElementById("mc-specimen-alert");
+    if (specimen.is_active) {
+      const site = specimen.location_name || "Field site";
+      const flight = (specimen.transport_flight_suggestion || {}).flight_id || "linked flight pending";
+      specimenEl.textContent = `High-Yield Specimen: ★${specimen.yield_stars || 5} at ${site} (${flight})`;
+      specimenEl.style.color = "#B45309";
+    } else {
+      specimenEl.textContent = "High-Yield Specimen: none in the last 72h";
+      specimenEl.style.color = "inherit";
+    }
+
+    const restockEl = document.getElementById("mc-restock-alert");
+    if (autoRestock.detected_hotspot) {
+      if (autoRestock.is_ready_for_mission) {
+        restockEl.textContent = "Restock: Ready for Mission";
+        restockEl.style.color = "#047857";
+      } else {
+        const shortfalls = (autoRestock.shortfall_items || []).join(", ") || "Consumables";
+        restockEl.textContent = `Restock Needed: ${shortfalls}`;
+        restockEl.style.color = "#B91C1C";
+      }
+    } else if (restock.is_active) {
+      const names = (restock.low_item_labels || []).join(", ") || "Consumables";
+      restockEl.textContent = `Restock Needed: ${names}`;
+      restockEl.style.color = "#B91C1C";
+    } else {
+      restockEl.textContent = `Restock: ${restock.label || "Systems Nominal"}`;
+      restockEl.style.color = "inherit";
+    }
+
+    const fuelMarketEl = document.getElementById("mc-fuel-market");
+    fuelMarketEl.textContent = fuelMarket.label || "Fuel Market: Nominal.";
+    fuelMarketEl.style.color = fuelMarket.is_refuel_alert ? "#B45309" : "inherit";
+
+    const edgeSyncEl = document.getElementById("mc-edge-sync");
+    edgeSyncEl.textContent = edgeSync.label || "Edge Sync: Active.";
+    edgeSyncEl.style.color = (edgeSync.status || "").toUpperCase() === "ACTIVE" ? "#047857" : "inherit";
+
+    const globalPulseEl = document.getElementById("mc-global-pulse");
+    globalPulseEl.textContent = globalNode.label || "Global Pulse: Connected.";
+    globalPulseEl.style.color = (globalNode.status || "").toUpperCase() === "CONNECTED" ? "#0369A1" : "inherit";
+
+    const meshIntegrityEl = document.getElementById("mc-mesh-integrity");
+    meshIntegrityEl.textContent = globalNode.mesh_integrity_label || "Mesh Integrity: 100%.";
+    meshIntegrityEl.style.color = (globalNode.mesh_integrity_pct || 0) >= 85 ? "#047857" : "#B45309";
+
+    const meshRadarEl = document.getElementById("mc-mesh-radar");
+    meshRadarEl.textContent = meshRadar.label || "Mesh Radar: Active.";
+    meshRadarEl.style.color = String(meshRadar.status || "").toUpperCase() === "ACTIVE" ? "#0F766E" : "inherit";
+
+    const networkHealthEl = document.getElementById("mc-network-health");
+    const networkFillEl = document.getElementById("mc-network-health-fill");
+    const guestNodesEl = document.getElementById("mc-guest-nodes");
+    const networkStatusEl = document.getElementById("mc-network-status");
+    const networkPct = Math.max(0, Math.min(100, Number(networkHealth.mesh_integrity_pct || 0)));
+    networkHealthEl.textContent = networkHealth.network_health_label || `Network Health: ${networkPct}%.`;
+    guestNodesEl.textContent = `Guest Nodes: ${Number(networkHealth.active_guest_nodes || 0)} active / ${Number(networkHealth.guest_nodes_total || 0)} total`;
+    networkStatusEl.textContent = networkHealth.status_label || "Network Status: Dormant.";
+    networkFillEl.style.width = `${networkPct}%`;
+    if (networkPct >= 75) {
+      networkFillEl.style.background = "#15803D";
+      networkHealthEl.style.color = "#166534";
+      networkStatusEl.style.color = "#166534";
+    } else if (networkPct >= 45) {
+      networkFillEl.style.background = "#C2410C";
+      networkHealthEl.style.color = "#9A3412";
+      networkStatusEl.style.color = "#9A3412";
+    } else {
+      networkFillEl.style.background = "#B91C1C";
+      networkHealthEl.style.color = "#991B1B";
+      networkStatusEl.style.color = "#991B1B";
+    }
+
+    const intelLabelEl = document.getElementById("mc-intel-synthesis-label");
+    const strategicSummaryEl = document.getElementById("mc-strategic-global-pulse");
+    const strategicActionEl = document.getElementById("mc-strategic-local-action");
+    intelLabelEl.textContent = intelligenceSynthesis.label || "Intelligence Synthesis: Nominal.";
+    strategicSummaryEl.textContent = intelligenceSynthesis.global_pulse_summary || "Global Pulse summary unavailable.";
+    strategicActionEl.textContent =
+      intelligenceSynthesis.local_action_recommendation ||
+      "Local Action: continue mission monitoring.";
+    intelLabelEl.style.color = "#0F766E";
+
+    const systemsOracleLabelEl = document.getElementById("mc-systems-oracle-label");
+    const systemsReflectionEl = document.getElementById("mc-systems-reflection");
+    const systemsSynthesisEl = document.getElementById("mc-philosophical-synthesis");
+    systemsOracleLabelEl.textContent = systemsOracle.label || "Systems Oracle: Standby.";
+    systemsReflectionEl.textContent =
+      systemsOracle.systems_reflection ||
+      "Systems-Thinking Reflection: no overlay generated.";
+    systemsSynthesisEl.textContent =
+      systemsOracle.philosophical_synthesis ||
+      "Philosophical Synthesis: no manuscript linkage available.";
+    systemsOracleLabelEl.style.color = String(systemsOracle.status || "").toUpperCase() === "SYNCED" ? "#065F46" : "#9A3412";
+
+    const fleetStatusEl = document.getElementById("mc-fleet-status-gold");
+    const serviceBtnEl = document.getElementById("mc-schedule-service");
+    fleetStatusEl.textContent = data.fleet_status_badge || maintenanceForecast.fleet_status_label || "Fleet Status: Gold Master.";
+    fleetStatusEl.style.color = String(fleetStatusEl.textContent).indexOf("Gold Master") !== -1 ? "#047857" : "#B91C1C";
+
+    const serviceNeeded = !!maintenanceForecast.schedule_service_required;
+    const dueComponents = Array.isArray(maintenanceForecast.schedule_service_components)
+      ? maintenanceForecast.schedule_service_components
+      : [];
+    if (serviceNeeded) {
+      serviceBtnEl.classList.remove("mc-service-btn--hidden");
+      serviceBtnEl.textContent = dueComponents.length
+        ? ("Schedule Service: " + dueComponents.join(", "))
+        : "Schedule Service";
+      serviceBtnEl.onclick = function () {
+        window.location.href = "/aviation#predictive-tti";
+      };
+    } else {
+      serviceBtnEl.classList.add("mc-service-btn--hidden");
+      serviceBtnEl.textContent = "Schedule Service";
+      serviceBtnEl.onclick = null;
+    }
+
+    const globalFeedEl = document.getElementById("mc-global-feed");
+    if (globalFeedEl) {
+      globalFeedEl.innerHTML = "";
+      if (!globalFeed.length) {
+        const emptyItem = document.createElement("li");
+        emptyItem.className = "mc-feed-empty";
+        emptyItem.textContent = "No external discovery signals yet.";
+        globalFeedEl.appendChild(emptyItem);
+      } else {
+        globalFeed.slice(0, 3).forEach(function (entry) {
+          const item = document.createElement("li");
+          item.className = "mc-feed-item";
+
+          const body = document.createElement("div");
+          body.className = "mc-feed-body";
+
+          const statusBadge = document.createElement("span");
+          const statusText = entry.probability_status || "Plausible";
+          statusBadge.className = "mc-feed-badge mc-feed-badge--" + String(statusText).toLowerCase();
+          statusBadge.textContent = statusText + " " + String(entry.confidence_pct || 0) + "%";
+          body.appendChild(statusBadge);
+
+          const message = document.createElement("span");
+          message.className = "mc-feed-message";
+          message.textContent = entry.message || "Global signal received.";
+          body.appendChild(message);
+
+          const meta = document.createElement("span");
+          meta.className = "mc-feed-meta";
+          meta.textContent = "Vouches: " + String(entry.vouch_count || 0);
+          body.appendChild(meta);
+
+          item.appendChild(body);
+
+          if (entry.can_vouch && !entry.already_vouched && entry.id) {
+            const vouchBtn = document.createElement("button");
+            vouchBtn.type = "button";
+            vouchBtn.className = "btn btn-ghost btn-sm mc-vouch-btn";
+            vouchBtn.textContent = "Vouch";
+            vouchBtn.onclick = function () {
+              vouchGlobalSignal(entry.id, vouchBtn);
+            };
+            item.appendChild(vouchBtn);
+          }
+
+          globalFeedEl.appendChild(item);
+        });
+      }
+    }
+
+    const launchEl = document.getElementById("mc-suggested-launch");
+    const launchBreakdownEl = document.getElementById("mc-suggested-launch-breakdown");
+    const launchLabel = missionForecast.label || "Suggested Launch: pending";
+    const launchBreakdown = missionForecast.breakdown_summary || "Clear Skies + Low Fuel Prices + Low Consulting Drift.";
+    launchEl.textContent = launchLabel;
+    launchBreakdownEl.textContent = launchBreakdown;
+    launchBreakdownEl.classList.add("mc-launch-breakdown--hidden");
+    launchEl.style.color = missionForecast.suggested_date ? "#0F766E" : "inherit";
+    const toggleBreakdown = function () {
+      launchBreakdownEl.classList.toggle("mc-launch-breakdown--hidden");
+    };
+    launchEl.onclick = toggleBreakdown;
+    launchEl.onkeydown = function (evt) {
+      if (evt.key === "Enter" || evt.key === " ") {
+        evt.preventDefault();
+        toggleBreakdown();
+      }
+    };
+
+    const discoveryForecastEl = document.getElementById("mc-discovery-forecast");
+    const discoveryRouteEl = document.getElementById("mc-discovery-route");
+    const routeLabel = discoveryForecast.suggested_route || ((discoveryForecast.route || {}).route_label);
+    discoveryForecastEl.textContent = discoveryForecast.label || "Discovery Forecast: Standby";
+    discoveryRouteEl.textContent = routeLabel || "Mission Route: Continue scheduled transects";
+    if (discoveryForecast.detected) {
+      discoveryForecastEl.style.color = "#B45309";
+      discoveryRouteEl.style.color = "#0F766E";
+    } else {
+      discoveryForecastEl.style.color = "inherit";
+      discoveryRouteEl.style.color = "inherit";
+    }
+
+    const fleetReadinessEl = document.getElementById("mc-fleet-readiness");
+    const fleetReadinessFillEl = document.getElementById("mc-fleet-readiness-fill");
+    const fleetReadinessMetaEl = document.getElementById("mc-fleet-readiness-meta");
+    const readinessPct = Math.max(0, Math.min(100, Number(fleetReadiness.readiness_pct || 0)));
+    fleetReadinessEl.textContent = fleetReadiness.label || `Fleet Readiness: ${readinessPct}% (Prep Required).`;
+    fleetReadinessFillEl.style.width = `${readinessPct}%`;
+    if (readinessPct >= 85) {
+      fleetReadinessFillEl.style.background = "#15803D";
+      fleetReadinessEl.style.color = "#166534";
+    } else if (readinessPct >= 60) {
+      fleetReadinessFillEl.style.background = "#C2410C";
+      fleetReadinessEl.style.color = "#9A3412";
+    } else {
+      fleetReadinessFillEl.style.background = "#B91C1C";
+      fleetReadinessEl.style.color = "#991B1B";
+    }
+    fleetReadinessMetaEl.textContent =
+      `Fuel ${fleetReadiness.fuel_component_pct || 0}% · ` +
+      `Consumables ${fleetReadiness.consumables_component_pct || 0}% · ` +
+      `Aircraft ${fleetReadiness.aircraft_component_pct || 0}%`;
+
+    const strategyBadgeEl = document.getElementById("mc-strategy-badge");
+    const strategyRationaleEl = document.getElementById("mc-strategy-rationale");
+    const architectModeEl = document.getElementById("mc-architect-mode");
+    const proposedAutomationEl = document.getElementById("mc-proposed-automation");
+    const systemLongevityEl = document.getElementById("mc-system-longevity");
+    const prunedTodayEl = document.getElementById("mc-pruned-today");
+    const professionalEcologyEl = document.getElementById("mc-professional-ecology");
+    strategyBadgeEl.textContent = optimizationPivot.label || "Strategy: Monitoring.";
+    strategyRationaleEl.textContent =
+      optimizationPivot.rationale ||
+      "Yield Velocity > Operational Cost.";
+    if (String(optimizationPivot.status || "").toUpperCase() === "OPTIMIZED") {
+      strategyBadgeEl.style.color = "#065F46";
+      strategyBadgeEl.style.background = "#D1FAE5";
+    } else {
+      strategyBadgeEl.style.color = "#7C2D12";
+      strategyBadgeEl.style.background = "#FFEDD5";
+    }
+
+    architectModeEl.textContent = automationArchitect.architect_mode_label || "Architect Mode: Enabled. Suggestions Pending.";
+    proposedAutomationEl.textContent = automationArchitect.proposed_automation_label || "Proposed Automation: Awaiting recurring drift signatures.";
+    if (String(automationArchitect.status || "").toUpperCase() === "ENABLED") {
+      architectModeEl.style.color = "#0f766e";
+    } else {
+      architectModeEl.style.color = "inherit";
+    }
+
+    systemLongevityEl.textContent = systemLongevity.label || "Lighthouse Status: Primary Active. Legacy Protocol Standing By.";
+    if (systemLongevity.is_legacy_mode) {
+      systemLongevityEl.style.color = "#14532d";
+      systemLongevityEl.style.fontWeight = "700";
+    } else {
+      systemLongevityEl.style.color = "#334155";
+      systemLongevityEl.style.fontWeight = "600";
+    }
+
+    const alArchitectMode = document.getElementById("al-architect-mode");
+    const alProposed = document.getElementById("al-proposed");
+    const alCollective = document.getElementById("al-collective");
+    const alDryRunBtn = document.getElementById("al-dry-run-btn");
+    const alDeployBtn = document.getElementById("al-deploy-btn");
+    alArchitectMode.textContent = automationArchitect.architect_mode_label || "Architect Mode: Enabled. Suggestions Pending.";
+    alProposed.textContent = automationArchitect.proposal_message || "Collecting 30-day drift cadence before recommending a targeted pruner.";
+    alCollective.textContent = ((automationArchitect.collective_intelligence || {}).label) || "Mesh Bottlenecks: Insufficient mesh drift signatures.";
+
+    const suggestions = Array.isArray(automationArchitect.suggestions) ? automationArchitect.suggestions : [];
+    const primarySuggestion = suggestions.length ? suggestions[0] : null;
+    window.__architectSuggestion = primarySuggestion;
+    window.__architectUserId = Number((role && role.user_id) || 1);
+    alDryRunBtn.disabled = !primarySuggestion;
+    alDeployBtn.disabled = !primarySuggestion;
+    if (primarySuggestion) {
+      alDryRunBtn.textContent = `Dry-Run Suggested Pruner (${primarySuggestion.required_scope || "scope"})`;
+    } else {
+      alDryRunBtn.textContent = "Dry-Run Suggested Pruner";
+    }
+    if (primarySuggestion) {
+      alDeployBtn.textContent = `Deploy Suggested Pruner (${primarySuggestion.required_scope || "scope"})`;
+    } else {
+      alDeployBtn.textContent = "Deploy Suggested Pruner";
+    }
+
+    const prunedCount = Number(pacPruning.pruned_today_count || 0);
+    const prunedBillable = Number(pacPruning.pruned_today_billable_pulse || 0);
+    const prunedDrift = Number(pacPruning.recorded_drift_pct || 0);
+    prunedTodayEl.textContent = `Pruned Today: ${prunedCount} item(s) • $${prunedBillable.toFixed(2)} • Drift ${prunedDrift.toFixed(1)}%`;
+    professionalEcologyEl.textContent = pacPruning.professional_ecology_label || "Professional Ecology: Monitoring.";
+    if (String(pacPruning.status || "").toUpperCase() === "PRUNED") {
+      prunedTodayEl.style.color = "#0f766e";
+      professionalEcologyEl.style.color = "#166534";
+    } else {
+      prunedTodayEl.style.color = "#475569";
+      professionalEcologyEl.style.color = "inherit";
+    }
+
+    const vaultEl = document.getElementById("mc-vault-health");
+    const vaultLabel = vault.label || `Vault Health: ${vault.status || "UNKNOWN"}`;
+    vaultEl.textContent = vaultLabel;
+    if ((vault.status || "").toUpperCase() === "WARNING") {
+      vaultEl.style.color = "#D97706";
+    } else if ((vault.status || "").toUpperCase() === "OK") {
+      vaultEl.style.color = "#047857";
+    } else {
+      vaultEl.style.color = "inherit";
+    }
+
+    const lgEl = document.getElementById("mc-lighthouse-governance");
+    if (lgEl) {
+      lgEl.textContent = lighthouseGovernance.label || "Lighthouse Governance: Absolute. Audit Ready.";
+      lgEl.style.color = (lighthouseGovernance.status || "").toUpperCase() === "ABSOLUTE" ? "#5b21b6" : "#475569";
+    }
+    const bpEl = document.getElementById("mc-billing-preview");
+    if (bpEl) {
+      bpEl.textContent = billingPreview.label || "Billing Preview: —";
+      bpEl.style.color = "#0369a1";
+    }
+    if (orgTheme.primary_color || orgTheme.secondary_color) {
+      let styleEl = document.getElementById("org-theme-styles");
+      if (!styleEl) {
+        styleEl = document.createElement("style");
+        styleEl.id = "org-theme-styles";
+        document.head.appendChild(styleEl);
+      }
+      styleEl.textContent = `:root { --org-primary: ${orgTheme.primary_color || "#0f766e"}; --org-secondary: ${orgTheme.secondary_color || "#065F46"}; }`;
+    }
+
+    document.getElementById("mc-investment").textContent  = bl.investment_24h || "—";
+    document.getElementById("mc-pulse-count").textContent =
+      `${bl.pulse_count_24h || 0} pulses (${bl.billable_min_24h || 0} min)`;
+    document.getElementById("mc-narrative").textContent   = data.narrative || "—";
+    const ts = data.generated_at || "";
+    document.getElementById("mc-generated-at").textContent =
+      ts ? `as of ${ts.replace("T", " ").replace("Z", " UTC")}` : "";
+    const card = document.getElementById("morning-card");
+    card.classList.toggle("mc--warning",  data.overall_alert === "WARNING");
+    card.classList.toggle("mc--critical", data.overall_alert === "CRITICAL");
+  } catch (e) {
+    document.getElementById("mc-narrative").textContent = `Error: ${e.message}`;
+  }
+}
+
+async function vouchGlobalSignal(signalId, buttonEl) {
+  const slug = (document.getElementById("tenant_slug").value || "").trim() || "default";
+  const tenantId = slug === "default" ? "internal" : slug;
+  buttonEl.disabled = true;
+  buttonEl.textContent = "Vouching...";
+  try {
+    const res = await fetch(`/api/observatory/signals/${signalId}/vouch`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tenant_id: tenantId, user_id: 1 }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ("HTTP " + res.status));
+    }
+    await loadMorningCard();
+  } catch (err) {
+    buttonEl.disabled = false;
+    buttonEl.textContent = "Vouch";
+    alert("Vouch failed: " + err.message);
+  }
+}
+
+async function deploySuggestedAutomation() {
+  const slug = (document.getElementById("tenant_slug").value || "").trim() || "default";
+  const tenantId = slug === "default" ? "internal" : slug;
+  const statusEl = document.getElementById("al-deploy-status");
+  const deployBtn = document.getElementById("al-deploy-btn");
+  const suggestion = window.__architectSuggestion;
+  if (!suggestion || !suggestion.key) {
+    statusEl.textContent = "No deployable suggestion is available for this user context.";
+    return;
+  }
+
+  deployBtn.disabled = true;
+  const oldText = deployBtn.textContent;
+  deployBtn.textContent = "Deploying…";
+  statusEl.textContent = "Deploying suggested pruner script…";
+  try {
+    const res = await fetch("/api/architect/automation/deploy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tenant_id: tenantId,
+        user_id: Number(window.__architectUserId || 1),
+        suggestion_key: suggestion.key,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ("HTTP " + res.status));
+    }
+
+    const deployedPath = (((data || {}).deployment || {}).script_path) || "scripts/generated";
+    statusEl.textContent = `Deployed ${deployedPath}.`;
+    await loadMorningCard();
+  } catch (err) {
+    statusEl.textContent = `Deployment failed: ${err.message}`;
+  } finally {
+    deployBtn.disabled = false;
+    deployBtn.textContent = oldText;
+  }
+}
+
+async function dryRunSuggestedAutomation() {
+  const tenantId = (document.getElementById("tenant_slug").value || "").trim() || "default";
+  const statusEl = document.getElementById("al-deploy-status");
+  const dryRunBtn = document.getElementById("al-dry-run-btn");
+  const suggestion = window.__architectSuggestion;
+  if (!suggestion || !suggestion.key) {
+    statusEl.textContent = "No dry-runnable suggestion is available for this user context.";
+    return;
+  }
+
+  dryRunBtn.disabled = true;
+  const oldText = dryRunBtn.textContent;
+  dryRunBtn.textContent = "Dry-Running…";
+  statusEl.textContent = "Running sandbox_execution.py in dry-run mode…";
+  try {
+    const res = await fetch("/api/architect/automation/dry-run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tenant_id: tenantId,
+        user_id: Number(window.__architectUserId || 1),
+        suggestion_key: suggestion.key,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ("HTTP " + res.status));
+    }
+    const sandboxPath = ((((data || {}).dry_run || {}).sandbox_script_path) || "scripts/generated/sandbox_execution.py");
+    statusEl.textContent = `Dry-run complete via ${sandboxPath}.`;
+  } catch (err) {
+    statusEl.textContent = `Dry-run failed: ${err.message}`;
+  } finally {
+    dryRunBtn.disabled = false;
+    dryRunBtn.textContent = oldText;
+  }
+}
+
+function initRealtimePulse() {
+  if (typeof io !== "function") {
+    return;
+  }
+  const globalFeedEl = document.getElementById("mc-global-feed");
+  const strategicActionEl = document.getElementById("mc-strategic-local-action");
+  if (!globalFeedEl) {
+    return;
+  }
+  const socket = io({ transports: ["websocket", "polling"] });
+
+  socket.on("observatory_signal", function (entry) {
+    if (!entry || typeof entry !== "object") {
+      return;
+    }
+    const empty = globalFeedEl.querySelector(".mc-feed-empty");
+    if (empty) {
+      empty.remove();
+    }
+
+    const item = document.createElement("li");
+    item.className = "mc-feed-item";
+    const body = document.createElement("div");
+    body.className = "mc-feed-body";
+
+    const statusBadge = document.createElement("span");
+    const statusText = entry.probability_status || "Plausible";
+    statusBadge.className = "mc-feed-badge mc-feed-badge--" + String(statusText).toLowerCase();
+    statusBadge.textContent = statusText + " " + String(entry.confidence_pct || 0) + "%";
+    body.appendChild(statusBadge);
+
+    const message = document.createElement("span");
+    message.className = "mc-feed-message";
+    message.textContent = entry.message || "Global signal received.";
+    body.appendChild(message);
+
+    item.appendChild(body);
+    globalFeedEl.insertBefore(item, globalFeedEl.firstChild);
+    while (globalFeedEl.children.length > 4) {
+      globalFeedEl.removeChild(globalFeedEl.lastChild);
+    }
+  });
+
+  socket.on("drift_update", function (entry) {
+    if (!entry || typeof entry !== "object" || !strategicActionEl) {
+      return;
+    }
+    const driftValue = Number(entry.drift_pct || 0);
+    strategicActionEl.textContent = `Local Action: Drift update ${driftValue.toFixed(1)}% captured in real-time.`;
+    strategicActionEl.style.color = driftValue >= 40 ? "#b91c1c" : "#0f766e";
+  });
+}
+
+loadMorningCard();
+initRealtimePulse();
+</script>
+<style>
+/* ── Sentinel glow: sessions panel pulses when a shadow:snapshot exists ───── */
+@keyframes sentinelGlow {
+  0%   { box-shadow: 0 0  0   0   rgba( 99, 102, 241, 0.0 ); }
+  40%  { box-shadow: 0 0 18px  6px rgba( 99, 102, 241, 0.35); }
+  100% { box-shadow: 0 0  0   0   rgba( 99, 102, 241, 0.0 ); }
+}
+.panel--sentinel-active {
+  animation: sentinelGlow 2.6s ease-in-out infinite;
+  border-color: rgba(99, 102, 241, 0.55) !important;
+}
+.mc-launch-badge {
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.mc-launch-breakdown {
+  font-size: 0.8rem;
+  color: #0F172A;
+  margin-top: 0.15rem;
+}
+.mc-launch-breakdown--hidden {
+  display: none;
+}
+.mc-discovery-forecast {
+  margin-top: 0.2rem;
+  font-weight: 600;
+}
+.mc-discovery-route {
+  font-size: 0.82rem;
+}
+#mc-lighthouse-governance {
+  font-weight: 600;
+}
+.mc-fleet-readiness {
+  margin-top: 0.25rem;
+  font-weight: 700;
+}
+.mc-readiness-track {
+  width: min(100%, 18rem);
+  height: 0.48rem;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+  margin-top: 0.15rem;
+}
+.mc-readiness-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #64748b;
+  transition: width 180ms ease;
+}
+.mc-readiness-meta {
+  font-size: 0.76rem;
+  color: #475569;
+}
+.mc-network-health {
+  margin-top: 0.25rem;
+  font-weight: 700;
+}
+.mc-network-track {
+  width: min(100%, 18rem);
+  height: 0.48rem;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+  margin-top: 0.15rem;
+}
+.mc-network-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #64748b;
+  transition: width 180ms ease;
+}
+.mc-guest-nodes {
+  font-size: 0.8rem;
+  color: #334155;
+}
+.mc-network-status {
+  font-weight: 600;
+}
+.mc-strategy-badge {
+  margin-top: 0.25rem;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.mc-strategy-rationale {
+  font-size: 0.78rem;
+  color: #374151;
+}
+.mc-architect-mode {
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0f766e;
+}
+.mc-proposed-automation {
+  margin-top: 0.18rem;
+  font-size: 0.79rem;
+  color: #0f172a;
+}
+.mc-system-longevity {
+  margin-top: 0.22rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+}
+.mc-pruned-today {
+  margin-top: 0.28rem;
+  font-size: 0.78rem;
+  color: #475569;
+}
+.mc-professional-ecology {
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #166534;
+}
+.mc-feed-list {
+  margin: 0.4rem 0 0;
+  padding-left: 0;
+  color: var(--text-secondary, #4b5563);
+  display: grid;
+  gap: 0.35rem;
+}
+.mc-feed-item {
+  list-style: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.4rem 0.45rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+  background: #f8fafc;
+}
+.mc-feed-body {
+  display: grid;
+  gap: 0.2rem;
+}
+.mc-feed-message {
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+.mc-feed-meta {
+  font-size: 0.74rem;
+  color: #64748b;
+}
+.mc-feed-badge {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.12rem 0.42rem;
+}
+.mc-feed-badge--verified {
+  background: #dcfce7;
+  color: #166534;
+}
+.mc-feed-badge--plausible {
+  background: #ffedd5;
+  color: #9a3412;
+}
+.mc-feed-badge--anomaly {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.mc-vouch-btn {
+  flex-shrink: 0;
+}
+.mc-service-btn {
+  margin-top: 0.3rem;
+  width: fit-content;
+}
+.mc-service-btn--hidden {
+  display: none;
+}
+.mc-intel-synthesis-label {
+  margin-top: 0.15rem;
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.16rem 0.52rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: #CCFBF1;
+  color: #0F766E;
+}
+.mc-strategic-summary {
+  margin-top: 0.25rem;
+  color: #0F172A;
+  line-height: 1.35;
+}
+.mc-strategic-action {
+  margin-top: 0.3rem;
+  color: #1D4ED8;
+  font-weight: 600;
+}
+.mc-systems-oracle-label {
+  margin-top: 0.15rem;
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.16rem 0.52rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: #dcfce7;
+  color: #166534;
+}
+.mc-systems-reflection {
+  margin-top: 0.25rem;
+  color: #1f2937;
+  line-height: 1.35;
+}
+.mc-philosophical-synthesis {
+  margin-top: 0.3rem;
+  color: #0f766e;
+  line-height: 1.35;
+}
+.mc-feed-empty {
+  list-style: none;
+  margin-left: 0;
+  color: #6b7280;
+}
+#automation-lab {
+  border-left: 3px solid #0f766e;
+  background: linear-gradient(135deg, rgba(15, 118, 110, 0.05), rgba(15, 23, 42, 0.02));
+}
+#al-deploy-status {
+  font-size: 0.8rem;
+  color: #334155;
+}
+</style>
+<script>
+// ── Helpers ────────────────────────────────────────────────────────────────
+function syncRange(id, val) {
+  document.getElementById(id).value = val;
+}
+
+function getInputs() {
+  const signals = {};
+  document.querySelectorAll(".custom-signal-row").forEach(row => {
+    const lbl = row.querySelector(".sig-label").value.trim();
+    const val = parseFloat(row.querySelector(".sig-value").value);
+    if (lbl && !isNaN(val)) signals[lbl] = val;
+  });
+  return {
+    client_name:    document.getElementById("client_name").value.trim(),
+    tenant_slug:    document.getElementById("tenant_slug").value.trim() || "default",
+    revenue_trend:  parseFloat(document.getElementById("revenue_trend").value),
+    process_score:  parseFloat(document.getElementById("process_score").value),
+    team_alignment: parseFloat(document.getElementById("team_alignment").value),
+    market_response:parseFloat(document.getElementById("market_response").value),
+    custom_signals: signals,
+  };
+}
+
+function addCustomSignal() {
+  const c = document.getElementById("custom-signals-container");
+  const row = document.createElement("div");
+  row.className = "custom-signal-row";
+  row.innerHTML = `
+    <input class="sig-label" type="text"   placeholder="Signal label" />
+    <input class="sig-value" type="number" value="50" min="0" max="100" step="1" />
+    <button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()">✕</button>
+  `;
+  c.appendChild(row);
+}
+
+function showSpinner(msg) {
+  document.getElementById("spinner-msg").textContent = msg;
+  document.getElementById("spinner").classList.remove("hidden");
+}
+function hideSpinner() {
+  document.getElementById("spinner").classList.add("hidden");
+}
+
+// ── Run Drift Analysis ─────────────────────────────────────────────────────
+async function runAnalysis() {
+  const inputs = getInputs();
+  if (!inputs.client_name) { alert("Please enter a Client Name."); return; }
+
+  showSpinner("Analysing drift signals…");
+  try {
+    const res  = await fetch("/api/drift/analyse", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(inputs),
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || "Analysis failed."); return; }
+
+    renderResults(data.report);
+    document.getElementById("btn-report").disabled = false;
+  } catch (e) {
+    alert("Network error: " + e.message);
+  } finally {
+    hideSpinner();
+  }
+}
+
+// ── Render results ─────────────────────────────────────────────────────────
+function renderResults(r) {
+  const panel = document.getElementById("results-panel");
+  panel.classList.remove("hidden");
+
+  // Pulse badge
+  const badge = document.getElementById("pulse-badge");
+  badge.textContent = `SYSTEMS PULSE · ${r.systems_pulse}`;
+  badge.className   = "pulse-badge pulse-" + r.systems_pulse.toLowerCase();
+
+  // Score
+  document.getElementById("score-value").textContent = r.drift_score.toFixed(1);
+  const bar = document.getElementById("score-bar");
+  bar.style.width = r.drift_score + "%";
+  bar.className   = "score-bar pulse-bg-" + r.systems_pulse.toLowerCase();
+
+  // Observations
+  const obsList = document.getElementById("observations-list");
+  obsList.innerHTML = "";
+  r.observations.forEach(o => {
+    const li = document.createElement("li");
+    li.textContent = o;
+    obsList.appendChild(li);
+  });
+
+  // Recommendations
+  const recList = document.getElementById("recommendations-list");
+  recList.innerHTML = "";
+  r.recommendations.forEach(rec => {
+    const li = document.createElement("li");
+    li.textContent = rec;
+    recList.appendChild(li);
+  });
+
+  panel.scrollIntoView({ behavior: "smooth" });
+}
+
+// ── Generate PDF Report ────────────────────────────────────────────────────
+async function generateReport() {
+  const inputs = getInputs();
+  if (!inputs.client_name) { alert("Please enter a Client Name."); return; }
+
+  showSpinner("Building your Flow & Grow PDF…");
+  try {
+    const res = await fetch("/api/report/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(inputs),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.error || "Report generation failed.");
+      return;
+    }
+
+    // Trigger browser download
+    const blob     = await res.blob();
+    const url      = URL.createObjectURL(blob);
+    const filename = res.headers.get("Content-Disposition")
+      ?.match(/filename="(.+)"/)?.[1] || "flow_grow_report.pdf";
+    const a = document.createElement("a");
+    a.href     = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    loadReportList();
+  } catch (e) {
+    alert("Network error: " + e.message);
+  } finally {
+    hideSpinner();
+  }
+}
+
+// ── Saved reports list ─────────────────────────────────────────────────────
+async function loadReportList() {
+  try {
+    const res   = await fetch("/api/reports/list");
+    const files = await res.json();
+    const list  = document.getElementById("reports-list");
+    if (!files.length) {
+      list.innerHTML = '<li class="empty-state">No reports generated yet.</li>';
+      return;
+    }
+    list.innerHTML = files.map(f =>
+      `<li class="report-item">
+         <span class="report-name">📄 ${f.name}</span>
+         <span class="report-size">${f.size_kb} KB</span>
+       </li>`
+    ).join("");
+  } catch (_) { /* silent */ }
+}
+
+// ── Recent Sessions timeline ───────────────────────────────────────────────
+async function loadSessionTimeline() {
+  const slug    = document.getElementById("tenant_slug").value.trim() || "default";
+  const el      = document.getElementById("sessions-timeline");
+  el.innerHTML  = '<p class="empty-state">Loading…</p>';
+  try {
+    const res  = await fetch(`/api/telemetry/sessions?tenant_slug=${encodeURIComponent(slug)}&limit=5`);
+    const data = await res.json();
+    if (!data.sessions || data.sessions.length === 0) {
+      el.innerHTML = `<p class="empty-state">No sessions recorded yet for <strong>${slug}</strong>.</p>`;
+      return;
+    }
+    const rows = data.sessions.map((s, i) => {
+      const dur   = s.duration_min >= 60
+        ? `${Math.floor(s.duration_min / 60)}h ${s.duration_min % 60}m`
+        : `${s.duration_min}m`;
+      const start = s.start ? s.start.replace("T", " ").replace("Z", " UTC") : "—";
+      const acts  = (s.activities || []).join(", ") || "—";
+      return `<li class="report-item" style="flex-direction:column;align-items:flex-start;gap:0.15rem">
+        <span style="font-weight:600">Session ${i + 1} &mdash; ${start}</span>
+        <span>Duration: <strong>${dur}</strong> &nbsp;|&nbsp; Billable: <strong>${s.investment}</strong></span>
+        <span style="color:var(--color-muted,#888)">Activities: ${acts}</span>
+      </li>`;
+    });
+
+    // ── Sentinel glow: activate if any shadow:snapshot milestones exist ────
+    const panel = document.getElementById("sessions-panel");
+    if (data.shadow_milestones && data.shadow_milestones.length > 0) {
+      panel.classList.add("panel--sentinel-active");
+      const newest = data.shadow_milestones[0];
+      const snapshotTs = newest.timestamp
+        ? newest.timestamp.replace("T", " ").replace("Z", " UTC")
+        : "";
+      rows.unshift(`<li class="report-item" style="flex-direction:column;align-items:flex-start;gap:0.1rem;border-left:3px solid #6366f1">
+        <span style="font-weight:600;color:#6366f1">🟣 Session Checkpoint &mdash; ${snapshotTs}</span>
+        <span>Uptime: <strong>${newest.total_minutes ?? '—'} min</strong> &nbsp;|&nbsp; Investment: <strong>${newest.investment}</strong></span>
+      </li>`);
+    } else {
+      panel.classList.remove("panel--sentinel-active");
+    }
+    el.innerHTML = `
+      <p style="margin:0 0 0.5rem;font-size:0.85rem;color:var(--color-muted,#888)">
+        Tenant: <strong>${data.tenant_name || slug}</strong> &nbsp;&bull;&nbsp;
+        Rate: <strong>$${data.hourly_rate}/hr</strong>
+      </p>
+      <ul class="reports-list">${rows.join("")}</ul>`;
+  } catch (e) {
+    el.innerHTML = `<p class="empty-state">Error loading sessions: ${e.message}</p>`;
+  }
+}
+
+// On load
+loadReportList();
+</script>
+{% endblock %}

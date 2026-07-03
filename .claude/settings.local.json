@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(cmd /c \"cd /d C:\\\\Users\\\\hetfw\\\\aero-cortex-hub && npx tsc --noEmit 2>&1\")",
+      "Bash(powershell -Command \"cd ''C:\\\\Users\\\\hetfw\\\\aero-cortex-hub''; npx tsc --noEmit 2>&1\")",
+      "Read(//c/Users/hetfw/aero-cortex-hub/**)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(python run.py --report \"Lakeside Legal\" --revenue 0.04 --process 78 --team 82 --market 71 --tenant \"lakeside-legal\")",
+      "Bash(python run.py --report \"Peak Growth Co\" --revenue 0.12 --process 88 --team 91 --market 85 --tenant \"peak-growth\")",
+      "Bash(python -c \":*)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\hetfw\\aero-cortex-hub\\src\\services",
+      "C:\\Users\\hetfw\\aero-cortex-hub\\src-tauri\\capabilities",
+      "C:\\Users\\hetfw\\aero-cortex-hub\\src"
+    ]
+  }
+}

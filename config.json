@@ -1,0 +1,6 @@
+{
+  "_comment": "HutchSolves v11.5.0-FINAL Autonomous Pulse Configuration",
+  "AUTO_PRUNE": true,
+  "REAL_TIME_PULSE": true,
+  "LEGACY_SWITCH": "active"
+}

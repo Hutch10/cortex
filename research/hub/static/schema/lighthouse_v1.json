@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hutchsolves.local/schema/lighthouse_v1.json",
+  "title": "Lighthouse v1 Operational Exchange Schema",
+  "description": "Open schema for exchanging Maintenance Event and Systems Drift records across the Lighthouse mesh.",
+  "definitions": {
+    "MaintenanceEvent": {
+      "type": "object",
+      "description": "Structured record of an operational maintenance action or recommendation.",
+      "required": ["event_id", "asset_id", "recorded_at", "severity", "status", "summary"],
+      "properties": {
+        "event_id": { "type": "string" },
+        "asset_id": { "type": "string" },
+        "recorded_at": { "type": "string", "format": "date-time" },
+        "severity": { "type": "string", "enum": ["info", "watch", "warning", "critical"] },
+        "status": { "type": "string", "enum": ["open", "scheduled", "in_progress", "resolved"] },
+        "summary": { "type": "string" },
+        "recommended_action": { "type": "string" },
+        "source": { "type": "string" },
+        "cost_estimate_usd": { "type": ["number", "null"], "minimum": 0 },
+        "metadata": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": false
+    },
+    "SystemsDrift": {
+      "type": "object",
+      "description": "Standardized drift signal for operational variance, control lag, or responsiveness decay.",
+      "required": ["drift_id", "recorded_at", "metric_name", "metric_value", "baseline_value", "drift_pct", "window"],
+      "properties": {
+        "drift_id": { "type": "string" },
+        "recorded_at": { "type": "string", "format": "date-time" },
+        "metric_name": { "type": "string" },
+        "metric_value": { "type": "number" },
+        "baseline_value": { "type": "number" },
+        "drift_pct": { "type": "number" },
+        "window": {
+          "type": "object",
+          "required": ["started_at", "ended_at", "unit"],
+          "properties": {
+            "started_at": { "type": "string", "format": "date-time" },
+            "ended_at": { "type": "string", "format": "date-time" },
+            "unit": { "type": "string", "enum": ["minutes", "hours", "days"] },
+            "sample_count": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "failure_mode": { "type": "string" },
+        "recommended_action": { "type": "string" },
+        "metadata": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": false
+    },
+    "ObservationSignal": {
+      "type": "object",
+      "description": "A discrete field observation signal emitted by an operator or sensor within the Lighthouse mesh.",
+      "required": ["signal_id", "observed_at", "signal_type", "value", "unit", "source"],
+      "properties": {
+        "signal_id": { "type": "string" },
+        "observed_at": { "type": "string", "format": "date-time" },
+        "signal_type": {
+          "type": "string",
+          "enum": ["biological", "mechanical", "environmental", "operational", "financial"]
+        },
+        "value": { "type": "number" },
+        "unit": { "type": "string" },
+        "source": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "asset_id": { "type": "string" },
+        "tenant_id": { "type": "string" },
+        "metadata": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": false
+    },
+    "DriftMetrics": {
+      "type": "object",
+      "description": "Fleet-level drift metrics summarizing variance between current operational state and baseline across all monitored assets.",
+      "required": ["drift_id", "computed_at", "metric_name", "fleet_baseline", "fleet_value", "drift_pct", "risk_label"],
+      "properties": {
+        "drift_id": { "type": "string" },
+        "computed_at": { "type": "string", "format": "date-time" },
+        "metric_name": { "type": "string" },
+        "fleet_baseline": { "type": "number" },
+        "fleet_value": { "type": "number" },
+        "drift_pct": { "type": "number" },
+        "risk_label": {
+          "type": "string",
+          "enum": ["Low Risk", "Guarded", "Elevated", "Critical"]
+        },
+        "asset_count": { "type": "integer", "minimum": 0 },
+        "period_days": { "type": "integer", "minimum": 1 },
+        "units": { "type": "string" },
+        "metadata": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": false
+    },
+    "AeroCortexTelemetry": {
+      "type": "object",
+      "description": "Telemetry envelope for AeroCortex-enabled operational mesh nodes. Carries a rationale-hash-stamped pulse or observation signal with full provenance metadata.",
+      "required": ["telemetry_id", "emitted_at", "node_id", "tenant_id", "event_type", "payload", "rationale_hash"],
+      "properties": {
+        "telemetry_id": { "type": "string" },
+        "emitted_at": { "type": "string", "format": "date-time" },
+        "node_id": { "type": "string" },
+        "tenant_id": { "type": "string" },
+        "event_type": {
+          "type": "string",
+          "enum": ["pulse", "ack", "drift", "observation", "maintenance", "guest_invite"]
+        },
+        "payload": { "type": "object", "additionalProperties": true },
+        "rationale_hash": { "type": "string", "description": "SHA-256 of philosophy_weights + telemetry_payload at emission time." },
+        "philosophy_version": { "type": "string" },
+        "operational_uptime_pct": { "type": "number", "minimum": 0.0, "maximum": 100.0 },
+        "schema_version": { "type": "string", "const": "lighthouse_v1" },
+        "metadata": { "type": "object", "additionalProperties": true }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "schema_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "lighthouse_v1"
+    }
+  },
+  "additionalProperties": false
+}

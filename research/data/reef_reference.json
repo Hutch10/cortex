@@ -1,0 +1,23 @@
+[
+  {
+    "reef_id": "reef-cordell-bank",
+    "reef_name": "Cordell Bank Reef",
+    "latitude": 38.039,
+    "longitude": -123.423,
+    "region": "California Current"
+  },
+  {
+    "reef_id": "reef-olympic-coast",
+    "reef_name": "Olympic Coast Reef Complex",
+    "latitude": 47.752,
+    "longitude": -124.926,
+    "region": "Pacific Northwest"
+  },
+  {
+    "reef_id": "reef-oregon-shelf",
+    "reef_name": "Oregon Shelf Reef",
+    "latitude": 44.639,
+    "longitude": -124.533,
+    "region": "Pacific Northwest"
+  }
+]

@@ -1,0 +1,4 @@
+station_id,longitude,latitude,time,WTMP
+,degrees_east,degrees_north,UTC,degree_C
+46002,-130.507,42.662,2022-01-01T05:00:00Z,10.7
+46002,-130.507,42.662,2022-01-01T05:10:00Z,10.9

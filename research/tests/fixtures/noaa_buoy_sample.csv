@@ -1,0 +1,4 @@
+station_id,longitude,latitude,time,WSPD
+,degrees_east,degrees_north,UTC,m/s
+46002,-130.507,42.662,2022-01-01T05:00:00Z,4.3
+46002,-130.507,42.662,2022-01-01T05:10:00Z,5.0

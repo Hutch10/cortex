@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Station {{ station_id }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Station {{ station_id }}</h1>
+  <p class="page-desc">Read-only station investigation view. Metric values are observations; anomaly status is a deterministic threshold-rule output only.</p>
+</div>
+
+<div class="panel">
+  <h2 class="panel-title">Station Filters</h2>
+  <form class="marine-filter-form" method="get" action="/marine/station/{{ station_id }}">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="dataset">Dataset</label>
+        <select id="dataset" name="dataset" class="marine-select">
+          <option value="" {% if not dataset_filter %}selected{% endif %}>All datasets</option>
+          <option value="sst" {% if dataset_filter == 'sst' %}selected{% endif %}>Sea Surface Temperature</option>
+          <option value="buoy" {% if dataset_filter == 'buoy' %}selected{% endif %}>Buoy Observations</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="limit">Limit</label>
+        <input type="number" id="limit" name="limit" min="1" max="250" value="{{ limit_value }}" />
+      </div>
+    </div>
+    <div class="action-bar">
+      <button type="submit" class="btn btn-primary">Apply Filter</button>
+      <a href="/marine/station/{{ station_id }}" class="btn btn-ghost">Reset</a>
+      <a href="/marine" class="btn btn-ghost">Back to Marine Workspace</a>
+      <a href="/api/marine/export?dataset={{ dataset_filter }}&station_id={{ station_id }}&limit={{ limit_value }}" class="btn btn-ghost">Export Station JSON</a>
+    </div>
+  </form>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Saved Investigation Manifests</h2>
+    <span class="marine-note">Saved station scopes preserve navigation context only. Export bundles remain the reproducible data artifact.</span>
+  </div>
+  <form class="marine-save-form" data-save-investigation data-path="/marine/station/{{ station_id }}" data-scope-type="station">
+    <div class="action-bar">
+      <input type="text" name="name" class="marine-save-input" placeholder="Name this station investigation" required />
+      <button type="submit" class="btn btn-secondary">Save Investigation</button>
+      <span class="marine-save-status" aria-live="polite"></span>
+    </div>
+  </form>
+  {% if saved_investigations %}
+    <ul class="marine-telemetry-list">
+      {% for item in saved_investigations %}
+        <li>
+          <strong>{{ item.name }}</strong>
+          · {{ item.scope_type }}
+          · <a href="/marine/investigations/{{ item.id }}/open">Open saved scope</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-state">No saved marine investigations yet.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Station Comparison Summary</h2>
+    <span class="marine-note">Comparison highlights co-located observations only. It does not imply causation between datasets.</span>
+  </div>
+  {% if series %}
+    <div class="marine-summary-grid">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Station</span>
+        <strong>{{ station_id }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Observations In Scope</span>
+        <strong>{{ series|length }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Datasets Present</span>
+        <strong>{{ available_datasets|join(', ') }}</strong>
+      </div>
+    </div>
+  {% else %}
+    <p class="empty-state">No marine observations are available for station {{ station_id }} in the current filter scope.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Latest Station Observations</h2>
+    <span class="marine-note">Latest values are shown newest first for quick review.</span>
+  </div>
+  {% if latest_observations %}
+    <div class="marine-table-wrap">
+      <table class="marine-table">
+        <thead>
+          <tr>
+            <th>Dataset</th>
+            <th>Timestamp</th>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Baseline</th>
+            <th>Deviation</th>
+            <th>Anomaly Status</th>
+            <th>Reef Stress</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in latest_observations %}
+            <tr>
+              <td>{{ row.dataset_name }}</td>
+              <td>{{ row.timestamp }}</td>
+              <td>{{ row.metric_name }}</td>
+              <td>{{ row.metric_value }}</td>
+              <td>{{ row.baseline if row.baseline is not none else '—' }}</td>
+              <td>{{ row.deviation if row.deviation is not none else '—' }}</td>
+              <td><span class="marine-status marine-status-{{ row.anomaly_status }}">{{ row.anomaly_status }}</span></td>
+              <td>
+                {% if row.reef_stress_status %}
+                  <span class="marine-status marine-status-reef-{{ row.reef_stress_status }}">{{ row.reef_stress_status }}</span>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty-state">No recent station observations found.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Station Timeline</h2>
+    <span class="marine-note">Ordered oldest to newest for timeline review and rule-based anomaly transition tracking.</span>
+  </div>
+  {% if series %}
+    <div class="station-timeline">
+      {% for row in series %}
+        <div class="station-timeline-row">
+          <div class="station-timeline-time">{{ row.timestamp }}</div>
+          <div class="station-timeline-marker">
+            <span class="marine-status marine-status-{{ row.anomaly_status }}">{{ row.anomaly_status }}</span>
+          </div>
+          <div class="station-timeline-body">
+            <strong>{{ row.dataset_name }}</strong>
+            · {{ row.metric_name }} = {{ row.metric_value }}
+            {% if row.baseline is not none %}
+              · baseline {{ row.baseline }}
+            {% endif %}
+            {% if row.deviation is not none %}
+              · deviation {{ row.deviation }}
+            {% endif %}
+            {% if row.reef_stress_status %}
+              · reef stress {{ row.reef_stress_status }}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-state">No timeline is available for this station yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function currentStationScope() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      dataset: params.get("dataset") || "",
+      station_id: "{{ station_id }}",
+      limit: params.get("limit") || "{{ limit_value }}",
+    };
+  }
+
+  document.querySelectorAll("[data-save-investigation]").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const status = form.querySelector(".marine-save-status");
+      const scope = currentStationScope();
+      const payload = {
+        name: new FormData(form).get("name"),
+        scope_type: form.dataset.scopeType,
+        path: form.dataset.path,
+        dataset: scope.dataset,
+        station_id: scope.station_id,
+        limit: scope.limit,
+        query_string: new URLSearchParams(
+          Object.entries({
+            dataset: scope.dataset,
+            limit: scope.limit,
+          }).filter(([, value]) => value),
+        ).toString(),
+      };
+
+      const response = await fetch("/api/marine/investigations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        status.textContent = "Save failed";
+        return;
+      }
+
+      const manifest = await response.json();
+      status.textContent = `Saved as #${manifest.id}`;
+      window.location.reload();
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Cortex Project: Production-Grade .gitignore
+# Scope: Cortex/ directory only (excludes external Git and sibling repositories)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Environment & Secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.secrets.toml
+secrets.json
+credentials.json
+st_secrets.toml
+
+# Virtual Environments ──────────────────────────────────────────────────────
+.venv/
+.venv-*/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Python artifacts ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Testing ──────────────────────────────────────────────────────────────────
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+htmlcov/
+
+# IDE & Editor Artifacts ───────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublimeproject
+*.sublimeworkspace
+.tern-port
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Database & State ──────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+*.rdb
+.cache/
+
+# Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+*.stdout
+*.stderr
+
+# OS-level temporary files ──────────────────────────────────────────────────
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Project-specific outputs (non-versioned) ──────────────────────────────────
+outputs/
+reports/
+tmp/
+temp/
+*.temp
+
+# Streamlit cache (app.py runtime) ──────────────────────────────────────────
+.streamlit/

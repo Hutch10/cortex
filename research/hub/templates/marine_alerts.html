@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Marine Alerts{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Marine Alerts</h1>
+  <p class="page-desc">Focused researcher handoff view for near-reef station review priority. These alerts are deterministic prioritization outputs based on reef proximity plus SST reef-stress only.</p>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Latest Monitoring Snapshot</h2>
+    <span class="marine-note">Deterministic monitoring summary based on reef proximity plus SST reef-stress review rules.</span>
+  </div>
+  {% if latest_snapshot %}
+    <div class="marine-summary-grid">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Snapshot Timestamp</span>
+        <strong>{{ latest_snapshot.generated_at }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Attention</span>
+        <strong>{{ latest_snapshot.reef_alert_summary.attention }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Priority</span>
+        <strong>{{ latest_snapshot.reef_alert_summary.priority }}</strong>
+      </div>
+    </div>
+    <div class="action-bar" style="margin-top:14px;">
+      <a href="/api/marine/export?dataset={{ dataset_filter }}&limit={{ limit_value }}&minimum_priority={{ minimum_priority_filter }}" class="btn btn-ghost">Export Alerts JSON</a>
+      <a href="/marine/snapshots" class="btn btn-ghost">Open Snapshot Details</a>
+    </div>
+  {% else %}
+    <p class="empty-state">No snapshot available yet. Run `python scripts/run_marine_snapshot.py` to generate the latest deterministic monitoring summary.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Latest Monitoring Change Event</h2>
+    <span class="marine-note">Deterministic monitoring-change notification only. It does not imply ecological diagnosis.</span>
+  </div>
+  {% if latest_alert_event %}
+    <div class="marine-summary-grid">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Event Timestamp</span>
+        <strong>{{ latest_alert_event.generated_at }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Priority Increased</span>
+        <strong>{{ 'Yes' if latest_alert_event.priority_increased else 'No' }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">New Priority Stations</span>
+        <strong>{{ latest_alert_event.new_priority_station_ids|length }}</strong>
+      </div>
+    </div>
+    <div class="action-bar" style="margin-top:14px;">
+      <a href="/marine/snapshots" class="btn btn-ghost">Open Snapshot Details</a>
+      <a href="/api/marine/export?dataset={{ dataset_filter }}&limit={{ limit_value }}&minimum_priority={{ minimum_priority_filter }}" class="btn btn-ghost">Export Alerts JSON</a>
+    </div>
+  {% else %}
+    <p class="empty-state">No monitoring change event is available yet.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Alert Summary</h2>
+    <span class="marine-note">Review priority only. This does not imply bleaching, reef damage, or causation.</span>
+  </div>
+  <div class="marine-summary-grid">
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Near-Reef Stations</span>
+      <strong>{{ reef_alert_summary.near_reef_total }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Attention</span>
+      <strong>{{ reef_alert_summary.attention }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Priority</span>
+      <strong>{{ reef_alert_summary.priority }}</strong>
+    </div>
+    <div class="marine-summary-card">
+      <span class="marine-summary-label">Latest Ingest</span>
+      <strong>{{ latest_ingest.payload.timestamp if latest_ingest else '—' }}</strong>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2 class="panel-title">Alert Filters</h2>
+  <form class="marine-filter-form" method="get" action="/marine/alerts">
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="dataset">Dataset</label>
+        <select id="dataset" name="dataset" class="marine-select">
+          <option value="" {% if not dataset_filter %}selected{% endif %}>All datasets</option>
+          <option value="sst" {% if dataset_filter == 'sst' %}selected{% endif %}>Sea Surface Temperature</option>
+          <option value="buoy" {% if dataset_filter == 'buoy' %}selected{% endif %}>Buoy Observations</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="minimum_priority">Minimum Priority</label>
+        <select id="minimum_priority" name="minimum_priority" class="marine-select">
+          <option value="" {% if not minimum_priority_filter %}selected{% endif %}>All alerts</option>
+          <option value="attention" {% if minimum_priority_filter == 'attention' %}selected{% endif %}>Attention and Priority</option>
+          <option value="priority" {% if minimum_priority_filter == 'priority' %}selected{% endif %}>Priority only</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="limit">Limit</label>
+        <input type="number" id="limit" name="limit" min="1" max="250" value="{{ limit_value }}" />
+      </div>
+    </div>
+    <div class="action-bar">
+      <button type="submit" class="btn btn-primary">Apply Filter</button>
+      <a href="/marine/alerts" class="btn btn-ghost">Reset</a>
+      <a href="/api/marine/export?dataset={{ dataset_filter }}&limit={{ limit_value }}&minimum_priority={{ minimum_priority_filter }}" class="btn btn-ghost">Export Alerts JSON</a>
+    </div>
+  </form>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Priority Reef-Alert Stations</h2>
+    <span class="marine-note">Ordered highest-priority first for review handoff.</span>
+  </div>
+  {% if reef_alerts %}
+    <div class="marine-table-wrap">
+      <table class="marine-table">
+        <thead>
+          <tr>
+            <th>Station</th>
+            <th>Nearest Reef</th>
+            <th>Distance (km)</th>
+            <th>Reef Stress</th>
+            <th>Anomaly Status</th>
+            <th>Priority</th>
+            <th>Priority Reason</th>
+            <th>Open</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in reef_alerts %}
+            <tr>
+              <td>{{ row.station_id }}</td>
+              <td>{{ row.nearest_reef_name or '—' }}</td>
+              <td>{{ row.nearest_reef_distance_km if row.nearest_reef_distance_km is not none else '—' }}</td>
+              <td>{{ row.latest_reef_stress_status or '—' }}</td>
+              <td>{{ row.latest_anomaly_status or '—' }}</td>
+              <td><span class="marine-status marine-status-{{ row.priority_status }}">{{ row.priority_status }}</span></td>
+              <td>{{ row.priority_reason }}</td>
+              <td><a href="/marine/station/{{ row.station_id }}">Open station</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty-state">No reef-alert stations match the current filter scope.</p>
+  {% endif %}
+</div>
+{% endblock %}

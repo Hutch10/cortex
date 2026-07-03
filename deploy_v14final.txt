@@ -1,0 +1,297 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\hetfw\Cortex\.venv-5\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\hetfw\Cortex
+configfile: pytest.ini
+collecting ... collected 113 items
+
+tests/test_marine_data_ingestion.py::MarineDataIngestionTests::test_anomaly_classification_is_threshold_based PASSED [  0%]
+tests/test_marine_data_ingestion.py::MarineDataIngestionTests::test_duplicate_insert_is_ignored PASSED [  1%]
+tests/test_marine_data_ingestion.py::MarineDataIngestionTests::test_normalize_row_maps_sst_schema PASSED [  2%]
+tests/test_marine_data_ingestion.py::MarineDataIngestionTests::test_parse_csv_payload_skips_units_row PASSED [  3%]
+tests/test_marine_data_ingestion.py::MarineDataIngestionTests::test_sqlite_insertion_persists_normalized_records PASSED [  4%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_export_empty_scope_is_safe PASSED [  5%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_export_includes_station_series_only_when_station_provided PASSED [  6%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_export_respects_dataset_filter PASSED [  7%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_export_returns_bundle_shape PASSED [  7%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_map_points_filters_by_dataset PASSED [  8%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_map_points_returns_map_ready_rows PASSED [  9%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_observations_filters_by_dataset PASSED [ 10%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_observations_returns_rows PASSED [ 11%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_reef_alerts PASSED [ 12%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_reef_context PASSED [ 13%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_station_context_returns_one_row_per_station PASSED [ 14%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_station_series_orders_oldest_to_newest PASSED [ 15%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_station_series_requires_station_id PASSED [ 15%]
+tests/test_marine_routes.py::MarineRouteTests::test_api_marine_telemetry_returns_ingest_events PASSED [ 16%]
+tests/test_marine_routes.py::MarineRouteTests::test_export_includes_reef_alerts PASSED [ 17%]
+tests/test_marine_routes.py::MarineRouteTests::test_export_includes_reef_context PASSED [ 18%]
+tests/test_marine_routes.py::MarineRouteTests::test_export_includes_reef_stress_fields_for_sst_scope PASSED [ 19%]
+tests/test_marine_routes.py::MarineRouteTests::test_export_includes_station_context PASSED [ 20%]
+tests/test_marine_routes.py::MarineRouteTests::test_export_links_render_on_marine_pages PASSED [ 21%]
+tests/test_marine_routes.py::MarineRouteTests::test_manifest_lookup_missing_id_is_safe PASSED [ 22%]
+tests/test_marine_routes.py::MarineRouteTests::test_manifest_save_list_and_lookup PASSED [ 23%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_alerts_page_filter_behavior PASSED [ 23%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_alerts_page_orders_priority_first PASSED [ 24%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_alerts_page_renders PASSED [ 25%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_alerts_page_renders_latest_alert_event PASSED [ 26%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_alerts_page_renders_latest_snapshot_summary PASSED [ 27%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_briefing_empty_state_is_safe PASSED [ 28%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_briefing_page_returns_200 PASSED [ 29%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_briefing_renders_priority_station_list PASSED [ 30%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_briefing_renders_snapshot_and_event_text PASSED [ 30%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_page_empty_state PASSED [ 31%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_page_renders_latest_alert_event PASSED [ 32%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_page_renders_latest_snapshot_summary PASSED [ 33%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_page_renders_sample_data PASSED [ 34%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_station_page_empty_state PASSED [ 35%]
+tests/test_marine_routes.py::MarineRouteTests::test_marine_station_page_renders_sample_data PASSED [ 36%]
+tests/test_marine_routes.py::MarineRouteTests::test_ocean_map_renders_reef_context_text PASSED [ 37%]
+tests/test_marine_routes.py::MarineRouteTests::test_ocean_map_renders_station_context_text PASSED [ 38%]
+tests/test_marine_routes.py::MarineRouteTests::test_ocean_map_route_renders PASSED [ 38%]
+tests/test_marine_routes.py::MarineRouteTests::test_priority_summary_renders_text PASSED [ 39%]
+tests/test_marine_routes.py::MarineRouteTests::test_reef_alert_classification_logic PASSED [ 40%]
+tests/test_marine_routes.py::MarineRouteTests::test_reef_alert_minimum_priority_filter PASSED [ 41%]
+tests/test_marine_routes.py::MarineRouteTests::test_reef_context_proximity_logic PASSED [ 42%]
+tests/test_marine_routes.py::MarineRouteTests::test_reef_reference_loading PASSED [ 43%]
+tests/test_marine_routes.py::MarineRouteTests::test_reef_stress_renders_on_marine_page PASSED [ 44%]
+tests/test_marine_routes.py::MarineRouteTests::test_reef_stress_renders_on_station_page PASSED [ 45%]
+tests/test_marine_routes.py::MarineRouteTests::test_reef_stress_rule_logic_for_sst PASSED [ 46%]
+tests/test_marine_routes.py::MarineRouteTests::test_reef_stress_safe_when_baseline_missing PASSED [ 46%]
+tests/test_marine_routes.py::MarineRouteTests::test_saved_manifest_controls_render PASSED [ 47%]
+tests/test_marine_routes.py::MarineRouteTests::test_saved_manifest_open_redirects PASSED [ 48%]
+tests/test_marine_routes.py::MarineRouteTests::test_station_context_uses_latest_reef_stress_and_anomaly PASSED [ 49%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_alert_event_generated_when_priority_count_increases PASSED [ 50%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_latest_alert_event_endpoint_returns_event PASSED [ 51%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_latest_alert_event_endpoint_safe_when_empty PASSED [ 52%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_latest_snapshot_endpoint_returns_snapshot PASSED [ 53%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_latest_snapshot_endpoint_safe_when_empty PASSED [ 53%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_no_false_positive_event_when_priority_state_unchanged PASSED [ 54%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_snapshot_page_empty_state PASSED [ 55%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_snapshot_page_renders_latest_snapshot PASSED [ 56%]
+tests/test_marine_snapshot.py::MarineSnapshotTests::test_snapshot_runner_generates_expected_shape PASSED [ 57%]
+tests/test_ocr_worker.py::MetalParsingTests::test_alpha_fixture_aluminium PASSED [ 58%]
+tests/test_ocr_worker.py::MetalParsingTests::test_alpha_fixture_copper PASSED [ 59%]
+tests/test_ocr_worker.py::MetalParsingTests::test_alpha_fixture_iron PASSED [ 60%]
+tests/test_ocr_worker.py::MetalParsingTests::test_beta_fixture_inline_format PASSED [ 61%]
+tests/test_ocr_worker.py::MetalParsingTests::test_no_metals_returns_none PASSED [ 61%]
+tests/test_ocr_worker.py::OilExtractionPropertiesTests::test_copper_flagged_above_15 PASSED [ 62%]
+tests/test_ocr_worker.py::OilExtractionPropertiesTests::test_copper_not_flagged_at_8 PASSED [ 63%]
+tests/test_ocr_worker.py::OilExtractionPropertiesTests::test_delta_none_when_iron_none PASSED [ 64%]
+tests/test_ocr_worker.py::OilExtractionPropertiesTests::test_flagged_aggregates_either_metal PASSED [ 65%]
+tests/test_ocr_worker.py::OilExtractionPropertiesTests::test_iron_delta_from_baseline PASSED [ 66%]
+tests/test_ocr_worker.py::OilExtractionPropertiesTests::test_iron_flagged_when_deviation_exceeds_threshold PASSED [ 67%]
+tests/test_ocr_worker.py::OilExtractionPropertiesTests::test_iron_not_flagged_at_baseline PASSED [ 68%]
+tests/test_ocr_worker.py::DbWriteAndUpsertTests::test_different_pdfs_insert_separate_rows PASSED [ 69%]
+tests/test_ocr_worker.py::DbWriteAndUpsertTests::test_upsert_replaces_not_duplicates PASSED [ 69%]
+tests/test_ocr_worker.py::DbWriteAndUpsertTests::test_write_inserts_row PASSED [ 70%]
+tests/test_ocr_worker.py::OcrWorkerDryRunTests::test_dry_run_does_not_write_db PASSED [ 71%]
+tests/test_ocr_worker.py::FleetHealthSummaryTests::test_all_healthy_fleet_status PASSED [ 72%]
+tests/test_ocr_worker.py::FleetHealthSummaryTests::test_empty_returns_message PASSED [ 73%]
+tests/test_ocr_worker.py::FleetHealthSummaryTests::test_health_pct_100_when_no_flags PASSED [ 74%]
+tests/test_ocr_worker.py::FleetHealthSummaryTests::test_iron_stats_computed PASSED [ 75%]
+tests/test_ocr_worker.py::FleetHealthSummaryTests::test_majority_flagged_is_critical PASSED [ 76%]
+tests/test_ocr_worker.py::FleetHealthSummaryTests::test_single_flagged_is_attention PASSED [ 76%]
+tests/test_ocr_worker.py::ProcessFolderTests::test_empty_folder_returns_no_pdfs_message PASSED [ 77%]
+tests/test_ocr_worker.py::ProcessFolderTests::test_raises_on_plain_file PASSED [ 78%]
+tests/test_ocr_worker.py::SummariseDriftLogNarrativeTests::test_combined_context_references_both PASSED [ 79%]
+tests/test_ocr_worker.py::SummariseDriftLogNarrativeTests::test_empty_reports_returns_insufficient_data PASSED [ 80%]
+tests/test_ocr_worker.py::SummariseDriftLogNarrativeTests::test_iron_delta_echoed_in_result PASSED [ 81%]
+tests/test_ocr_worker.py::SummariseDriftLogNarrativeTests::test_iron_spike_appears_in_narrative PASSED [ 82%]
+tests/test_ocr_worker.py::SummariseDriftLogNarrativeTests::test_narrative_key_always_present PASSED [ 83%]
+tests/test_ocr_worker.py::SummariseDriftLogNarrativeTests::test_negative_delta_uses_drop_wording PASSED [ 84%]
+tests/test_ocr_worker.py::SummariseDriftLogNarrativeTests::test_session_context_appears_in_narrative PASSED [ 84%]
+tests/test_sqlite_lifecycle.py::OpenSqliteLifecycleTests::test_committed_write_survives_normal_exit PASSED [ 85%]
+tests/test_sqlite_lifecycle.py::OpenSqliteLifecycleTests::test_connection_is_closed_after_exception PASSED [ 86%]
+tests/test_sqlite_lifecycle.py::OpenSqliteLifecycleTests::test_connection_is_closed_after_normal_exit PASSED [ 87%]
+tests/test_sqlite_lifecycle.py::OpenSqliteLifecycleTests::test_exception_is_reraised_after_rollback PASSED [ 88%]
+tests/test_sqlite_lifecycle.py::OpenSqliteLifecycleTests::test_partial_write_is_rolled_back_on_exception PASSED [ 89%]
+tests/test_sqlite_lifecycle.py::InvestigationManifestLifecycleTests::test_create_manifest_increments_id_for_each_insert PASSED [ 90%]
+tests/test_sqlite_lifecycle.py::InvestigationManifestLifecycleTests::test_create_manifest_open_url_omits_query_when_empty PASSED [ 91%]
+tests/test_sqlite_lifecycle.py::InvestigationManifestLifecycleTests::test_create_manifest_returns_correct_record PASSED [ 92%]
+tests/test_sqlite_lifecycle.py::BillingEngagementLifecycleTests::test_different_tenants_are_isolated PASSED [ 92%]
+tests/test_sqlite_lifecycle.py::BillingEngagementLifecycleTests::test_event_filter_in_query_events PASSED [ 93%]
+tests/test_sqlite_lifecycle.py::BillingEngagementLifecycleTests::test_query_events_returns_empty_when_db_missing PASSED [ 94%]
+tests/test_sqlite_lifecycle.py::BillingEngagementLifecycleTests::test_total_pulse_count_counts_only_pulse_events PASSED [ 95%]
+tests/test_sqlite_lifecycle.py::BillingEngagementLifecycleTests::test_total_pulse_count_returns_zero_when_db_missing PASSED [ 96%]
+tests/test_sqlite_lifecycle.py::BillingEngagementLifecycleTests::test_write_event_and_query_events_round_trip PASSED [ 97%]
+tests/test_sqlite_lifecycle.py::BillingEngagementLifecycleTests::test_write_event_creates_schema_on_first_call PASSED [ 98%]
+tests/test_unicorn_path.py::UnicornPathTests::test_expedition_guest_invite_is_single_use PASSED [ 99%]
+tests/test_unicorn_path.py::UnicornPathTests::test_ingestor_pulse_records_provenance_and_risk_score PASSED [100%]
+
+============================= 113 passed in 3.59s =============================
+
+HutchSolves v1.2.0 ù Sunday Executive Briefing
+Date: Wednesday 2026-03-18 00:45 UTC
+
+================================================================
+  STEP 1 ù N6424P Hangar Briefing PDF
+================================================================
+  [OK]  Written : outputs\reports\internal\hangar_briefing_20260317_194526.pdf
+
+================================================================
+  STEP 2 ù Lakeside Legal Weekly Session Summary PDF
+================================================================
+  [OK]  Written : outputs\reports\weekly\lakeside_legal_weekly_2026-03-17.pdf
+
+================================================================
+  STEP 3 ù Field Log summary
+================================================================
+  [OK]  Written : outputs\reports\weekly\field_log_2026-03-17.txt
+
+================================================================
+  STEP 4 ù Maintenance Forecast
+================================================================
+  [OK]  Written : outputs\reports\weekly\maintenance_forecast_2026-03-17.txt
+
+================================================================
+  STEP 5 ù Bundle into Executive Weekly ZIP
+================================================================
+  [--]  + hangar_briefing_20260317_194526.pdf
+  [--]  + lakeside_legal_weekly_2026-03-17.pdf
+  [--]  + field_log_2026-03-17.txt
+  [--]  + maintenance_forecast_2026-03-17.txt
+  [OK]  ZIP written : outputs\reports\weekly\HutchSolves_Executive_Weekly_2026-03-17.zip
+
+================================================================
+  SUMMARY
+================================================================
+  aviation_pdf     PASS  outputs\reports\internal\hangar_briefing_20260317_194526.pdf
+  legal_pdf        PASS  outputs\reports\weekly\lakeside_legal_weekly_2026-03-17.pdf
+  field_log        PASS  outputs\reports\weekly\field_log_2026-03-17.txt
+  maintenance_forecast PASS  outputs\reports\weekly\maintenance_forecast_2026-03-17.txt
+  zip_file         PASS  outputs\reports\weekly\HutchSolves_Executive_Weekly_2026-03-17.zip
+
+HutchSolves v7.0.0-SINGULARITY ù The Autonomous Legacy deployment script
+Repo root : C:\Users\hetfw\Cortex
+Started   : 2026-03-18T00:44:45.122181+00:00
+
+==================================================================
+  STEP 1 ù pytest (all tests)
+==================================================================
+  [OK]  All tests passed.
+
+==================================================================
+  STEP 2 ù Vault hardening (rockhounding + specimen + fuel + consumables)
+==================================================================
+  [OK]  rockhounding_expeditions count accessible: 2
+  [OK]  specimen_inventory count accessible: 0
+  [OK]  fuel_logs count accessible: 0
+  [OK]  mission_consumables count accessible: 6
+  [OK]  Specimen image-path integrity verified (0 path(s) checked).
+
+==================================================================
+  STEP 3 ù Drive-Health Sentinel (SMART + latency)
+==================================================================
+  [--]  Vault health flagged WARNING: backup drive E:\ not detected; latency probe unavailable
+  [OK]  Vault-health card status persisted to outputs/vault_health_status.json (WARN - Vault Health).
+
+==================================================================
+  STEP 4 ù Sentinel hardening (mission map + preflight + Morning Card)
+==================================================================
+  [OK]  Mission Map Leaflet assets detected in /navigator.
+  [OK]  Mission-map API returned 3 valid geospatial point(s).
+  [OK]  Mission ROI API responded with fuel + consumables + specimen yield aggregates.
+  [OK]  Mission forecast API produced a suggested launch window for the upcoming week.
+  [OK]  Role-based briefing supports Lead Analyst telemetry logs and Associate discovery summary.
+  [OK]  Tenant migration hardening verified: tenant schema initialized for deploy-tenant-1773794694439
+  [OK]  Edge reconciliation verified after broken-connection simulation: cached outbox payload restored for tenant edge-sync-1773794694551
+  [OK]  Global Node anonymization hardening verified: anonymized global signal verified for tenant token e3736060dafd6bb0
+  [OK]  Org-Admin isolation hardening verified: Org-Admin isolation verified at database and briefing levels between org-a-1773794696679 and org-b-1773794696679.
+  [OK]  Franchise isolation hardening verified: parent org fr-parent-1773794698777 can view child aggregate stats for fr-child-1773794698777 without private telemetry leakage
+  [OK]  Signal probability engine verified: Agate in KIXD region classified Verified (100%) and vouch flow succeeded
+  [OK]  Hotspot engine verified: hotspot engine predicted KIXD region at 100% and Morning Card displays 'Discovery Forecast: High-Yield Zone Detected.'; Pre-Flight Prep: hotspot within 100nm of home base.; readiness gauge drop verified when Oil Quarts fell below threshold
+  [OK]  Global mesh correlation verified: private Agate correlation matched synthetic global Agate signal and Morning Card shows Mesh Radar: Active.
+  [OK]  Intelligence synthesis verified: intelligence synthesis payload includes two-sentence Global Pulse summary and regional high-risk pre-check is active
+  [OK]  Systems Oracle verified: digital manuscript synced and systems-thinking overlay rendered in Morning Card payload
+  [OK]  PAC pruning verified: synthetic 10-item PAC auction log ingested with 0.0% drift and Morning Card pruning metrics active
+  [OK]  Morning Card displays: Professional Ecology: Pruned and Flowing.
+  [OK]  Predictive maintenance verified: 45.0 ppm iron correctly mapped to red cylinder inspect-now status with service booking trigger
+  [OK]  Logbook deep-audit verified: efficiency gap detected: burn 9.50 gph exceeded 5-log average 8.00 gph by >15% without payload increase
+  [OK]  Pivot engine verified: pivot engine recommends maintenance when readiness is <70 for two consecutive days
+  [OK]  Pre-flight API returned N6424P Sentinel + Fuel + Weather + Go/No-Go summary.
+  [--]  External digital logbook not configured or no Hobbs/Tach record available; skipping sync.
+  [OK]  Automated logbook catch-up found no gap days in fuel-log history.
+  [OK]  Guest gate data isolation verified: Isolation verified between users 104 and 105.
+  [OK]  Fungal outreach hardening verified: guest mentorship onboarding, wisdom signal broadcast, and Honey Hole privacy isolation verified
+  [OK]  Morning Card displays: Network Status: Flourishing.
+  [OK]  Architect write-permission hardening verified: Architect suggestion engine filtered unauthorized scopes and blocked no-write deployments
+  [OK]  Associate guardrail hardening verified: Associate role is blocked from expeditions and observatory signal POST routes
+  [OK]  Legacy switch hardening verified: legacy switch entered Market Standard lighthouse mode with Senior Guest mentor promotion and autonomous observatory emission
+  [OK]  Morning Card displays: Lighthouse Status: Market Standard. The Mesh is the Industry. Joshua R Hutchison: Founder & Architect.
+  [OK]  Governance ledger hardening verified: governance ledger write-only for System-Admin; read-only for others; immutability trigger active
+  [OK]  Lighthouse Governance: Absolute. Audit Ready.
+  [OK]  Unicorn Path hardening verified: rationale hash 4fbd073af8d9 tied to missing with a 24h telemetry window; one-time expedition token redeemed once; guest token org isolation enforced; all ledger pulses carry rationale_hash; mesh risk score 8.0
+  [OK]  Mobile pulse speed stress test verified: mobile pulse avg 8.0 ms, p95 11.1 ms, max 12.4 ms across 30 runs; max payload 1.0 KB
+  [OK]  Transport flight correlation matched synthetic specimen to synthetic fuel log.
+  [OK]  Morning Card remains the primary executive entry point.
+  [OK]  Fleet page renders Predictive TTI progress bars for major components.
+  [OK]  Market tracker produced non-zero USD value for synthetic 10-lb Agate find.
+  [OK]  Morning Card restock alert triggered correctly for low Oil Quarts and Sample Kits.
+  [OK]  Consumables API restock action incremented Sample Kits quantity successfully.
+  [OK]  Morning Card shows Systems Nominal after synthetic restock.
+  [OK]  Morning Card shows Fuel Market: Nominal.
+  [OK]  Morning Card displays Suggested Launch for upcoming week: 2026-03-21.
+  [OK]  Morning Card displays role: Administrator (Hutch).
+  [OK]  Morning Card footer identifies tenant: Tenant ID: internal
+  [OK]  Morning Card shows Edge Sync: Active.
+  [OK]  Morning Card shows Global Pulse: Connected.
+  [OK]  Morning Card shows Mesh Integrity: 100%.
+  [OK]  Morning Card displays: Mesh Radar: Active.
+  [OK]  Morning Card displays: Intelligence Synthesis: Nominal.
+  [OK]  Morning Card displays: Systems Oracle: Synced with Mycology to Your Ecology.
+  [OK]  Morning Card displays: Fleet Status: Gold Master.
+  [OK]  Morning Card discovery forecast line present: Discovery Forecast: Monitoring.
+  [OK]  Morning Card displays: Fleet Readiness: 100% (Mission Ready).
+  [OK]  Morning Card strategy recommendation present: Strategy: Maintenance Focus.
+  [OK]  Morning Card displays: Architect Mode: Enabled. Suggestions Pending.
+  [OK]  Morning Card system longevity line present: Lighthouse Status: Primary Active. Legacy Protocol Standing By.
+  [OK]  Morning Card vault health status present: WARNING
+  [OK]  Morning Card displays: System Status: Digital Guardian Active. Ready for the Mass Market.
+  [OK]  Morning Card displays: Lighthouse Governance: Absolute. Audit Ready.
+  [OK]  Morning Card high-yield specimen alert is active for recent 5-star finds.
+  [OK]  Tax export integrity verified: Tax export header validated (date, lakeside_legal_revenue_usd, business_aviation_expense_usd, net_usd, revenue_pulse_count, expense_notes).
+
+==================================================================
+  STEP 5 ù Automated Cloud Mirror
+==================================================================
+  [OK]  Cloud mirror complete: 0 specimen file(s), aviation DB mirrored=True, encrypted=False, latest container age=0.0 min.
+
+==================================================================
+  STEP 6 ù batch OCR scan (fixtures/, dry-run)
+==================================================================
+  [--]  PDFs processed : []
+  [--]  Errors         : 0
+  [--]  Fleet status   : N/A
+  [--]  Fe avg         : N/A ppm
+  [OK]  Fixture scan complete (dry-run ù no DB writes).
+
+==================================================================
+  STEP 7 ù export cortex.sqlite snapshot
+==================================================================
+  [OK]  Snapshot written: outputs\fortress_backups\fortress_backup_20260318T004526Z.db
+
+==================================================================
+  STEP 8 ù verify Executive Weekly ZIP
+==================================================================
+  [OK]  Latest ZIP: outputs\reports\weekly\HutchSolves_Executive_Weekly_2026-03-17.zip  (5,005 bytes)
+
+==================================================================
+  STEP 9 ù Sunday Briefing smoke test (--force)
+==================================================================
+  [OK]  sunday_briefing.py executed without errors.
+
+==================================================================
+  SUMMARY
+==================================================================
+  pytest       PASS
+  rockhounding PASS
+  drive_health PASS
+  sentinel_hardening PASS
+  cloud_mirror PASS
+  ocr_scan     PASS
+  snapshot     PASS
+  weekly_zip   PASS
+  sunday_pulse PASS
+
+  Deployment checks: ALL PASSED

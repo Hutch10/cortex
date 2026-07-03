@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Marine Snapshots{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Marine Snapshots</h1>
+  <p class="page-desc">Read-only monitoring summaries generated from recurring ingest plus reef-alert prioritization. Snapshot content is deterministic and intended for review handoff, not ecological diagnosis.</p>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title" style="margin:0">Latest Snapshot</h2>
+    <span class="marine-note">Snapshots summarize current ingest and reef-alert scope using deterministic rules already shown elsewhere in the marine workspace.</span>
+  </div>
+  {% if latest_snapshot %}
+    <div class="marine-summary-grid">
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Generated At</span>
+        <strong>{{ latest_snapshot.generated_at }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Datasets Run</span>
+        <strong>{{ latest_snapshot.datasets_run|join(', ') if latest_snapshot.datasets_run else '—' }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Attention</span>
+        <strong>{{ latest_snapshot.reef_alert_summary.attention }}</strong>
+      </div>
+      <div class="marine-summary-card">
+        <span class="marine-summary-label">Priority</span>
+        <strong>{{ latest_snapshot.reef_alert_summary.priority }}</strong>
+      </div>
+    </div>
+    <div class="action-bar" style="margin-top:14px;">
+      <a href="/api/marine/snapshots/latest" class="btn btn-ghost">Open Latest Snapshot JSON</a>
+      <a href="/marine/alerts" class="btn btn-ghost">Open Marine Alerts</a>
+    </div>
+    {% if latest_snapshot.top_reef_alerts %}
+      <div class="marine-table-wrap" style="margin-top:18px;">
+        <table class="marine-table">
+          <thead>
+            <tr>
+              <th>Station</th>
+              <th>Nearest Reef</th>
+              <th>Distance (km)</th>
+              <th>Reef Stress</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in latest_snapshot.top_reef_alerts %}
+              <tr>
+                <td><a href="/marine/station/{{ row.station_id }}">{{ row.station_id }}</a></td>
+                <td>{{ row.nearest_reef_name or '—' }}</td>
+                <td>{{ row.nearest_reef_distance_km if row.nearest_reef_distance_km is not none else '—' }}</td>
+                <td>{{ row.latest_reef_stress_status or '—' }}</td>
+                <td>{{ row.priority_status }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="empty-state">No marine snapshot is available yet. Run `python scripts/run_marine_snapshot.py` to generate the first deterministic monitoring summary.</p>
+  {% endif %}
+</div>
+{% endblock %}

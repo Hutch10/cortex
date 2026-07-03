@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-03-15T02:58:41.616Z",
+  "datasets_run": [
+    "sst"
+  ],
+  "rows_ingested": {
+    "sst": 0
+  },
+  "ingest_results": [
+    {
+      "ok": true,
+      "dataset": "sst",
+      "rows_received": 2,
+      "rows_ingested": 0,
+      "timestamp": "2026-03-15T02:58:41.609Z",
+      "sample_rows": [
+        {
+          "dataset_name": "noaa_erddap_sst",
+          "timestamp": "2022-01-01T05:00:00Z",
+          "latitude": 42.662,
+          "longitude": -130.507,
+          "metric_name": "sea_surface_temperature",
+          "metric_value": 10.7,
+          "source": "NOAA ERDDAP",
+          "station_id": "46002",
+          "baseline": 10.6,
+          "deviation": 0.1,
+          "anomaly_status": "normal"
+        },
+        {
+          "dataset_name": "noaa_erddap_sst",
+          "timestamp": "2022-01-01T05:10:00Z",
+          "latitude": 42.662,
+          "longitude": -130.507,
+          "metric_name": "sea_surface_temperature",
+          "metric_value": 10.9,
+          "source": "NOAA ERDDAP",
+          "station_id": "46002",
+          "baseline": 10.6,
+          "deviation": 0.3,
+          "anomaly_status": "normal"
+        }
+      ]
+    }
+  ],
+  "reef_alert_summary": {
+    "near_reef_total": 0,
+    "attention": 0,
+    "priority": 0
+  },
+  "top_reef_alerts": [],
+  "minimum_priority": null,
+  "limit": 5,
+  "note": "Deterministic monitoring summary based on marine ingest plus reef-alert prioritization. Not an ecological diagnosis."
+}

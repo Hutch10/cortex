@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Navigator Mobile{% endblock %}
+
+{% block content %}
+<div class="mobile-shell" id="mobile-shell" data-tenant-id="{{ active_tenant_id }}" data-user-id="{{ active_user_id }}">
+  <header class="mobile-topbar">
+    <div>
+      <p class="mobile-kicker">Navigator Mobile</p>
+      <h1>Morning Card Pulse</h1>
+    </div>
+    <span class="mobile-status" id="mobile-sync-status">Live</span>
+  </header>
+
+  <section class="mobile-panel">
+    <h2>Pulse Notifications</h2>
+    <p class="mobile-subtext">Swipe-style cards with one-tap acknowledgement for field operators.</p>
+    <ul id="pulse-list" class="pulse-list">
+      <li class="pulse-empty">Loading pulse notifications...</li>
+    </ul>
+  </section>
+
+  <section class="mobile-panel">
+    <h2>One-Tap Action</h2>
+    <p class="mobile-subtext">Fast actions to capture outcomes without opening full forms.</p>
+    <div class="one-tap-grid" id="one-tap-actions"></div>
+  </section>
+
+  <section class="mobile-panel">
+    <h2>Chat-to-Action</h2>
+    <p class="mobile-subtext">Type or speak a command and execute directly from the Morning Card.</p>
+    <form class="chat-form" onsubmit="runCommand(event)">
+      <textarea id="chat-command" rows="3" placeholder="Log Expedition at current location."></textarea>
+      <div class="chat-row">
+        <button type="button" class="btn" onclick="fillDemoCommand()">Use Demo Command</button>
+        <button type="submit" class="btn btn-primary">Execute</button>
+      </div>
+    </form>
+    <pre class="chat-result" id="chat-result">Awaiting command...</pre>
+  </section>
+</div>
+
+<style>
+  .mobile-shell {
+    max-width: 420px;
+    margin: 0 auto;
+    display: grid;
+    gap: 1rem;
+  }
+  .mobile-topbar {
+    background: linear-gradient(135deg, #0b1f3a, #116e7a);
+    color: #f8fafc;
+    padding: 1rem;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+  }
+  .mobile-topbar h1 {
+    margin: 0.25rem 0 0;
+    font-size: 1.2rem;
+    letter-spacing: 0.02em;
+  }
+  .mobile-kicker {
+    margin: 0;
+    font-size: 0.75rem;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .mobile-status {
+    background: rgba(255, 255, 255, 0.18);
+    padding: 0.3rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+  }
+  .mobile-panel {
+    background: #ffffff;
+    border: 1px solid #dbe3eb;
+    border-radius: 14px;
+    padding: 0.9rem;
+    box-shadow: 0 6px 16px rgba(16, 42, 67, 0.08);
+  }
+  .mobile-panel h2 {
+    margin: 0;
+    font-size: 1rem;
+    color: #102a43;
+  }
+  .mobile-subtext {
+    margin: 0.35rem 0 0.65rem;
+    font-size: 0.82rem;
+    color: #486581;
+  }
+  .pulse-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+  .pulse-item {
+    padding: 0.65rem 0.7rem;
+    border-radius: 10px;
+    border-left: 5px solid #0e9f9a;
+    background: #f8fbff;
+    font-size: 0.87rem;
+    color: #243b53;
+  }
+  .pulse-item.warning { border-left-color: #f59e0b; }
+  .pulse-item.critical { border-left-color: #ef4444; }
+  .one-tap-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .one-tap-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem;
+    font-weight: 600;
+    background: #102a43;
+    color: #f8fafc;
+    cursor: pointer;
+  }
+  .one-tap-btn.secondary {
+    background: #0e9f9a;
+  }
+  .chat-form textarea {
+    width: 100%;
+    border: 1px solid #c6d2de;
+    border-radius: 10px;
+    padding: 0.6rem;
+    resize: vertical;
+    font-family: inherit;
+  }
+  .chat-row {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .chat-result {
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    background: #0b1f3a;
+    color: #f8fafc;
+    border-radius: 10px;
+    padding: 0.6rem;
+    min-height: 74px;
+    white-space: pre-wrap;
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const mobileShell = document.getElementById('mobile-shell');
+const tenantId = mobileShell?.dataset?.tenantId || 'default';
+const userId = Number(mobileShell?.dataset?.userId || '1');
+
+async function loadPulseUI() {
+  const res = await fetch(`/api/mobile/pulse-notifications?tenant_id=${encodeURIComponent(tenantId)}&user_id=${encodeURIComponent(userId)}`);
+  const data = await res.json();
+  const pulseList = document.getElementById('pulse-list');
+  const actionGrid = document.getElementById('one-tap-actions');
+
+  const pulses = Array.isArray(data.pulse_notifications) ? data.pulse_notifications : [];
+  const actions = Array.isArray(data.one_tap_actions) ? data.one_tap_actions : [];
+
+  pulseList.innerHTML = '';
+  if (!pulses.length) {
+    pulseList.innerHTML = '<li class="pulse-empty">No active pulse notifications.</li>';
+  } else {
+    pulses.forEach((pulse) => {
+      const li = document.createElement('li');
+      li.className = `pulse-item ${String(pulse.severity || '').toLowerCase()}`;
+      li.textContent = pulse.label || 'Pulse notification';
+      pulseList.appendChild(li);
+    });
+  }
+
+  actionGrid.innerHTML = '';
+  actions.forEach((action, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `one-tap-btn ${idx % 2 === 1 ? 'secondary' : ''}`;
+    btn.textContent = action.label || action.action || 'Action';
+    btn.onclick = async () => {
+      if (action.action === 'ack_pulse') {
+        const primaryPulse = pulses[0] || {};
+        await fetch('/api/mobile/pulse-notifications/ack', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tenant_id: tenantId,
+            pulse_id: primaryPulse.id || null,
+            rationale_hash: primaryPulse.rationale_hash || null,
+          }),
+        });
+        document.getElementById('mobile-sync-status').textContent = 'Acknowledged';
+        return;
+      }
+      if (action.action === 'log_expedition_current_location') {
+        document.getElementById('chat-command').value = 'Log Expedition at current location.';
+        runCommand();
+        return;
+      }
+      if (action.endpoint && action.method === 'GET') {
+        window.location.href = action.endpoint;
+      }
+    };
+    actionGrid.appendChild(btn);
+  });
+}
+
+function fillDemoCommand() {
+  document.getElementById('chat-command').value = 'Log Expedition at current location.';
+}
+
+async function runCommand(event) {
+  if (event) event.preventDefault();
+  const cmd = document.getElementById('chat-command').value.trim();
+  if (!cmd) return;
+
+  let latitude = null;
+  let longitude = null;
+  let label = 'Current Location';
+
+  if (navigator.geolocation) {
+    await new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          latitude = pos.coords.latitude;
+          longitude = pos.coords.longitude;
+          label = 'GPS Current Location';
+          resolve();
+        },
+        () => resolve(),
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+      );
+    });
+  }
+
+  const payload = {
+    tenant_id: tenantId,
+    user_id: userId,
+    command: cmd,
+    current_location: { latitude, longitude, label },
+  };
+
+  const res = await fetch('/api/observatory/chat-action', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  document.getElementById('chat-result').textContent = JSON.stringify(data, null, 2);
+}
+
+loadPulseUI();
+</script>
+{% endblock %}

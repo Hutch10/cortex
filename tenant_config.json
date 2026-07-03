@@ -1,0 +1,32 @@
+{
+  "_comment": "HutchSolves Cortex — per-tenant billing configuration. base_hourly_rate is in USD.",
+  "_consulting_weights": {
+    "_note": "Applied by summarise_drift_log() when tenant_type is 'legal'. Scales the confidence score.",
+    "KCPA": 3.0,
+    "STF":  3.0
+  },
+  "default": {
+    "name": "Default",
+    "base_hourly_rate": 250,
+    "currency": "USD",
+    "tenant_type": "default"
+  },
+  "lakeside-legal": {
+    "name": "Lakeside Legal",
+    "base_hourly_rate": 250,
+    "currency": "USD",
+    "tenant_type": "legal"
+  },
+  "peak-growth": {
+    "name": "Peak Growth Co",
+    "base_hourly_rate": 275,
+    "currency": "USD",
+    "tenant_type": "default"
+  },
+  "acme-corp": {
+    "name": "Acme Corp",
+    "base_hourly_rate": 250,
+    "currency": "USD",
+    "tenant_type": "default"
+  }
+}

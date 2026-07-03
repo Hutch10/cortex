@@ -1,0 +1,14 @@
+Mycology to Your Ecology
+
+Principles:
+- Healthy systems move like mycelium: many small nodes sharing nutrients, signals, and memory.
+- Drift appears when too much load concentrates in one node and the network cannot redistribute.
+- Discovery thrives at the edge where exploratory hyphae test uncertain ground.
+- Pruning is not loss; it is network hygiene that restores flow and resilience.
+- Diversity of pathways increases recovery speed after shocks.
+- Maintenance is an act of intelligence, not a pause in growth.
+
+Operational Lens:
+Treat each workflow queue as a living branch.
+When one branch crowds out the rest, reroute resources and trim stale tasks.
+Use weak signals from field discoveries to guide where to expand next.

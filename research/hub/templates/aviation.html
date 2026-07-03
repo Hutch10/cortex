@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Aero-Cortex{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Aero-Cortex</h1>
+  <p class="page-desc">N6424P oil-analysis trends — Fe / Cu / Al from Blackstone Labs reports.</p>
+</div>
+
+<!-- ── Fleet Overview ──────────────────────────────────────────────────────── -->
+<div class="panel">
+  <h2 class="panel-title">Fleet Overview</h2>
+  {% if fleet_overview and fleet_overview.total_reports %}
+  <div class="stat-grid">
+    <div class="stat-card stat-{{ fleet_overview.fleet_status | lower }}">
+      <span class="stat-label">Fleet Status</span>
+      <span class="stat-value">{{ fleet_overview.fleet_status }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Reports</span>
+      <span class="stat-value">{{ fleet_overview.total_reports }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Flagged</span>
+      <span class="stat-value">{{ fleet_overview.flagged_count }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Health</span>
+      <span class="stat-value">{{ fleet_overview.health_pct }}%</span>
+    </div>
+    {% if fleet_overview.iron %}
+    <div class="stat-card">
+      <span class="stat-label">Fe avg / min / max</span>
+      <span class="stat-value">
+        {{ "%.1f"|format(fleet_overview.iron.avg) if fleet_overview.iron.avg is not none else "—" }}
+        / {{ "%.1f"|format(fleet_overview.iron.min) if fleet_overview.iron.min is not none else "—" }}
+        / {{ "%.1f"|format(fleet_overview.iron.max) if fleet_overview.iron.max is not none else "—" }} ppm
+      </span>
+    </div>
+    {% endif %}
+    {% if fleet_overview.copper %}
+    <div class="stat-card">
+      <span class="stat-label">Cu avg / min / max</span>
+      <span class="stat-value">
+        {{ "%.1f"|format(fleet_overview.copper.avg) if fleet_overview.copper.avg is not none else "—" }}
+        / {{ "%.1f"|format(fleet_overview.copper.min) if fleet_overview.copper.min is not none else "—" }}
+        / {{ "%.1f"|format(fleet_overview.copper.max) if fleet_overview.copper.max is not none else "—" }} ppm
+      </span>
+    </div>
+    {% endif %}
+    {% if fleet_overview.aluminium %}
+    <div class="stat-card">
+      <span class="stat-label">Al avg / min / max</span>
+      <span class="stat-value">
+        {{ "%.1f"|format(fleet_overview.aluminium.avg) if fleet_overview.aluminium.avg is not none else "—" }}
+        / {{ "%.1f"|format(fleet_overview.aluminium.min) if fleet_overview.aluminium.min is not none else "—" }}
+        / {{ "%.1f"|format(fleet_overview.aluminium.max) if fleet_overview.aluminium.max is not none else "—" }} ppm
+      </span>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+  <p class="empty-state">No fleet data yet — process at least one PDF to populate.</p>
+  {% endif %}
+</div>
+
+<!-- ── Maintenance Forecast ──────────────────────────────────────────────── -->
+<div class="panel" id="predictive-tti">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Maintenance Forecast</h2>
+    <span class="hint">Predictive TTI by major component</span>
+  </div>
+  {% set component_rows = maintenance_forecast.components if maintenance_forecast and maintenance_forecast.components else [] %}
+  {% if component_rows %}
+  <div class="tti-grid">
+    {% for component in component_rows %}
+    <div class="tti-card tti-card--{{ (component.status or 'SAFE')|lower }}">
+      <div class="tti-head">
+        <span class="tti-label">{{ component.component_label }}</span>
+        <span class="tti-status">{{ component.status_emoji }} {{ component.status_label }}</span>
+      </div>
+      <div class="tti-meta">Time to Inspect: {{ "%.1f"|format(component.tti_hours or 0.0) }} h</div>
+      <div class="tti-track" aria-hidden="true">
+        <span class="tti-fill tti-fill--{{ (component.status or 'SAFE')|lower }}" data-progress="{{ component.progress_pct or 0 }}"></span>
+      </div>
+      <div class="tti-progress">{{ component.progress_pct or 0 }}% lifecycle reserve</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-state">No telemetry available yet for Predictive TTI.</p>
+  {% endif %}
+</div>
+
+<!-- ── Sparkline Chart ──────────────────────────────────────────────────────── -->
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Metal Trend Sparklines</h2>
+    <span class="hint">Fe baseline: {{ baseline_fe }} ppm (steady line)</span>
+  </div>
+  <canvas id="oil-chart" height="100" aria-label="Oil analysis metal trend chart"></canvas>
+</div>
+
+<!-- ── Report Table ─────────────────────────────────────────────────────────── -->
+<div class="panel">
+  <h2 class="panel-title">Oil Sentinel Reports</h2>
+  {% if reports %}
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Report</th>
+          <th>Analyzed At</th>
+          <th>Fe (ppm)</th>
+          <th>Cu (ppm)</th>
+          <th>Al (ppm)</th>
+          <th>Fe Δ%</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+        <tr class="{{ 'row-flagged' if r.flagged else '' }}">
+          <td>{{ r.report_name or r.source_pdf or "Unknown" }}</td>
+          <td>{{ r.analyzed_at }}</td>
+          <td>{{ "%.1f"|format(r.iron) if r.iron is not none else "—" }}</td>
+          <td>{{ "%.1f"|format(r.copper) if r.copper is not none else "—" }}</td>
+          <td>{{ "%.1f"|format(r.aluminium) if r.aluminium is not none else "—" }}</td>
+          <td>{{ ("%+.1f"|format(r.iron_delta_pct)) if r.iron_delta_pct is not none else "—" }}</td>
+          <td>
+            {% if r.flagged %}
+              <span class="badge badge-critical">FLAGGED</span>
+            {% else %}
+              <span class="badge badge-ok">OK</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty-state">No oil sentinel reports found. Run <code>python run.py --briefing</code> or
+     <code>python nerves/aviation/ocr_worker.py &lt;pdf&gt;</code> to populate the database.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<style>
+.tti-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-top: 0.65rem;
+}
+.tti-card {
+  border: 1px solid var(--border, #d4d4d8);
+  border-radius: 8px;
+  padding: 0.7rem 0.8rem;
+  background: #f8fafc;
+}
+.tti-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.tti-label {
+  font-weight: 700;
+  color: #0f172a;
+}
+.tti-status {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.tti-meta,
+.tti-progress {
+  margin-top: 0.32rem;
+  font-size: 0.8rem;
+  color: #334155;
+}
+.tti-track {
+  margin-top: 0.42rem;
+  width: 100%;
+  height: 0.52rem;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+.tti-fill {
+  display: block;
+  height: 100%;
+}
+.tti-fill--safe { background: #16a34a; }
+.tti-fill--monitor { background: #ca8a04; }
+.tti-fill--inspect_now { background: #dc2626; }
+.tti-card--safe .tti-status { color: #166534; }
+.tti-card--monitor .tti-status { color: #92400e; }
+.tti-card--inspect_now .tti-status { color: #991b1b; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+document.querySelectorAll('.tti-fill[data-progress]').forEach(function (node) {
+  var pct = Number(node.dataset.progress || 0);
+  if (!isFinite(pct)) pct = 0;
+  pct = Math.max(0, Math.min(100, pct));
+  node.style.width = pct + '%';
+});
+
+(async () => {
+  const BASE_FE = {{ baseline_fe }};
+
+  // ── Fetch data ────────────────────────────────────────────────────────────
+  let reports = [];
+  try {
+    const res = await fetch("/api/aviation/oil-reports?limit=20");
+    const data = await res.json();
+    reports = data.reports || [];
+  } catch (_) {}
+
+  const canvas = document.getElementById("oil-chart");
+  if (!canvas) return;
+
+  if (reports.length === 0) {
+    canvas.parentElement.insertAdjacentHTML(
+      "beforeend",
+      "<p class='empty-state' style='margin-top:0.5rem'>No data yet — run the OCR worker to populate reports.</p>"
+    );
+    return;
+  }
+
+  // ── Labels (use report_name or short analyzed_at) ─────────────────────────
+  const labels = reports.map(r =>
+    r.report_name || r.analyzed_at.slice(0, 10)
+  );
+
+  const feData  = reports.map(r => r.iron      ?? null);
+  const cuData  = reports.map(r => r.copper     ?? null);
+  const alData  = reports.map(r => r.aluminium  ?? null);
+
+  // Baseline horizontal line — same value for every label point
+  const baseline = reports.map(() => BASE_FE);
+
+  // ── Chart ─────────────────────────────────────────────────────────────────
+  new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label:           "Fe baseline (38.0 ppm)",
+          data:            baseline,
+          borderColor:     "rgba(220, 80, 60, 0.45)",
+          borderDash:      [6, 4],
+          borderWidth:     2,
+          pointRadius:     0,
+          fill:            false,
+          tension:         0,
+        },
+        {
+          label:           "Iron (Fe)",
+          data:            feData,
+          borderColor:     "rgba(220, 80, 60, 1)",
+          backgroundColor: "rgba(220, 80, 60, 0.12)",
+          borderWidth:     2,
+          pointRadius:     4,
+          fill:            false,
+          tension:         0.3,
+          spanGaps:        true,
+        },
+        {
+          label:           "Copper (Cu)",
+          data:            cuData,
+          borderColor:     "rgba(45, 130, 210, 1)",
+          backgroundColor: "rgba(45, 130, 210, 0.12)",
+          borderWidth:     2,
+          pointRadius:     4,
+          fill:            false,
+          tension:         0.3,
+          spanGaps:        true,
+        },
+        {
+          label:           "Aluminium (Al)",
+          data:            alData,
+          borderColor:     "rgba(140, 140, 140, 1)",
+          backgroundColor: "rgba(140, 140, 140, 0.10)",
+          borderWidth:     2,
+          pointRadius:     4,
+          fill:            false,
+          tension:         0.3,
+          spanGaps:        true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "top" },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y !== null ? ctx.parsed.y + " ppm" : "N/A"}`,
+          },
+        },
+      },
+      scales: {
+        y: {
+          title: { display: true, text: "ppm" },
+          beginAtZero: false,
+        },
+        x: {
+          ticks: { maxRotation: 35 },
+        },
+      },
+    },
+  });
+})();
+</script>
+{% endblock %}

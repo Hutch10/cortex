@@ -1,0 +1,1734 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Navigator{% endblock %}
+
+{% block content %}
+<div class="page-header page-header--with-sync">
+  <div>
+    <h1 class="page-title">Navigator</h1>
+    <p class="page-desc">Rockhounding field observation log — track field finds, specimen photos, and transport-flight links.</p>
+  </div>
+  <div class="header-status-stack">
+    <div class="sync-status sync-status--synced" id="sync-status-indicator" role="status" aria-live="polite">
+      <span class="sync-status-emoji" id="sync-status-emoji">🟢</span>
+      <span class="sync-status-label" id="sync-status-label">Sync Status: Synced</span>
+    </div>
+    <label class="privacy-optin" for="share-signals-toggle">
+      <input id="share-signals-toggle" type="checkbox" onchange="updateShareSignalsPreference(this.checked)" />
+      Share anonymized high-yield signals with Global Node
+    </label>
+    <span class="privacy-optin-state" id="share-signals-state">Global Node sharing disabled.</span>
+  </div>
+</div>
+
+<div class="panel onboarding-wizard-panel">
+  <div class="panel-header-row onboarding-wizard-header">
+    <h2 class="panel-title panel-title--flush">Organization Setup</h2>
+    <span class="hint">Professional onboarding for enterprise operations</span>
+  </div>
+  <div class="onboarding-step-row" aria-hidden="true">
+    <span class="onboarding-step onboarding-step--active">1. Identity</span>
+    <span class="onboarding-step">2. Operations</span>
+    <span class="onboarding-step">3. Branding</span>
+  </div>
+  <form id="organization-setup-form" class="onboarding-wizard-form" onsubmit="submitOrganizationSetup(event)">
+    <div class="form-grid">
+      <div class="form-field">
+        <label class="form-label" for="org-setup-name">Organization Name</label>
+        <input class="form-input" id="org-setup-name" type="text" placeholder="e.g. Atlas Logistics" required />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="org-setup-id">Organization ID</label>
+        <input class="form-input" id="org-setup-id" type="text" placeholder="atlas-logistics" required />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="org-setup-director">Operations Director</label>
+        <input class="form-input" id="org-setup-director" type="text" placeholder="Jordan Lee" required />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="org-setup-home-base">Primary Base ICAO</label>
+        <input class="form-input" id="org-setup-home-base" type="text" placeholder="KIXD" maxlength="4" required />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="org-setup-primary">Enterprise Primary Color</label>
+        <input class="form-input" id="org-setup-primary" type="text" value="#1d4ed8" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="org-setup-secondary">Enterprise Secondary Color</label>
+        <input class="form-input" id="org-setup-secondary" type="text" value="#475569" />
+      </div>
+    </div>
+    <div class="onboarding-action-row">
+      <button class="btn btn-primary" type="submit">Save Setup Draft</button>
+      <button class="btn" type="button" onclick="clearOrganizationSetupWizard()">Clear</button>
+    </div>
+    <p id="organization-setup-feedback" class="onboarding-feedback">No setup draft saved yet.</p>
+  </form>
+</div>
+
+<!-- ── Log New Find ──────────────────────────────────────────────────────────── -->
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Log New Field Observation</h2>
+    <button class="btn btn-sm" id="toggle-form-btn" onclick="toggleForm()">+ New Find</button>
+  </div>
+  <form id="expedition-form" style="display:none; margin-top:1rem;" onsubmit="submitFind(event)">
+    <div class="form-grid">
+      <div class="form-field">
+        <label class="form-label">Location Name</label>
+        <input class="form-input" type="text" name="location_name"
+               placeholder="e.g. Flint Creek, Trego Co." />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Specimen Types</label>
+        <input class="form-input" type="text" name="specimen_types"
+               placeholder="e.g. Quartz, Agate, Jasper" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Latitude</label>
+        <input class="form-input" type="number" step="any" name="latitude"
+               placeholder="39.0473" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Longitude</label>
+        <input class="form-input" type="number" step="any" name="longitude"
+               placeholder="-99.9022" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">Yield Rating (0–10)</label>
+        <input class="form-input" type="number" step="0.1" min="0" max="10"
+               name="yield_rating" placeholder="7.5" />
+      </div>
+    </div>
+    <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+      <button class="btn btn-primary" type="submit">Log Find</button>
+      <button class="btn" type="button" onclick="toggleForm()">Cancel</button>
+    </div>
+    <p id="form-feedback" style="margin-top:0.5rem; font-size:0.85rem; min-height:1.2em;"></p>
+  </form>
+</div>
+
+<!-- ── Mission Map ───────────────────────────────────────────────────────────── -->
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Mission Map</h2>
+    <span class="hint">Aviation reports (nearest airport) + field finds</span>
+    <div class="map-toggle-group">
+      <label class="hotspot-toggle" for="hotspot-toggle">
+        <input id="hotspot-toggle" type="checkbox" />
+        Predicted Hotspots
+      </label>
+      <label class="hotspot-toggle" for="global-mesh-toggle">
+        <input id="global-mesh-toggle" type="checkbox" />
+        Global Fungal Mesh
+      </label>
+    </div>
+  </div>
+  <div id="mission-map" class="mission-map" role="img" aria-label="Mission map with aviation and expedition markers"></div>
+  <div class="mission-legend" aria-hidden="true">
+    <span class="legend-item"><span class="legend-dot legend-dot--aviation"></span> Aviation Report</span>
+    <span class="legend-item"><span class="legend-dot legend-dot--expedition"></span> Rockhounding Find</span>
+    <span class="legend-item"><span class="legend-dot legend-dot--hotspot"></span> Predicted Heat Zone</span>
+    <span class="legend-item"><span class="legend-dot legend-dot--mesh"></span> Global Fungal Mesh Node</span>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Real-Time Pulse</h2>
+    <span class="hint">Live Observatory Signals + Drift Updates</span>
+  </div>
+  <ul class="mc-feed-list" id="navigator-realtime-feed">
+    <li class="mc-feed-empty">Waiting for live signals.</li>
+  </ul>
+</div>
+
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Aero-Math (Client-Side)</h2>
+    <span class="hint" id="navigator-oil-chart-meta">Loading up to 10,000 points…</span>
+  </div>
+  <canvas id="navigator-oil-chart" height="120" aria-label="Navigator client-side oil telemetry chart"></canvas>
+</div>
+
+<!-- ── Weight & Balance ─────────────────────────────────────────────────────── -->
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Load Profile</h2>
+    <span class="hint">Applied to all pre-flight checks</span>
+  </div>
+  <div class="load-grid">
+    <div class="form-field">
+      <label class="form-label" for="load-profile-select">Profile</label>
+      <select class="form-input" id="load-profile-select" onchange="onLoadProfileChange()">
+        <option value="standard">Standard Survey (0 lbs specimens)</option>
+        <option value="high-yield" selected>High-Yield Haul (50 lbs specimens)</option>
+        <option value="custom">Custom Load</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label class="form-label" for="load-custom-lbs">Custom Specimen Weight (lbs)</label>
+      <input class="form-input" id="load-custom-lbs" type="number" min="0" step="1" value="50" disabled onchange="onLoadProfileChange()" />
+    </div>
+  </div>
+  <p class="load-hint" id="load-profile-summary">High-Yield profile selected: +50 lbs specimen load will be applied.</p>
+  <p class="load-hint" id="remaining-useful-load">Remaining Useful Load (est.): -- lbs</p>
+</div>
+
+<!-- ── Found It! Specimen Entry ───────────────────────────────────────────── -->
+<div class="panel specimen-panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Found It! Specimen Entry</h2>
+    <span class="hint">Mobile quick-log before wheels-up</span>
+  </div>
+  <form id="specimen-form" class="specimen-form" onsubmit="submitSpecimen(event)">
+    <div class="specimen-grid">
+      <div class="form-field">
+        <label class="form-label" for="specimen-expedition-id">Field Observation</label>
+        <select class="form-input" id="specimen-expedition-id" name="expedition_id">
+          <option value="">Unlinked / quick capture</option>
+          {% for exp in expeditions %}
+          <option value="{{ exp.id }}">#{{ exp.id }} — {{ exp.location_name or "Unknown Site" }} ({{ exp.timestamp[:10] }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="specimen-yield-stars">Yield Rating (1-5 stars)</label>
+        <select class="form-input" id="specimen-yield-stars" name="yield_stars" required>
+          <option value="5" selected>&#9733;&#9733;&#9733;&#9733;&#9733; (Exceptional)</option>
+          <option value="4">&#9733;&#9733;&#9733;&#9733; (Strong)</option>
+          <option value="3">&#9733;&#9733;&#9733; (Good)</option>
+          <option value="2">&#9733;&#9733; (Low)</option>
+          <option value="1">&#9733; (Minimal)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="specimen-photo">Snap Photo</label>
+        <input class="form-input" id="specimen-photo" type="file" accept="image/*" capture="environment" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="specimen-image-path">Image Path (optional override)</label>
+        <input class="form-input" id="specimen-image-path" type="text" placeholder="mobile://IMG_0001.jpg or /outputs/specimens/field.jpg" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="specimen-color">Color</label>
+        <input class="form-input" id="specimen-color" type="text" placeholder="Honey amber" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="specimen-hardness">Hardness (Mohs)</label>
+        <input class="form-input" id="specimen-hardness" type="number" min="0" max="10" step="0.1" placeholder="6.5" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="specimen-specific-gravity">Specific Gravity</label>
+        <input class="form-input" id="specimen-specific-gravity" type="number" min="0" step="0.01" placeholder="2.65" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="specimen-estimated-weight">Estimated Weight (lbs)</label>
+        <input class="form-input" id="specimen-estimated-weight" type="number" min="0" step="0.1" placeholder="8.0" oninput="updateRemainingUsefulLoad()" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="specimen-mineral-class">Mineral Class</label>
+        <input class="form-input" id="specimen-mineral-class" type="text" placeholder="Silicate" />
+      </div>
+      <div class="form-field specimen-notes">
+        <label class="form-label" for="specimen-notes">Notes</label>
+        <input class="form-input" id="specimen-notes" type="text" placeholder="Pocket near south ridge wash" />
+      </div>
+    </div>
+    <div class="specimen-actions">
+      <button class="btn btn-primary" type="submit">Save Specimen</button>
+    </div>
+    <p id="specimen-feedback" class="specimen-feedback"></p>
+  </form>
+
+  <div class="specimen-recent">
+    <h3 class="panel-subtitle">Recent Specimen Entries</h3>
+    <p class="load-hint specimen-portfolio-summary">
+      Portfolio Value:
+      <strong>${{ "%.2f"|format(specimen_portfolio.portfolio_value_usd or 0.0) }}</strong>
+      (Agate ${{ "%.2f"|format(specimen_portfolio.agate_value_usd or 0.0) }},
+      Jasper ${{ "%.2f"|format(specimen_portfolio.jasper_value_usd or 0.0) }})
+    </p>
+    <div class="specimen-search-row">
+      <input
+        class="form-input"
+        id="specimen-search-mineral"
+        type="text"
+        placeholder="Quick search by Mineral Class"
+        oninput="filterSpecimens()"
+      />
+      <input
+        class="form-input"
+        id="specimen-search-hardness"
+        type="number"
+        min="0"
+        max="10"
+        step="0.1"
+        placeholder="Hardness >="
+        oninput="filterSpecimens()"
+      />
+      <label class="specimen-toggle">
+        <input id="specimen-search-high-yield" type="checkbox" onchange="filterSpecimens()" />
+        High-Yield Only (5-star)
+      </label>
+    </div>
+    <div class="scientist-view-row">
+      <label class="specimen-toggle" for="scientist-view-toggle">
+        <input id="scientist-view-toggle" type="checkbox" onchange="toggleScientistView()" />
+        Scientist View (High Density)
+      </label>
+    </div>
+    {% if specimens %}
+    <div class="scientist-view-table-wrap scientist-view-table-wrap--hidden" id="scientist-view-table-wrap">
+      <table class="scientist-view-table" id="scientist-view-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Stars</th>
+            <th>Specific Gravity</th>
+            <th>Hardness</th>
+            <th>Chemical Class</th>
+            <th>Site</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for specimen in specimens %}
+          <tr>
+            <td>{{ specimen.timestamp[:16] if specimen.timestamp else "Unknown" }}</td>
+            <td>{{ specimen.yield_stars or 0 }}</td>
+            <td>{% if specimen.specific_gravity is not none %}{{ "%.2f"|format(specimen.specific_gravity) }}{% else %}—{% endif %}</td>
+            <td>{% if specimen.hardness is not none %}{{ "%.1f"|format(specimen.hardness) }}{% else %}—{% endif %}</td>
+            <td>{{ specimen.mineral_class or "—" }}</td>
+            <td>{{ specimen.location_name or "Unlinked Site" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="specimen-list" id="specimen-list">
+      {% for specimen in specimens %}
+      <div
+        class="specimen-item"
+        data-hardness="{{ specimen.hardness if specimen.hardness is not none else '' }}"
+        data-mineral-class="{{ (specimen.mineral_class or '')|lower }}"
+        data-yield-stars="{{ specimen.yield_stars or 0 }}"
+      >
+        <div class="specimen-item-head">
+          <span class="specimen-stars">{{ "&#9733;" * (specimen.yield_stars or 0) | safe }}</span>
+          <span class="specimen-time">{{ specimen.timestamp[:16] if specimen.timestamp else "Unknown" }}</span>
+        </div>
+        <div class="specimen-meta">
+          {{ specimen.location_name or "Unlinked Site" }}
+          {% if specimen.mineral_class %}&middot; {{ specimen.mineral_class }}{% endif %}
+          {% if specimen.color %}&middot; {{ specimen.color }}{% endif %}
+          {% if specimen.estimated_weight_lbs is not none %}&middot; {{ "%.1f"|format(specimen.estimated_weight_lbs) }} lbs{% endif %}
+        </div>
+        {% if specimen.market_value_usd is not none %}
+        <div class="specimen-path">Market Value: ${{ "%.2f"|format(specimen.market_value_usd) }}</div>
+        {% endif %}
+        {% if specimen.image_path %}
+        <div class="specimen-path">Photo: {{ specimen.image_path }}</div>
+        {% endif %}
+        {% if specimen.transport_flight_suggestion %}
+        <div class="specimen-flight">
+          Suggested Transport: {{ specimen.transport_flight_suggestion.flight_id or "N/A" }}
+          ({{ specimen.transport_flight_suggestion.confidence or "LOW" }}, {{ specimen.transport_flight_suggestion.time_delta_min or "?" }} min)
+        </div>
+        {% endif %}
+        {% if specimen.globally_significant %}
+        <div class="specimen-global-tag">Globally Significant</div>
+        {% endif %}
+        {% if specimen.mesh_citations %}
+        <div class="specimen-citations">
+          Mesh Citations:
+          {% for citation in specimen.mesh_citations %}
+            #{{ citation }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <p class="empty-state specimen-no-results" id="specimen-no-results">
+      No specimens match this quick-search filter.
+    </p>
+    {% else %}
+    <p class="empty-state">No specimen entries yet. Use Found It! to capture your first yield.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ── Expedition Cards ────────────────────────────────────────────────────────── -->
+<div class="panel">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">Field Observations</h2>
+    <span class="hint">
+      {{ expeditions | length }} record{{ 's' if expeditions | length != 1 else '' }}
+    </span>
+  </div>
+
+  {% if expeditions %}
+  <div class="expedition-grid" id="expedition-grid">
+    {% for exp in expeditions %}
+    <div class="expedition-card morning-card">
+      <div class="exp-header">
+        <span class="exp-location">{{ exp.location_name or "Unknown Site" }}</span>
+        {% if exp.yield_rating is not none %}
+        <span class="exp-yield" title="Yield rating">
+          &#9733; {{ "%.1f"|format(exp.yield_rating) }}
+        </span>
+        {% endif %}
+      </div>
+      <div class="exp-date">{{ exp.timestamp[:10] }}</div>
+      {% if exp.specimen_types %}
+      <div class="exp-specimens">{{ exp.specimen_types }}</div>
+      {% endif %}
+      {% if exp.globally_significant %}
+      <div class="exp-global-tag">Globally Significant</div>
+      {% endif %}
+      {% if exp.mesh_citations %}
+      <div class="exp-citations">
+        Mesh Citations:
+        {% for citation in exp.mesh_citations %}
+          #{{ citation }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if exp.transport_flight_suggestion %}
+      <div class="exp-transport">
+        Transport Flight: {{ exp.transport_flight_suggestion.flight_id or "N/A" }}
+        ({{ exp.transport_flight_suggestion.confidence or "LOW" }}, {{ exp.transport_flight_suggestion.time_delta_min or "?" }} min)
+      </div>
+      {% endif %}
+      {% if exp.mission_cost %}
+      <div class="exp-cost">
+        Mission Cost: ${{ "%.2f"|format(exp.mission_cost.transport_flight_expense_usd or 0.0) }}
+        | 5-Star Finds: {{ exp.mission_cost.five_star_count or 0 }}
+        | Cost per 5-Star:
+        {% if exp.mission_cost.cost_per_5_star_usd is not none %}
+          ${{ "%.2f"|format(exp.mission_cost.cost_per_5_star_usd) }}
+        {% else %}
+          N/A
+        {% endif %}
+      </div>
+      {% endif %}
+      {% if exp.latitude is not none and exp.longitude is not none %}
+      <div class="exp-coords">
+        {{ "%.5f"|format(exp.latitude) }},&nbsp;{{ "%.5f"|format(exp.longitude) }}
+      </div>
+      <div class="exp-links">
+        <a class="exp-link"
+           href="https://maps.google.com/?q={{ exp.latitude }},{{ exp.longitude }}"
+           target="_blank" rel="noopener noreferrer">Google Maps</a>
+        <a class="exp-link exp-link--foreflight"
+           href="foreflight://maps/goto?lat={{ exp.latitude }}&lon={{ exp.longitude }}">ForeFlight</a>
+      </div>
+      {% endif %}
+      <div class="exp-actions">
+        <button class="btn btn-sm btn-primary" type="button" onclick="runPreflightCheck({{ exp.id }}, this)">
+          Pre-Flight Check
+        </button>
+      </div>
+      <div class="preflight-summary" id="preflight-summary-{{ exp.id }}"></div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-state" id="empty-state">
+    No field observations yet — log your first find above.
+  </p>
+  {% endif %}
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+<style>
+.page-header--with-sync {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.header-status-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sync-status--synced {
+  border-color: #99f6e4;
+  background: #ecfdf5;
+  color: #065f46;
+}
+.sync-status--pending {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #9a3412;
+}
+.sync-status--offline {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+.sync-status-emoji {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.privacy-optin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+.privacy-optin input {
+  margin: 0;
+}
+.privacy-optin-state {
+  font-size: 0.76rem;
+  color: #64748b;
+}
+.onboarding-wizard-panel {
+  border: 1px solid #cbd5e1;
+  background: linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+}
+.onboarding-wizard-header {
+  border-bottom: 1px solid #dbeafe;
+  padding-bottom: 0.35rem;
+}
+.onboarding-step-row {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin: 0.7rem 0 0.8rem;
+}
+.onboarding-step {
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 0.22rem 0.62rem;
+  background: #ffffff;
+}
+.onboarding-step--active {
+  color: #1d4ed8;
+  border-color: #93c5fd;
+  background: #eff6ff;
+  font-weight: 600;
+}
+.onboarding-wizard-form .form-input {
+  border-color: #cbd5e1;
+}
+.onboarding-action-row {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+}
+.onboarding-feedback {
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  min-height: 1.1rem;
+  color: #334155;
+}
+.expedition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.expedition-card {
+  border: 1px solid var(--border, #e0e0e0);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  background: var(--surface, #fff);
+}
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+.exp-location {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary, #212121);
+  line-height: 1.3;
+}
+.exp-yield {
+  font-size: 0.85rem;
+  color: #F59E0B;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.exp-date {
+  font-size: 0.78rem;
+  color: var(--text-secondary, #757575);
+  margin-bottom: 0.4rem;
+}
+.exp-specimens {
+  font-size: 0.85rem;
+  color: var(--text-primary, #424242);
+  margin-bottom: 0.5rem;
+}
+.exp-transport {
+  font-size: 0.78rem;
+  color: #1D4ED8;
+  margin-bottom: 0.5rem;
+}
+.exp-cost {
+  font-size: 0.78rem;
+  color: #92400E;
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+}
+.exp-coords {
+  font-size: 0.78rem;
+  font-family: monospace;
+  color: var(--text-secondary, #757575);
+  margin-bottom: 0.4rem;
+}
+.exp-links {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.exp-link {
+  display: inline-block;
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid var(--teal-primary, #0097A7);
+  color: var(--teal-primary, #0097A7);
+  text-decoration: none;
+}
+.exp-link:hover { background: var(--teal-primary, #0097A7); color: #fff; }
+.exp-link--foreflight {
+  border-color: #1C5FAD;
+  color: #1C5FAD;
+}
+.exp-link--foreflight:hover { background: #1C5FAD; color: #fff; }
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+.form-field { display: flex; flex-direction: column; gap: 0.25rem; }
+.form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary, #555); }
+.form-input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 5px;
+  font-size: 0.9rem;
+  background: var(--surface, #fff);
+  color: var(--text-primary, #212121);
+}
+.form-input:focus { outline: 2px solid var(--teal-primary, #0097A7); border-color: transparent; }
+.load-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+.load-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary, #666);
+}
+.mission-map {
+  min-height: 360px;
+  border: 1px solid var(--border, #e0e0e0);
+  border-radius: 8px;
+  margin-top: 0.75rem;
+  overflow: hidden;
+}
+.mission-legend {
+  margin-top: 0.65rem;
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: var(--text-secondary, #616161);
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+.legend-dot--aviation { background: #1D4ED8; }
+.legend-dot--expedition { background: #059669; }
+.legend-dot--hotspot { background: #EA580C; }
+.legend-dot--mesh { background: #0284C7; }
+.map-toggle-group {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.hotspot-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #4b5563);
+  font-weight: 600;
+}
+.hotspot-toggle input {
+  margin: 0;
+}
+.exp-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.preflight-summary {
+  margin-top: 0.65rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--border, #d4d4d8);
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 0.8rem;
+  color: var(--text-primary, #1f2937);
+  display: none;
+}
+.preflight-summary.is-visible {
+  display: block;
+}
+.preflight-summary pre {
+  margin: 0;
+  font-family: inherit;
+  white-space: pre-wrap;
+  line-height: 1.35;
+}
+.specimen-panel {
+  border-left: 4px solid #0EA5E9;
+}
+.specimen-form {
+  margin-top: 0.4rem;
+}
+.specimen-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.specimen-notes {
+  grid-column: span 2;
+}
+.specimen-actions {
+  margin-top: 0.9rem;
+}
+.specimen-feedback {
+  margin: 0.55rem 0 0;
+  min-height: 1.2rem;
+  font-size: 0.84rem;
+}
+.specimen-recent {
+  margin-top: 1rem;
+}
+.specimen-portfolio-summary {
+  margin: 0 0 0.55rem;
+}
+.specimen-search-row {
+  margin: 0 0 0.7rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+.specimen-toggle {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #4b5563);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+.panel-subtitle {
+  margin: 0 0 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+.specimen-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.65rem;
+}
+.specimen-item {
+  border: 1px solid var(--border, #d4d4d8);
+  border-radius: 6px;
+  padding: 0.6rem 0.7rem;
+  background: #f8fafc;
+}
+.specimen-item-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+.specimen-stars {
+  color: #F59E0B;
+  font-size: 0.82rem;
+}
+.specimen-time {
+  font-size: 0.76rem;
+  color: var(--text-secondary, #6b7280);
+}
+.specimen-meta,
+.specimen-path,
+.specimen-flight {
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+.specimen-flight {
+  color: #1E40AF;
+}
+.specimen-global-tag,
+.exp-global-tag {
+  margin-top: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #065F46;
+  background: #D1FAE5;
+}
+.specimen-citations,
+.exp-citations {
+  margin-top: 0.3rem;
+  font-size: 0.76rem;
+  color: #155E75;
+}
+.specimen-no-results {
+  display: none;
+  margin-top: 0.65rem;
+}
+.scientist-view-row {
+  margin: 0 0 0.6rem;
+}
+.scientist-view-table-wrap {
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 6px;
+  overflow: auto;
+  margin: 0 0 0.7rem;
+}
+.scientist-view-table-wrap--hidden {
+  display: none;
+}
+.scientist-view-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+  background: #f8fafc;
+}
+.scientist-view-table th,
+.scientist-view-table td {
+  padding: 0.35rem 0.45rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap;
+}
+.scientist-view-table th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+@media (max-width: 768px) {
+  .page-header--with-sync {
+    flex-direction: column;
+  }
+  .header-status-stack {
+    width: 100%;
+    align-items: flex-start;
+  }
+  .expedition-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .load-grid { grid-template-columns: 1fr; }
+  .mission-map { min-height: 300px; }
+  .specimen-grid { grid-template-columns: 1fr; }
+  .specimen-notes { grid-column: auto; }
+  .specimen-search-row { grid-template-columns: 1fr; }
+}
+</style>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+var initialMissionMap = {{ mission_map | tojson }};
+var activeUserId = {{ active_user_id | default(1) | int }};
+var activeTenantId = {{ active_tenant_id | default("internal") | tojson }};
+var observationOutboxStorageKey = 'cortex:navigator-outbox:' + String(activeTenantId) + ':' + String(activeUserId);
+var shareSignalsPending = false;
+
+function setShareSignalsState(enabled) {
+  var statusEl = document.getElementById('share-signals-state');
+  var toggleEl = document.getElementById('share-signals-toggle');
+  if (!statusEl || !toggleEl) return;
+
+  toggleEl.checked = !!enabled;
+  statusEl.textContent = enabled
+    ? 'Global Node sharing enabled (anonymized signals only).'
+    : 'Global Node sharing disabled.';
+  statusEl.style.color = enabled ? '#047857' : '#64748b';
+}
+
+async function loadShareSignalsPreference() {
+  var toggleEl = document.getElementById('share-signals-toggle');
+  if (!toggleEl) return;
+  try {
+    var params = new URLSearchParams({
+      tenant_id: String(activeTenantId),
+      user_id: String(activeUserId),
+    });
+    var res = await fetch('/api/navigator/profile/share-signals?' + params.toString());
+    var data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ('HTTP ' + res.status));
+    }
+    setShareSignalsState(!!data.share_signals);
+  } catch (_) {
+    setShareSignalsState(false);
+  }
+}
+
+async function updateShareSignalsPreference(enabled) {
+  if (shareSignalsPending) return;
+  var toggleEl = document.getElementById('share-signals-toggle');
+  if (!toggleEl) return;
+
+  shareSignalsPending = true;
+  toggleEl.disabled = true;
+  try {
+    var res = await fetch('/api/navigator/profile/share-signals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: activeTenantId,
+        user_id: activeUserId,
+        share_signals: !!enabled,
+      }),
+    });
+    var data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ('HTTP ' + res.status));
+    }
+    setShareSignalsState(!!data.share_signals);
+  } catch (_) {
+    setShareSignalsState(!enabled);
+  } finally {
+    shareSignalsPending = false;
+    toggleEl.disabled = false;
+  }
+}
+
+var orgSetupDraftKey = 'cortex:organization-setup-draft';
+
+function loadOrganizationSetupDraft() {
+  try {
+    var raw = window.localStorage.getItem(orgSetupDraftKey);
+    if (!raw) return;
+    var draft = JSON.parse(raw);
+    if (!draft || typeof draft !== 'object') return;
+    var fieldIds = [
+      'org-setup-name',
+      'org-setup-id',
+      'org-setup-director',
+      'org-setup-home-base',
+      'org-setup-primary',
+      'org-setup-secondary'
+    ];
+    fieldIds.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (draft[id] != null) {
+        el.value = String(draft[id]);
+      }
+    });
+    var fb = document.getElementById('organization-setup-feedback');
+    if (fb) {
+      fb.textContent = 'Setup draft loaded from local workspace state.';
+      fb.style.color = '#1e3a8a';
+    }
+  } catch (_) {}
+}
+
+function clearOrganizationSetupWizard() {
+  var fieldIds = [
+    'org-setup-name',
+    'org-setup-id',
+    'org-setup-director',
+    'org-setup-home-base',
+    'org-setup-primary',
+    'org-setup-secondary'
+  ];
+  fieldIds.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  try {
+    window.localStorage.removeItem(orgSetupDraftKey);
+  } catch (_) {}
+  var fb = document.getElementById('organization-setup-feedback');
+  if (fb) {
+    fb.textContent = 'Setup draft cleared.';
+    fb.style.color = '#475569';
+  }
+}
+
+function submitOrganizationSetup(event) {
+  event.preventDefault();
+  var payload = {
+    'org-setup-name': (document.getElementById('org-setup-name') || {}).value || '',
+    'org-setup-id': (document.getElementById('org-setup-id') || {}).value || '',
+    'org-setup-director': (document.getElementById('org-setup-director') || {}).value || '',
+    'org-setup-home-base': (document.getElementById('org-setup-home-base') || {}).value || '',
+    'org-setup-primary': (document.getElementById('org-setup-primary') || {}).value || '',
+    'org-setup-secondary': (document.getElementById('org-setup-secondary') || {}).value || '',
+  };
+
+  var orgId = String(payload['org-setup-id']).trim().toLowerCase();
+  if (!/^[a-z0-9_-]{2,64}$/.test(orgId)) {
+    var bad = document.getElementById('organization-setup-feedback');
+    if (bad) {
+      bad.textContent = 'Organization ID must be 2-64 chars: lowercase letters, numbers, underscores, and dashes only.';
+      bad.style.color = '#b91c1c';
+    }
+    return;
+  }
+  payload['org-setup-id'] = orgId;
+  payload['org-setup-home-base'] = String(payload['org-setup-home-base']).trim().toUpperCase();
+
+  try {
+    window.localStorage.setItem(orgSetupDraftKey, JSON.stringify(payload));
+  } catch (_) {}
+
+  var fb = document.getElementById('organization-setup-feedback');
+  if (fb) {
+    fb.textContent = 'Setup draft saved. Provision with scripts/provision_new_org.py ' + orgId + ' when ready.';
+    fb.style.color = '#065f46';
+  }
+}
+
+function appendRealtimePulse(message, tone) {
+  var feed = document.getElementById('navigator-realtime-feed');
+  if (!feed) return;
+  var empty = feed.querySelector('.mc-feed-empty');
+  if (empty) {
+    empty.remove();
+  }
+  var item = document.createElement('li');
+  item.className = 'mc-feed-item';
+  item.textContent = message;
+  if (tone === 'alert') {
+    item.style.color = '#b91c1c';
+  } else if (tone === 'success') {
+    item.style.color = '#065f46';
+  } else {
+    item.style.color = '#334155';
+  }
+  feed.insertBefore(item, feed.firstChild);
+  while (feed.children.length > 6) {
+    feed.removeChild(feed.lastChild);
+  }
+}
+
+function initRealtimePulseSocket() {
+  if (typeof io !== 'function') {
+    return;
+  }
+  var socket = io({ transports: ['websocket', 'polling'] });
+  socket.on('observatory_signal', function(entry) {
+    if (!entry || typeof entry !== 'object') return;
+    appendRealtimePulse(entry.message || 'Observatory signal received.', 'success');
+  });
+  socket.on('drift_update', function(entry) {
+    if (!entry || typeof entry !== 'object') return;
+    var driftPct = Number(entry.drift_pct || 0);
+    appendRealtimePulse('Drift update: ' + driftPct.toFixed(1) + '% (' + (entry.submission_type || 'DRIFT') + ')', driftPct >= 40 ? 'alert' : 'neutral');
+  });
+}
+
+function readObservationOutbox() {
+  try {
+    var raw = window.localStorage.getItem(observationOutboxStorageKey);
+    if (!raw) return [];
+    var parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function writeObservationOutbox(items) {
+  try {
+    window.localStorage.setItem(observationOutboxStorageKey, JSON.stringify(items));
+  } catch (_) {
+    // Ignore storage quota or availability failures.
+  }
+}
+
+function queueObservationOutbox(payload) {
+  var outbox = readObservationOutbox();
+  outbox.push({
+    client_cache_id: 'obs-' + Date.now() + '-' + Math.random().toString(16).slice(2, 8),
+    cached_at: new Date().toISOString(),
+    user_id: payload.user_id,
+    tenant_id: payload.tenant_id,
+    location_name: payload.location_name,
+    specimen_types: payload.specimen_types,
+    latitude: payload.latitude,
+    longitude: payload.longitude,
+    yield_rating: payload.yield_rating,
+    timestamp: new Date().toISOString(),
+  });
+  writeObservationOutbox(outbox);
+  return outbox.length;
+}
+
+function setSyncStatus(state, pendingCount) {
+  var host = document.getElementById('sync-status-indicator');
+  var emoji = document.getElementById('sync-status-emoji');
+  var label = document.getElementById('sync-status-label');
+  if (!host || !emoji || !label) return;
+
+  host.classList.remove('sync-status--synced', 'sync-status--pending', 'sync-status--offline');
+
+  if (state === 'offline') {
+    host.classList.add('sync-status--offline');
+    emoji.textContent = '🔴';
+    label.textContent = 'Sync Status: Offline';
+    return;
+  }
+  if (state === 'pending') {
+    host.classList.add('sync-status--pending');
+    emoji.textContent = '🟠';
+    label.textContent = pendingCount > 0
+      ? 'Sync Status: Pending Sync (' + pendingCount + ')'
+      : 'Sync Status: Pending Sync';
+    return;
+  }
+
+  host.classList.add('sync-status--synced');
+  emoji.textContent = '🟢';
+  label.textContent = 'Sync Status: Synced';
+}
+
+function refreshSyncStatus() {
+  var pendingCount = readObservationOutbox().length;
+  if (!window.navigator.onLine) {
+    setSyncStatus('offline', pendingCount);
+    return;
+  }
+  setSyncStatus(pendingCount > 0 ? 'pending' : 'synced', pendingCount);
+}
+
+async function flushObservationOutbox() {
+  var outbox = readObservationOutbox();
+  if (!outbox.length) {
+    refreshSyncStatus();
+    return { synced: 0, pending: 0 };
+  }
+  if (!window.navigator.onLine) {
+    setSyncStatus('offline', outbox.length);
+    return { synced: 0, pending: outbox.length };
+  }
+
+  setSyncStatus('pending', outbox.length);
+  try {
+    var res = await fetch('/api/navigator/observations/bulk-sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tenant_id: activeTenantId,
+        user_id: activeUserId,
+        items: outbox,
+      }),
+    });
+    var data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ('HTTP ' + res.status));
+    }
+    writeObservationOutbox([]);
+    refreshSyncStatus();
+    return { synced: Number(data.synced_count || outbox.length), pending: 0 };
+  } catch (_) {
+    refreshSyncStatus();
+    return { synced: 0, pending: outbox.length };
+  }
+}
+
+function missionPopup(point) {
+  var when = point.timestamp ? String(point.timestamp).replace('T', ' ').replace('Z', ' UTC') : 'Unknown timestamp';
+  var parts = [
+    '<strong>' + (point.title || 'Untitled') + '</strong>',
+    '<div>' + when + '</div>',
+  ];
+  if (point.subtitle) {
+    parts.push('<div>' + point.subtitle + '</div>');
+  }
+  if (point.type === 'expedition' && point.yield_rating != null) {
+    parts.push('<div>Yield: ' + Number(point.yield_rating).toFixed(1) + '</div>');
+  }
+  if (point.type === 'expedition' && point.globally_significant) {
+    parts.push('<div>Globally Significant</div>');
+    if (Array.isArray(point.mesh_citations) && point.mesh_citations.length) {
+      parts.push('<div>Mesh Citations: #' + point.mesh_citations.join(', #') + '</div>');
+    }
+  }
+  if (point.type === 'aviation' && point.airport_distance_km != null) {
+    parts.push('<div>Airport offset: ' + Number(point.airport_distance_km).toFixed(1) + ' km</div>');
+  }
+  return parts.join('');
+}
+
+async function initMissionMap() {
+  if (!window.L) return;
+
+  var mapHost = document.getElementById('mission-map');
+  if (!mapHost) return;
+
+  var map = L.map('mission-map', { zoomControl: true, scrollWheelZoom: true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors',
+  }).addTo(map);
+
+  var payload = initialMissionMap;
+  try {
+    var mapParams = new URLSearchParams({
+      expedition_limit: '300',
+      aviation_limit: '300',
+      user_id: String(activeUserId),
+      tenant_id: String(activeTenantId),
+    });
+    var res = await fetch('/api/navigator/mission-map?' + mapParams.toString());
+    if (res.ok) {
+      payload = await res.json();
+    }
+  } catch (_) {
+    // Use server-rendered payload when fetch fails.
+  }
+
+  var points = (payload && payload.all_points) ? payload.all_points : [];
+  var predictedHotspots = (payload && payload.predicted_hotspots) ? payload.predicted_hotspots : [];
+  var meshSignals = (payload && payload.mesh_signals) ? payload.mesh_signals : [];
+  var fungalMeshBranches = (payload && payload.fungal_mesh_branches) ? payload.fungal_mesh_branches : [];
+  var hotspotLayer = L.layerGroup();
+  var meshLayer = L.layerGroup();
+  var hotspotToggle = document.getElementById('hotspot-toggle');
+  var meshToggle = document.getElementById('global-mesh-toggle');
+
+  function hotspotPopup(hotspot) {
+    return [
+      '<strong>' + String(hotspot.region || 'Unknown region') + '</strong>',
+      '<div>Discovery Pulse probability: ' + String(hotspot.probability_pct || 0) + '%</div>',
+      '<div>Signals (12m): ' + String(hotspot.signal_count_12m || 0) + '</div>',
+    ].join('');
+  }
+
+  function renderHotspots(visible) {
+    hotspotLayer.clearLayers();
+    if (!visible) {
+      return;
+    }
+
+    predictedHotspots.forEach(function(hotspot) {
+      if (hotspot.latitude == null || hotspot.longitude == null) return;
+      var lat = Number(hotspot.latitude);
+      var lng = Number(hotspot.longitude);
+      if (!isFinite(lat) || !isFinite(lng)) return;
+
+      var probability = Number(hotspot.probability_pct || 0);
+      var radiusM = 9000 + (probability * 140);
+      var zone = L.circle([lat, lng], {
+        radius: radiusM,
+        color: '#C2410C',
+        fillColor: '#FB923C',
+        fillOpacity: 0.24,
+        weight: 2,
+      });
+      zone.bindPopup(hotspotPopup(hotspot));
+      hotspotLayer.addLayer(zone);
+    });
+
+    if (!map.hasLayer(hotspotLayer)) {
+      hotspotLayer.addTo(map);
+    }
+  }
+
+  function meshPopup(signal) {
+    var statusText = String(signal.probability_status || 'Plausible') + ' ' + String(signal.confidence_pct || 0) + '%';
+    return [
+      '<strong>' + String(signal.signal_type || 'Unknown Signal') + '</strong>',
+      '<div>' + String(signal.general_region || 'Unknown region') + '</div>',
+      '<div>' + statusText + '</div>',
+      '<div>Citation #' + String(signal.id || 0) + '</div>',
+    ].join('');
+  }
+
+  function renderMeshSignals(visible) {
+    meshLayer.clearLayers();
+    if (!visible) {
+      return;
+    }
+
+    fungalMeshBranches.forEach(function(branch) {
+      var fromLat = Number(branch.from_latitude);
+      var fromLng = Number(branch.from_longitude);
+      var toLat = Number(branch.to_latitude);
+      var toLng = Number(branch.to_longitude);
+      if (!isFinite(fromLat) || !isFinite(fromLng) || !isFinite(toLat) || !isFinite(toLng)) return;
+
+      var hypha = L.polyline([[fromLat, fromLng], [toLat, toLng]], {
+        color: '#0e7490',
+        weight: 2,
+        opacity: 0.72,
+        dashArray: '6, 6',
+      });
+      hypha.bindPopup('Mycelial Branch: #' + String(branch.from_id || '?') + ' -> #' + String(branch.to_id || '?'));
+      meshLayer.addLayer(hypha);
+    });
+
+    meshSignals.forEach(function(signal) {
+      if (signal.latitude == null || signal.longitude == null) return;
+      var lat = Number(signal.latitude);
+      var lng = Number(signal.longitude);
+      if (!isFinite(lat) || !isFinite(lng)) return;
+      var confidence = Number(signal.confidence_pct || 0);
+      var radius = Math.max(5, Math.min(11, 5 + (confidence / 22)));
+
+      var ring = L.circleMarker([lat, lng], {
+        radius: radius,
+        color: '#0C4A6E',
+        fillColor: '#38BDF8',
+        fillOpacity: 0.9,
+        weight: 2,
+      });
+      ring.bindPopup(meshPopup(signal));
+      meshLayer.addLayer(ring);
+
+      if (confidence >= 85) {
+        var halo = L.circle([lat, lng], {
+          radius: 6800,
+          color: '#22d3ee',
+          weight: 1,
+          opacity: 0.55,
+          fillOpacity: 0.05,
+        });
+        meshLayer.addLayer(halo);
+      }
+    });
+
+    if (!map.hasLayer(meshLayer)) {
+      meshLayer.addTo(map);
+    }
+  }
+
+  if (hotspotToggle) {
+    hotspotToggle.checked = false;
+    hotspotToggle.addEventListener('change', function() {
+      renderHotspots(!!hotspotToggle.checked);
+    });
+  }
+  if (meshToggle) {
+    meshToggle.checked = false;
+    meshToggle.addEventListener('change', function() {
+      renderMeshSignals(!!meshToggle.checked);
+    });
+  }
+
+  renderHotspots(false);
+  renderMeshSignals(false);
+
+  if (!points.length && !predictedHotspots.length && !meshSignals.length) {
+    map.setView([39.0, -98.0], 5);
+    return;
+  }
+
+  var bounds = [];
+  points.forEach(function(point) {
+    if (point.latitude == null || point.longitude == null) return;
+    var lat = Number(point.latitude);
+    var lng = Number(point.longitude);
+    if (!isFinite(lat) || !isFinite(lng)) return;
+
+    var isAviation = point.type === 'aviation';
+    var marker = L.circleMarker([lat, lng], {
+      radius: isAviation ? 7 : 6,
+      color: isAviation ? '#1D4ED8' : '#047857',
+      fillColor: isAviation ? '#3B82F6' : '#10B981',
+      fillOpacity: 0.9,
+      weight: isAviation ? 2 : 1,
+    }).addTo(map);
+
+    marker.bindPopup(missionPopup(point));
+    bounds.push([lat, lng]);
+  });
+
+  predictedHotspots.forEach(function(hotspot) {
+    if (hotspot.latitude == null || hotspot.longitude == null) return;
+    var lat = Number(hotspot.latitude);
+    var lng = Number(hotspot.longitude);
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    bounds.push([lat, lng]);
+  });
+
+  meshSignals.forEach(function(signal) {
+    if (signal.latitude == null || signal.longitude == null) return;
+    var lat = Number(signal.latitude);
+    var lng = Number(signal.longitude);
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    bounds.push([lat, lng]);
+  });
+
+  if (!bounds.length) {
+    map.setView([39.0, -98.0], 5);
+    return;
+  }
+  map.fitBounds(bounds, { padding: [24, 24], maxZoom: 10 });
+}
+
+function getLoadProfileInput() {
+  var profile = document.getElementById('load-profile-select').value;
+  var customInput = document.getElementById('load-custom-lbs');
+  var specimenWeight = null;
+  if (profile === 'custom') {
+    specimenWeight = customInput.value !== '' ? Number(customInput.value) : 0;
+  } else if (profile === 'high-yield') {
+    specimenWeight = 50;
+  } else {
+    specimenWeight = 0;
+  }
+  return { profile: profile, specimenWeight: specimenWeight };
+}
+
+function onLoadProfileChange() {
+  var profile = document.getElementById('load-profile-select').value;
+  var customInput = document.getElementById('load-custom-lbs');
+  var summary = document.getElementById('load-profile-summary');
+  customInput.disabled = profile !== 'custom';
+
+  if (profile === 'high-yield') {
+    summary.textContent = 'High-Yield profile selected: +50 lbs specimen load will be applied.';
+  } else if (profile === 'custom') {
+    summary.textContent = 'Custom profile selected: Pre-Flight checks will use your entered specimen weight.';
+  } else {
+    summary.textContent = 'Standard profile selected: no additional specimen load.';
+  }
+
+  updateRemainingUsefulLoad();
+}
+
+function updateRemainingUsefulLoad() {
+  var host = document.getElementById('remaining-useful-load');
+  if (!host) return;
+
+  var profile = getLoadProfileInput();
+  var profileWeight = Number(profile.specimenWeight || 0);
+
+  var estRaw = document.getElementById('specimen-estimated-weight');
+  var estimatedWeight = estRaw && estRaw.value !== '' ? Number(estRaw.value) : 0;
+  if (!isFinite(estimatedWeight) || estimatedWeight < 0) estimatedWeight = 0;
+
+  var maxGross = 2300;
+  var emptyWeight = 1665;
+  var crewWeight = 390;
+  var miscWeight = 35;
+  var baseFuelGal = 30;
+  var maxFuelGal = 38;
+  var avgasPerGal = 6;
+
+  var dryWeight = emptyWeight + crewWeight + miscWeight + profileWeight;
+  var maxSafeFuel = Math.max(0, Math.min(maxFuelGal, (maxGross - dryWeight) / avgasPerGal));
+  var plannedFuel = Math.max(0, Math.min(baseFuelGal, maxSafeFuel));
+  var loadedWeight = dryWeight + (plannedFuel * avgasPerGal);
+  var remainingPayload = maxGross - loadedWeight;
+  var remainingAfterEstimate = remainingPayload - estimatedWeight;
+
+  if (remainingAfterEstimate >= 0) {
+    host.textContent = 'Remaining Useful Load (est.): ' + remainingAfterEstimate.toFixed(1) + ' lbs after specimen estimate';
+    host.style.color = 'var(--text-secondary, #666)';
+  } else {
+    host.textContent = 'Remaining Useful Load (est.): OVER by ' + Math.abs(remainingAfterEstimate).toFixed(1) + ' lbs';
+    host.style.color = '#B91C1C';
+  }
+}
+
+function renderPreflightSummary(data) {
+  var sentinel = data.sentinel || {};
+  var fuel = data.fuel_status || {};
+  var weather = data.weather || {};
+  var go = data.go_no_go || {};
+  var load = data.load_profile || {};
+  var airport = data.nearest_airport || {};
+  var missionRegion = String(data.mission_region || 'Unknown region');
+  var highRiskSignals = Array.isArray(data.high_risk_signals) ? data.high_risk_signals : [];
+  var reasons = Array.isArray(go.reasons) ? go.reasons.join('; ') : 'No rationale provided';
+  var highRiskSummary = 'none reported in mission region';
+  if (highRiskSignals.length) {
+    var tags = highRiskSignals.slice(0, 3).map(function(signal) {
+      return String(signal.risk_category || signal.signal_type || 'High-Risk');
+    });
+    highRiskSummary = String(highRiskSignals.length) + ' in ' + missionRegion + ' (' + tags.join(', ') + ')';
+  }
+
+  return [
+    'Sentinel Status: ' + (sentinel.status || 'UNKNOWN') +
+      (sentinel.days_remaining != null ? ' (' + sentinel.days_remaining + ' days remaining)' : ''),
+    'Fuel Status: ' + (fuel.status || 'UNKNOWN') +
+      (fuel.recommended_fuel_gal != null ? ' | Recommended ' + fuel.recommended_fuel_gal + ' gal' : ''),
+    'Destination Weather: ' + (weather.risk || 'UNKNOWN') + ' @ ' + (airport.code || 'N/A') +
+      (weather.metar ? ' | METAR: ' + weather.metar : ''),
+    'High-Risk Signals: ' + highRiskSummary,
+    'Load Impact: +' + (load.specimen_weight_lbs != null ? load.specimen_weight_lbs : '0') + ' lbs specimens' +
+      (load.takeoff_roll_delta_pct != null ? ' | TO roll +' + load.takeoff_roll_delta_pct + '%' : ''),
+    'Go/No-Go: ' + (go.decision || 'UNKNOWN') + ' | ' + reasons,
+  ].join('\n');
+}
+
+async function runPreflightCheck(locationId, buttonEl) {
+  var summaryEl = document.getElementById('preflight-summary-' + locationId);
+  if (!summaryEl) return;
+
+  buttonEl.disabled = true;
+  buttonEl.textContent = 'Checking...';
+  summaryEl.classList.add('is-visible');
+  summaryEl.innerHTML = '<pre>Running pre-flight check...</pre>';
+
+  var load = getLoadProfileInput();
+  var params = new URLSearchParams({
+    location_id: String(locationId),
+    load_profile: load.profile,
+    user_id: String(activeUserId),
+    tenant_id: String(activeTenantId),
+  });
+  if (load.specimenWeight != null) {
+    params.set('specimen_weight_lbs', String(load.specimenWeight));
+  }
+
+  try {
+    var res = await fetch('/api/navigator/preflight?' + params.toString());
+    var data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ('HTTP ' + res.status));
+    }
+    summaryEl.innerHTML = '<pre>' + renderPreflightSummary(data) + '</pre>';
+  } catch (err) {
+    summaryEl.innerHTML = '<pre>Error: ' + err.message + '</pre>';
+  } finally {
+    buttonEl.disabled = false;
+    buttonEl.textContent = 'Pre-Flight Check';
+  }
+}
+
+function toggleForm() {
+  var form = document.getElementById('expedition-form');
+  var btn  = document.getElementById('toggle-form-btn');
+  if (form.style.display === 'none') {
+    form.style.display = 'block';
+    btn.textContent = 'Cancel';
+  } else {
+    form.style.display = 'none';
+    btn.textContent = '+ New Find';
+    document.getElementById('form-feedback').textContent = '';
+  }
+}
+
+async function submitFind(e) {
+  e.preventDefault();
+  var form = e.target;
+  var fb   = document.getElementById('form-feedback');
+  var payload = {
+    tenant_id: activeTenantId,
+    user_id: activeUserId,
+    location_name:  form.location_name.value.trim()  || null,
+    specimen_types: form.specimen_types.value.trim() || null,
+    latitude:       form.latitude.value  !== '' ? parseFloat(form.latitude.value)  : null,
+    longitude:      form.longitude.value !== '' ? parseFloat(form.longitude.value) : null,
+    yield_rating:   form.yield_rating.value !== '' ? parseFloat(form.yield_rating.value) : null,
+  };
+  try {
+    var res = await fetch('/api/navigator/observations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    fb.style.color = '#0097A7';
+    fb.textContent = 'Find logged. Refreshing...';
+    setTimeout(function () { location.reload(); }, 800);
+  } catch (err) {
+    if (!window.navigator.onLine || /Failed to fetch|NetworkError|Load failed/i.test(String(err && err.message))) {
+      var pendingCount = queueObservationOutbox(payload);
+      refreshSyncStatus();
+      fb.style.color = '#C2410C';
+      fb.textContent = 'Connection unavailable. Observation cached in Outbox (' + pendingCount + ' pending).';
+      form.reset();
+      return;
+    }
+    fb.style.color = '#EF4444';
+    fb.textContent = 'Error: ' + err.message;
+  }
+}
+
+async function submitSpecimen(e) {
+  e.preventDefault();
+  var fb = document.getElementById('specimen-feedback');
+  var expeditionRaw = document.getElementById('specimen-expedition-id').value;
+  var photoInput = document.getElementById('specimen-photo');
+  var manualPath = document.getElementById('specimen-image-path').value.trim();
+
+  var imagePath = manualPath;
+  if (!imagePath && photoInput.files && photoInput.files.length > 0) {
+    imagePath = 'mobile://' + photoInput.files[0].name;
+  }
+
+  var payload = {
+    tenant_id: activeTenantId,
+    user_id: activeUserId,
+    expedition_id: expeditionRaw ? Number(expeditionRaw) : null,
+    yield_stars: Number(document.getElementById('specimen-yield-stars').value),
+    image_path: imagePath || null,
+    color: document.getElementById('specimen-color').value.trim() || null,
+    specific_gravity: document.getElementById('specimen-specific-gravity').value !== ''
+      ? Number(document.getElementById('specimen-specific-gravity').value)
+      : null,
+    hardness: document.getElementById('specimen-hardness').value !== ''
+      ? Number(document.getElementById('specimen-hardness').value)
+      : null,
+    estimated_weight_lbs: document.getElementById('specimen-estimated-weight').value !== ''
+      ? Number(document.getElementById('specimen-estimated-weight').value)
+      : null,
+    mineral_class: document.getElementById('specimen-mineral-class').value.trim() || null,
+    notes: document.getElementById('specimen-notes').value.trim() || null,
+  };
+
+  try {
+    var res = await fetch('/api/navigator/specimens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    var data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ('HTTP ' + res.status));
+    }
+
+    var suggestion = (data.specimen || {}).transport_flight_suggestion || {};
+    var suggestionText = suggestion.flight_id
+      ? (' Suggested transport: ' + suggestion.flight_id + ' (' + (suggestion.confidence || 'LOW') + ').')
+      : '';
+
+    fb.style.color = '#059669';
+    fb.textContent = 'Specimen saved.' + suggestionText + ' Refreshing...';
+    setTimeout(function () { location.reload(); }, 900);
+  } catch (err) {
+    fb.style.color = '#EF4444';
+    fb.textContent = 'Error: ' + err.message;
+  }
+}
+
+function filterSpecimens() {
+  var list = document.getElementById('specimen-list');
+  if (!list) return;
+
+  var mineral = (document.getElementById('specimen-search-mineral').value || '').trim().toLowerCase();
+  var hardnessRaw = document.getElementById('specimen-search-hardness').value;
+  var minHardness = hardnessRaw !== '' ? Number(hardnessRaw) : null;
+  var highYieldOnly = document.getElementById('specimen-search-high-yield').checked;
+
+  var cards = list.querySelectorAll('.specimen-item');
+  var shown = 0;
+  cards.forEach(function(card) {
+    var mineralClass = String(card.dataset.mineralClass || '').toLowerCase();
+    var hardness = card.dataset.hardness !== '' ? Number(card.dataset.hardness) : null;
+    var stars = Number(card.dataset.yieldStars || 0);
+
+    var matchesMineral = !mineral || mineralClass.indexOf(mineral) !== -1;
+    var matchesHardness = minHardness == null || (hardness != null && hardness >= minHardness);
+    var matchesYield = !highYieldOnly || stars >= 5;
+
+    var show = matchesMineral && matchesHardness && matchesYield;
+    card.style.display = show ? '' : 'none';
+    if (show) shown += 1;
+  });
+
+  var empty = document.getElementById('specimen-no-results');
+  if (empty) {
+    empty.style.display = shown === 0 ? '' : 'none';
+  }
+}
+
+function toggleScientistView() {
+  var toggle = document.getElementById('scientist-view-toggle');
+  var wrap = document.getElementById('scientist-view-table-wrap');
+  if (!toggle || !wrap) return;
+  wrap.classList.toggle('scientist-view-table-wrap--hidden', !toggle.checked);
+}
+
+initMissionMap();
+onLoadProfileChange();
+updateRemainingUsefulLoad();
+filterSpecimens();
+toggleScientistView();
+loadShareSignalsPreference();
+loadOrganizationSetupDraft();
+refreshSyncStatus();
+flushObservationOutbox();
+initRealtimePulseSocket();
+window.addEventListener('online', function () {
+  refreshSyncStatus();
+  flushObservationOutbox();
+});
+window.addEventListener('offline', refreshSyncStatus);
+</script>
+<script type="module">
+import { initNavigatorAeroMath } from "{{ url_for('static', filename='js/navigator_aero_math.js') }}";
+
+initNavigatorAeroMath({
+  tenantId: String(activeTenantId || 'internal'),
+  baselineFe: 38.0,
+  maxPoints: 10000,
+  targetPoints: 1200,
+});
+</script>
+{% endblock %}

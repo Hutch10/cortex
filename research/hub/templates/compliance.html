@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}Cortex — Compliance Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Compliance Portal</h1>
+  <p class="page-desc">Operations Director view of Sovereign Ledger evidence mapped to SOC 2 control points.</p>
+</div>
+
+<div class="panel compliance-panel" id="compliance-shell" data-org-id="{{ active_org_id }}" data-role="{{ active_role }}">
+  <div class="panel-header-row">
+    <h2 class="panel-title panel-title--flush">SOC 2 Control Map</h2>
+    <span class="hint">Aggregate ledger evidence only</span>
+  </div>
+
+  <div class="compliance-kpis">
+    <div class="compliance-card">
+      <span class="compliance-label">Scoped Org</span>
+      <strong id="compliance-org">{{ active_org_id }}</strong>
+    </div>
+    <div class="compliance-card">
+      <span class="compliance-label">Role</span>
+      <strong id="compliance-role">{{ active_role }}</strong>
+    </div>
+    <div class="compliance-card">
+      <span class="compliance-label">Ledger Events</span>
+      <strong id="compliance-count">0</strong>
+    </div>
+  </div>
+
+  <div class="sovereign-table-wrap">
+    <table class="sovereign-table" id="compliance-control-table">
+      <thead>
+        <tr>
+          <th>Control Point</th>
+          <th>Category</th>
+          <th>Events</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="4" class="sovereign-empty">Loading control points...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sovereign-table-wrap compliance-event-wrap">
+    <table class="sovereign-table" id="compliance-event-table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Org</th>
+          <th>Action</th>
+          <th>Control Point</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="4" class="sovereign-empty">Loading ledger events...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.compliance-panel {
+  border: 1px solid #cbd5e1;
+  background: linear-gradient(180deg, #fbfdff 0%, #f4f7fb 100%);
+}
+.compliance-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
+  margin: 0.9rem 0 1rem;
+}
+.compliance-card {
+  border: 1px solid #d8e2ec;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 0.8rem;
+}
+.compliance-event-wrap {
+  margin-top: 1rem;
+}
+.compliance-label {
+  display: block;
+  color: #486581;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+</style>
+<script>
+async function loadCompliancePortal() {
+  const shell = document.getElementById('compliance-shell');
+  const activeOrgId = shell?.dataset?.orgId || 'internal';
+  const activeRole = shell?.dataset?.role || 'Operations Director';
+  const params = new URLSearchParams(window.location.search);
+  if (!params.get('organization_id') && activeOrgId) {
+    params.set('organization_id', activeOrgId);
+  }
+  if (!params.get('user_role')) {
+    params.set('user_role', activeRole);
+  }
+  const res = await fetch('/api/compliance/control-points?' + params.toString());
+  const data = await res.json();
+  if (!res.ok) return;
+
+  document.getElementById('compliance-count').textContent = String(data.count || 0);
+  document.getElementById('compliance-org').textContent = data.org_id || 'all';
+
+  const controlBody = document.querySelector('#compliance-control-table tbody');
+  const eventBody = document.querySelector('#compliance-event-table tbody');
+  controlBody.innerHTML = '';
+  eventBody.innerHTML = '';
+
+  const controls = Array.isArray(data.control_points) ? data.control_points : [];
+  const entries = Array.isArray(data.entries) ? data.entries : [];
+
+  if (!controls.length) {
+    controlBody.innerHTML = '<tr><td colspan="4" class="sovereign-empty">No control evidence recorded for this scope.</td></tr>';
+  } else {
+    controls.forEach((row) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${row.control_point || ''}</td><td>${row.category || ''}</td><td>${row.event_count || 0}</td><td>${row.description || ''}</td>`;
+      controlBody.appendChild(tr);
+    });
+  }
+
+  if (!entries.length) {
+    eventBody.innerHTML = '<tr><td colspan="4" class="sovereign-empty">No ledger entries recorded for this scope.</td></tr>';
+  } else {
+    entries.slice(0, 25).forEach((row) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${row.timestamp || ''}</td><td>${row.org_id || ''}</td><td>${row.action_type || ''}</td><td>${row.control_point || ''}</td>`;
+      eventBody.appendChild(tr);
+    });
+  }
+}
+
+loadCompliancePortal();
+</script>
+{% endblock %}

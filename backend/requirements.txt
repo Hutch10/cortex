@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+pandas
+numpy
+httpx
+pydantic
+pydantic-settings
+sqlalchemy
+psycopg2-binary
+torch
+transformers
+accelerate
+sentencepiece
+pynacl
+# Surya model requirements

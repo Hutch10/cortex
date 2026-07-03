@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}HutchSolves Cortex{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cortex.css') }}" />
+</head>
+<body>
+
+  <!-- ── Top Nav ── -->
+  <header class="nav-bar">
+    <div class="nav-brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">HutchSolves</span>
+      <span class="brand-sub">Cortex</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Dashboard</a>
+      <a href="/workflow" class="nav-link {% if request.path == '/workflow' %}active{% endif %}">Business Workflow</a>
+      <a href="/marine" class="nav-link {% if request.path == '/marine' %}active{% endif %}">Marine Workspace</a>
+      <a href="/marine/briefing" class="nav-link {% if request.path == '/marine/briefing' %}active{% endif %}">Marine Briefing</a>
+      <a href="/marine/alerts" class="nav-link {% if request.path == '/marine/alerts' %}active{% endif %}">Marine Alerts</a>
+      <a href="/marine/snapshots" class="nav-link {% if request.path == '/marine/snapshots' %}active{% endif %}">Marine Snapshots</a>
+      <a href="/ocean-map" class="nav-link {% if request.path == '/ocean-map' %}active{% endif %}">Ocean Map</a>
+      <a href="/aviation" class="nav-link {% if request.path == '/aviation' %}active{% endif %}">Aero-Cortex</a>
+      <a href="/navigator" class="nav-link {% if request.path == '/navigator' %}active{% endif %}">Navigator</a>
+      <a href="/navigator/mobile" class="nav-link {% if request.path == '/navigator/mobile' %}active{% endif %}">Navigator Mobile</a>
+      <a href="/compliance" class="nav-link {% if request.path == '/compliance' %}active{% endif %}">Compliance</a>
+      <a href="/sovereign" class="nav-link {% if request.path == '/sovereign' %}active{% endif %}">Sovereign</a>
+    </nav>
+
+    <!-- ── Billable Time Clock ── -->
+    <div class="billable-clock" id="billable-clock" title="Billable time logged for active tenant">
+      <span class="billable-icon" aria-hidden="true">&#x23F1;</span>
+      <span class="billable-label">Billable</span>
+      <span class="billable-value" id="billable-display">0h 0m</span>
+    </div>
+  </header>
+
+  <!-- ── Page content ── -->
+  <main class="page-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script src="{{ url_for('static', filename='js/cortex.js') }}"></script>
+  {% block scripts %}{% endblock %}
+
+  <!-- ── Purple Milestone Glow — fires on load if a shadow:snapshot exists today ── -->
+  <script>
+  (function () {
+    var TENANT = (
+      document.querySelector('meta[name="tenant-slug"]')?.content ||
+      new URLSearchParams(location.search).get('tenant_slug') ||
+      'default'
+    );
+    fetch('/api/briefing/daily?tenant_slug=' + encodeURIComponent(TENANT))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.billing || !data.billing.shadow_snapshot_today) return;
+        // Apply glow to every .morning-card on the page
+        document.querySelectorAll('.morning-card').forEach(function (el) {
+          el.classList.add('milestone-glow');
+          // Inject badge next to the card title if present
+          var title = el.querySelector('.mc-header, .mc-title, h3, h4');
+          if (title && !title.querySelector('.milestone-badge')) {
+            var badge = document.createElement('span');
+            badge.className = 'milestone-badge';
+            badge.textContent = 'Session milestone';
+            title.appendChild(badge);
+          }
+        });
+      })
+      .catch(function () { /* graceful no-op on network error */ });
+  })();
+  </script>
+</body>
+</html>

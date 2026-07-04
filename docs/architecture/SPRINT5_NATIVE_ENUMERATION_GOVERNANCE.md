@@ -668,3 +668,18 @@ O. unsupported mutation APIs remain absent
 - **Mutation Guards:** Statically verified clean (no `SecItemUpdate`, `SecItemDelete`, `deleteSecureRecord`, `updateSecureRecord`, `clear`, `reset`, `repair`).
 - **Provider Status:** Returns `unsupported` externally pending CI certification.
 - **native_authoritative:** STILL BLOCKED pending remote macOS CI results and Phase 5E promotion audit.
+
+
+### Sprint 5 Phase 5D CI Checkout and Commit-Integrity Corrective Action
+- failed run 28723256263
+- checkout failed before TypeScript/iOS/Xcode
+- terra-pulse-demo was accidentally committed as mode 160000 without .gitmodules registration
+- Phase 5D commit also tracked temporary helpers and node_modules
+- intended frontend bridge/provider changes were local-only and were not represented by the outer submodule pointer
+- frontend changes were committed and pushed separately
+- outer frontend gitlink advanced
+- accidental artifacts removed
+- no Phase 5D production Swift semantics changed
+- Phase 5D remains uncertified pending fresh macOS CI
+- native provider remains unsupported/fail-closed
+- native_authoritative remains blocked

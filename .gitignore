@@ -100,3 +100,6 @@ temp/
 
 # Streamlit cache (app.py runtime) ──────────────────────────────────────────
 .streamlit/
+
+# Node
+node_modules/

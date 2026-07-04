@@ -84,3 +84,62 @@ Future implementation is blocked until GG approves:
 4. XCTest design.
 5. Fail-closed fallback behavior.
 6. Documentation update requirements.
+
+
+## Sprint 5 Phase 2: Service Compatibility Strategy
+
+### Discovered Current Behavior
+- **Exact kSecAttrService string:** None. The `kSecAttrService` attribute is currently **omitted** from all Keychain queries.
+- **Canonical and Addendum Records:** Both share the same omitted service behavior (via `addKeychainItem`).
+- **ReadSecureRecord:** Uses the same omitted service behavior.
+- **Current records enumerable under final boundary:** Unknown. Because `kSecAttrService` is omitted, compatibility is unresolved pending macOS/Xcode Keychain behavior audit.
+
+### Preferred Future Compatibility Strategy
+**Explicit Service Allowlist / Bounded Service Queries.**
+
+**Rules:**
+- Future native enumeration may query only an explicit hardcoded allowlist of known Vitalicast service identifiers.
+- Each query must remain strictly service-bounded.
+- No broad generic password dump.
+- No cross-domain Keychain scan.
+- No wildcard search.
+- No payload reads during enumeration.
+- Merge/deduplicate returned account keys in memory.
+- Swift-side prefix validation required: `vitalicast_canonical_`, `vitalicast_addendum_`.
+- Malformed/foreign keys are ignored, not repaired.
+
+### Final/Proposed Service Policy
+- **Proposed final service value:** `com.vitalicast.archive`
+- **Legacy allowlist candidates:** None found (service omitted).
+- **Unresolved Risk:** Because the current source omits the service, native_authoritative enumeration remains blocked until behavior is tested on macOS/Xcode (to determine if iOS defaults to bundle ID or if a migration/fallback read is strictly required).
+
+### Permanently Forbidden Migration Mechanisms
+- No `SecItemUpdate`.
+- No `SecItemDelete`.
+- No `delete` / `update` / `clear` / `reset` / `repair` paths.
+- No background migration.
+- No copy-forward migration without separate future audit.
+- No UserDefaults mirror index.
+- No central mutable manifest/index.
+- No payload-reading migration.
+- No telemetry about legacy/new ratio.
+
+### Future Test Vectors
+- Records under final service enumerate.
+- Records under explicitly allowlisted legacy service enumerate (if applicable).
+- Duplicate service results are deduplicated in memory.
+- Unrelated service dummy secret is ignored.
+- Malformed account prefix is ignored.
+- Empty allowlisted service returns calm empty array.
+- `kSecReturnData` remains false for all service queries.
+- No `SecItemUpdate` / `SecItemDelete` present.
+- Exact-key read remains available for known legacy keys.
+- No-service records follow documented unresolved/deferred policy until audited on macOS.
+
+### Implementation Gates for Sprint 5 Phase 3
+- **GG approval required** before any Swift implementation.
+- Final service allowlist must be approved.
+- Behavior for omitted-service records must be resolved.
+- XCTest vectors must be approved.
+- Native provider must remain unsupported until CI passes.
+- Docs must be updated with exact CI run after implementation.

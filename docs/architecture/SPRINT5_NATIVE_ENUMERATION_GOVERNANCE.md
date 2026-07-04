@@ -341,3 +341,25 @@ ative_authoritative enabled.
 - No `SecItemUpdate` / `SecItemDelete` paths exist.
 - No `native_authoritative` enabled.
 - Test probe semantics remain unchanged.
+
+
+## Sprint 5 Phase 4H: App Module XCTest Visibility Corrective Action
+
+### CI Run Details
+- **Prior Run Classification:** `TEST_COMPILE_FAILURE` / `APP_MODULE_PLUGIN_TYPE_NOT_VISIBLE`
+- **Issue:** The test target could not find `VitalicastSecureStoragePlugin` in scope because it was not added to the `App` target's compile sources in the Xcode project.
+
+### Corrective Action Status
+- **Corrective Action Attempted:** Used the `xcodeproj` Ruby gem to correctly add `VitalicastSecureStoragePlugin.swift` to the `App` target's `PBXSourcesBuildPhase`. The test target already imports the App module (`@testable import App`) and the App Debug configuration already has `ENABLE_TESTABILITY = YES`. 
+- **Next Step:** A new CI run has been triggered to execute the tests. 
+
+### Probe Outcomes
+- All probe outcomes remain **Not Run**.
+- No Keychain compatibility conclusion has been drawn.
+- Production enumeration remains **blocked**.
+- Native provider remains `unsupported`/fail-closed.
+
+### Guard Assertions
+- Production Swift behavior remains unchanged.
+- No `SecItemUpdate` / `SecItemDelete` paths exist.
+- No `native_authoritative` enabled.

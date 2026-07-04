@@ -477,3 +477,39 @@ Before production implementation approval, require:
 - **Browser archive listing:** dev_non_authoritative_fallback
 - **native_authoritative:** BLOCKED
 - No production broad omitted-service `kSecMatchLimitAll` enumeration exists.
+
+
+## Sprint 5 Phase 5B: Exact-Read Collision Audit
+
+### Phase 5A Baseline
+- **Outcome B Baseline:** Omitted-service legacy items are natively preserved, exactly readable, and isolated from canonical bounded queries.
+
+### Phase 5B Objective
+Determine exact-read collision behavior when identical Keychain account names exist under:
+A. Omitted-service legacy storage
+B. `com.vitalicast.archive` canonical storage
+C. Unrelated explicit service storage
+
+**Key Questions:**
+- Can duplicate account names coexist across different services or no-services?
+- Does an exact-read query omitting `kSecAttrService` return the legacy item, a canonical item, or become nondeterministic when accounts match?
+- Is a production compatibility exact-read order viable and safe?
+
+### Probe Configuration
+- **Probe query shapes:** A dynamic `UUID` account was targeted across legacy creation, canonical creation, and unrelated creation. Reads targeted specific service configurations and the omitted-service configuration.
+- **Repeated-read bounded determinism probe:** The omitted-service read was executed 5 times to detect nondeterministic or mixed results.
+- **Synthetic marker policy:** Utilized markers like `PHASE5B_PROBE_E_OMITTED_EXACT_READ=<classification>` to unambiguously classify the runtime behavior directly in the CI logs without printing real user payloads.
+
+### B1 through B5 Decision Matrix
+- **B1:** Canonical and legacy same-account records coexist. Omitted-service exact known-account read stably returns legacy. Explicit unrelated service remains isolated.
+- **B2:** Canonical and legacy same-account records coexist. Omitted-service exact query incorrectly matches canonical/unrelated item.
+- **B3:** Omitted-service and canonical same-account items cannot coexist (`errSecDuplicateItem`).
+- **B4:** Repeated omitted-service exact reads return mixed identities (nondeterministic).
+- **B5:** Inconclusive probe execution.
+
+### Production Status Assertions
+- No broad omitted-service enumeration was added to the test suite (XCTest-only behavior was retained in the Phase 4 probe).
+- No production implementation was added.
+- No mutation functions (`SecItemUpdate`, `SecItemDelete`) are present.
+- **native provider:** unsupported / fail-closed
+- **native_authoritative:** BLOCKED

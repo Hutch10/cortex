@@ -41,3 +41,31 @@ To fully verify the bridge natively, future simulator UI tests (or manual runboo
 4. `readSecureRecord` successfully reads an exact key.
 5. Unsupported enumeration remains fail-closed.
 6. No `SecItemUpdate` path is exposed or reachable.
+
+## Phase 2 Implementation Details
+- Phase 2 added native runtime test governance/harness.
+- XCTest target name: VitalicastSecureStorageTests.
+- Approved test vectors implemented via Capacitor Plugin mocks.
+- Fixture key UUID policy: strictly uses UUID for distinct canonical/addendum records in each run.
+- No delete/update/clear/reset methods added.
+- No SecItemUpdate added (static guard checks confirmed absence of SecItemUpdate execution and SecItemDelete).
+- No native enumeration added.
+- xcodebuild test workflow step added.
+
+## Phase 3 Implementation Details
+- Phase 3 remote CI inspection status: PASS
+- CI run URL: https://github.com/Hutch10/cortex/actions/runs/28688158854
+- workflow status: PASS
+- xcodebuild build status: PASS
+- xcodebuild test status: PASS
+- runtime bridge verification status: PASS
+- whether pbxproj linkage was corrected: NO (unnecessary, already passed)
+- whether simulator destination was corrected: NO
+- whether CAPPluginCall mock was corrected: NO
+- static guard results: Confirmed no SecItemUpdate, no SecItemDelete, no deleteSecureRecord, no updateSecureRecord, no clear, no reset.
+- no native enumeration added.
+- no delete/update/clear/reset added.
+- no SecItemUpdate added.
+- secure-storage mutation semantics unchanged.
+- Sprint 2 remains FULL PASS.
+- Sprint 3 remains PASS.

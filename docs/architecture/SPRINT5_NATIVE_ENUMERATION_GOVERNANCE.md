@@ -198,3 +198,22 @@ To determine how iOS Keychain handles generic-password items created without `kS
 - No SecItemUpdate / SecItemDelete added.
 - No 
 ative_authoritative enabled.
+
+
+## Sprint 5 Phase 4B: XCTest Target Injection
+
+### Prior Blocker
+- **TEST_TARGET_MISSING_OR_MALFORMED:** The XCTest target was previously missing from the project entirely.
+
+### Corrective Action: Target Injection
+- **Target Creation Mechanism:** Used the `xcodeproj` Ruby gem to deterministically inject the `VitalicastSecureStorageTests` target (`PBXNativeTarget`) into `project.pbxproj`.
+- **Target UUID:** `12B4CF5D808B99A541873459`
+- **Host Mode:** App-Hosted. The test target is explicitly linked to the `App` target (`504EC3031FED79650016851F`) via `TestTargetID`, `TEST_HOST`, and `BUNDLE_LOADER` to ensure `Bundle.main.bundleIdentifier` correctly evaluates during the probe.
+- **Scheme TestAction:** Successfully manually generated the `App.xcscheme` file containing a `TestAction` referencing the new test target's UUID.
+
+### Guard Assertions
+- Production Swift behavior remains completely unchanged.
+- Native provider remains `unsupported`/fail-closed.
+- No production `SecItemCopyMatching` was implemented.
+- No `SecItemUpdate` / `SecItemDelete` paths exist.
+- New CI run required to execute probes.

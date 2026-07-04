@@ -513,3 +513,126 @@ C. Unrelated explicit service storage
 - No mutation functions (`SecItemUpdate`, `SecItemDelete`) are present.
 - **native provider:** unsupported / fail-closed
 - **native_authoritative:** BLOCKED
+
+
+## Sprint 5 Phase 5B Final Result: Outcome B1 — Stable Exact-Read Service Isolation
+
+### Certified CI Run Details
+- **CI run:** 28722515297
+- **Certified commit:** d5c422e
+- **Result:** `** TEST SUCCEEDED **`
+- **XCTest Result:** `testExactReadCollisionAcrossServicesProbe` passed
+- **Classification:** `PASS_PROBES_EXECUTED` / `OUTCOME_B1`
+
+### Certified Synthetic Markers
+- `PHASE5B_PROBE_B_CANONICAL_CREATE=0`
+- `PHASE5B_PROBE_C_UNRELATED_CREATE=0`
+- `PHASE5B_PROBE_D_CANONICAL_READ=CANONICAL_SERVICE_MATCH`
+- `PHASE5B_PROBE_E_OMITTED_EXACT_READ=LEGACY_ONLY_MATCH`
+- `PHASE5B_PROBE_F_REPEAT_READ=STABLE_LEGACY`
+- `PHASE5B_PROBE_G_UNRELATED_READ=UNRELATED_SERVICE_MATCH`
+- `PHASE5B_PROBE_H_CANONICAL_ENUM=CANONICAL_ACCOUNT_PRESENT`
+
+### Empirical Interpretation
+In the certified CI environment:
+- Identical accounts may coexist across omitted and explicit service values.
+- Canonical exact-service query returns the canonical item.
+- Omitted-service exact known-account query returns the legacy item.
+- Five repeated omitted-service exact reads remained `STABLE_LEGACY`.
+- Unrelated explicit service remained isolated.
+- Canonical bounded attributes-only query surfaced the canonical account.
+
+This is certified behavior in the Vitalicast CI environment and forms the basis for the production contract and regression coverage. It is not generalized as an undocumented universal guarantee across all Apple OS versions.
+
+## Sprint 5 Phase 5C: Native Archive Production Contract Design
+
+### Canonical Service Constant
+Proposed swift constant (contract design only):
+`private static let archiveService = "com.vitalicast.archive"`
+
+### Future Write Contract
+- **Canonical create writes:** Must include `kSecAttrService = com.vitalicast.archive`.
+- **Addendum writes:** Must include `kSecAttrService = com.vitalicast.archive`.
+- **Forbidden:** No write fallback, no omitted-service new writes, no migration of old records, no copy-forward, no update, no delete.
+
+### Exact-Record Read Contract
+1. **FIRST — canonical exact-service read:** Queries `kSecAttrService = com.vitalicast.archive` with `kSecMatchLimitOne`.
+   - `errSecSuccess` → return canonical record
+   - `errSecItemNotFound` → proceed to legacy exact compatibility read
+   - Any other `OSStatus` → fail closed (do not fall back)
+2. **SECOND — legacy exact compatibility read:** Queries exact storage key with `kSecAttrService` omitted and `kSecMatchLimitOne`.
+   - `errSecSuccess` → return legacy record
+   - `errSecItemNotFound` → return not found
+   - Any other `OSStatus` → fail closed
+
+*Crucial rule:* The legacy fallback must NEVER use `kSecMatchLimitAll`.
+
+### Duplicate-Account Semantics
+**canonical exact read precedence:** If both legacy and canonical items exist under the same account, the canonical-first read order intentionally returns canonical. The legacy item remains preserved (no deletion, no repair, no payload diff, no merge).
+
+### Bounded Native Enumeration Contract
+- **Query:** Targets `com.vitalicast.archive` with `kSecReturnAttributes = true`, `kSecReturnData = false`, and `kSecMatchLimit = kSecMatchLimitAll`.
+- **Forbidden:** `kSecReturnData = true`, service omission, bundle-ID compatibility scan, multiple service wildcard logic, generic-password-wide traversal.
+- **Attributes:** The production contract consumes only `kSecAttrAccount`.
+- **Zero-payload Invariant:** Enumeration must never hydrate payloads, inspect payload structure, verify records, or calculate hashes. It returns identities only.
+
+### Strict Swift Prefix Validation
+- **Allowed prefixes:** `vitalicast_canonical_`, `vitalicast_addendum_`
+- **Behavior:** All returned accounts must be filtered in Swift. Unknown accounts under `com.vitalicast.archive` are rejected from output but do not fail the whole query. No telemetry about rejected counts.
+
+### Deduplication and Ordering Contract
+- **Deduplication:** Deduplicate identical validated account strings before output (e.g. `Set<String>`) to be deterministic, though duplicates should not naturally occur. Do not mutate storage or interpret as corruption.
+- **Ordering:** If deterministic ordering is required downstream, sort storage key strings lexicographically after validation.
+
+### Production Failure Semantics (Enumeration)
+- `errSecSuccess`: Parse returned attributes.
+- `errSecItemNotFound`: Return successful empty identity list.
+- All other `OSStatus`: Fail closed with a neutral provider failure.
+- **Forbidden:** Do not fall back to browser listing automatically or run omitted-service query after enumeration failure.
+
+### Native Provider State Transition Gates
+Currently: **unsupported / fail-closed**.
+Before transitioning to `native_authoritative`, the following must pass:
+- Production Swift implementation complete
+- Production write service tagging complete
+- Exact canonical-first/legacy fallback read complete
+- Bounded attributes-only enumeration complete
+- Strict prefix filter complete
+- Deterministic dedup/sort complete
+- Static guards clean
+- XCTest regression matrix passes
+- CI Xcode build and XCTest passes
+- Bridge/provider integration audited
+- No payload enumeration confirmed
+
+### Phase 5D Implementation Scope
+**Allowed:**
+- Modifications to `VitalicastSecureStoragePlugin.swift` strictly required for the contract.
+- Minimal TypeScript bridge/provider changes required to surface storage keys.
+- Tests and governance docs.
+
+**Forbidden:**
+- UI redesign, payload preview, structural rendering, verification changes, export/copy/share, sync, telemetry, migration/repair/deletion/update, medical logic, browser fallback promotion.
+
+### Mandatory Phase 5D Regression Tests
+A. new canonical create is service-tagged
+B. new addendum write is service-tagged
+C. duplicate canonical create still fails
+D. canonical exact read succeeds
+E. canonical exact read takes precedence over same-account legacy
+F. legacy omitted-service exact read still succeeds when canonical is absent
+G. unrelated explicit service is not returned by canonical exact read
+H. canonical attributes-only enumeration returns canonical storage key
+I. canonical enumeration excludes unrelated service
+J. canonical enumeration excludes unknown account prefix under archive service
+K. canonical enumeration returns no payload
+L. empty canonical service cohort returns successful empty list
+M. no `SecItemUpdate`
+N. no `SecItemDelete`
+O. unsupported mutation APIs remain absent
+(Also preserve existing `testOmittedServiceKeychainBehaviorProbe` and `testExactReadCollisionAcrossServicesProbe`)
+
+### Production Guard Assertions
+- Production Swift behavior currently unchanged.
+- No `SecItemUpdate` / `SecItemDelete` / `deleteSecureRecord` / `updateSecureRecord` paths exist.
+- No `kSecMatchLimitAll` omitted-service broad enumeration exists.

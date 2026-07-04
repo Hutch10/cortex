@@ -390,3 +390,90 @@ ative_authoritative enabled.
 - Production Swift behavior remains unchanged.
 - No `SecItemUpdate` / `SecItemDelete` paths exist.
 - No `native_authoritative` enabled.
+
+
+## Sprint 5 Phase 4 Final Result: Outcome B — Omitted-Service Only
+
+### Certified CI Run Details
+- **CI run:** 28722199486
+- **Certified commit:** 79d401f
+- **Result:** `** TEST SUCCEEDED **`
+- **XCTest Result:** `VitalicastSecureStorageTests` suite passed
+- **Probe executed:** `testOmittedServiceKeychainBehaviorProbe` passed
+
+### Empirical Probe Outcomes
+- **Probe 1 — Legacy Creation:** `errSecSuccess` (Generic-password item created with account and data but no `kSecAttrService`).
+- **Probe 2 — Omitted Service Exact Read:** `errSecSuccess`, Payload exact match passed.
+- **Probe 3 — Final Service Exact Read:** `errSecItemNotFound`.
+- **Probe 4 — Bundle ID Exact Read:** `errSecItemNotFound`.
+- **Probe 5 — Bundle ID Attributes-Only Bounded Enumeration:** Legacy omitted-service fixture NOT FOUND.
+- **Probe 6 — Omitted Service Attributes-Only Probe:** Legacy fixture FOUND. (Note: This XCTest-only query is permanently forbidden as production guidance).
+- **Dummy Unrelated-Service Isolation Probe:** PASS. (Item under `com.vitalicast.unrelated_probe` was not returned by `com.vitalicast.archive`).
+
+### Governance Classification
+- **Decision Matrix Outcome:** OUTCOME B (OMITTED-SERVICE ONLY)
+- **Classification:** `PASS_PROBES_EXECUTED` / `OUTCOME_B`
+
+### Legacy Cohort Definition
+**Name:** legacy exact-read-only compatibility cohort
+
+**Rules:**
+- Legacy omitted-service items are preserved.
+- Exact known-key reads remain compatible.
+- They are not discoverable through the tested bundle-ID bounded service query.
+- They are discoverable only through the tested service-omitted broad query.
+- The service-omitted broad query remains permanently forbidden in production.
+- No native browse enumeration.
+- No omitted-service `kSecMatchLimitAll` in production.
+- No generic-password-wide traversal.
+- No migration, automatic migration, copy-forward, or background normalization.
+- No repair path, manifest, or UserDefaults index.
+- No legacy/new count telemetry.
+
+### Future Native Enumeration Cohort
+**Canonical service:** `com.vitalicast.archive`
+
+**Future Production Design Proposals:**
+- **NEW canonical writes:** `kSecAttrService = com.vitalicast.archive`
+- **NEW addendum writes:** `kSecAttrService = com.vitalicast.archive`
+- **Future bounded enumeration query:**
+  - `kSecClass = kSecClassGenericPassword`
+  - `kSecAttrService = com.vitalicast.archive`
+  - `kSecReturnData = false`
+  - `kSecReturnAttributes = true`
+  - `kSecMatchLimit = kSecMatchLimitAll`
+- **Enumeration output constraint:** Enumeration output may use only attributes required to identify records (No payload data).
+- **Prefix validation constraint:** After query return, enforce strict account prefix validation in Swift (`vitalicast_canonical_`, `vitalicast_addendum_`) and reject all other accounts.
+
+### Phase 5B Production Exact-Read Compatibility Design Questions
+Phase 5B must audit exact-record read behavior for:
+A. legacy omitted-service known-key records
+B. future `com.vitalicast.archive` service-tagged known-key records
+
+The production read design must preserve exact-read compatibility without broad enumeration. Explicitly evaluate a bounded exact-read order such as:
+1. exact account + `com.vitalicast.archive`
+2. exact account with legacy omitted-service compatibility query
+
+*But do not approve this order until exact query collision and ambiguity semantics are audited.*
+
+**Important Constraint:** A legacy exact-read query with `kSecAttrService` omitted is an exact known-account read, not enumeration. It must remain `kSecMatchLimitOne` and must never become `kSecMatchLimitAll`. Phase 5B must determine whether an omitted-service exact known-account query could accidentally match a service-tagged item with the same account. Do not guess.
+
+### Phase 5B Implementation Gates
+Before production implementation approval, require:
+- Exact-read collision audit
+- Duplicate-account-across-services behavior analysis
+- Write service-tag design
+- Addendum service-tag design
+- Attributes-only enumeration result shape
+- Prefix validation design
+- Deduplication policy if required
+- Zero payload confirmation
+- Zero mutation confirmation
+- Static guard plan
+- macOS CI test plan
+
+### Production Status Assertions
+- **native provider:** unsupported / fail-closed
+- **Browser archive listing:** dev_non_authoritative_fallback
+- **native_authoritative:** BLOCKED
+- No production broad omitted-service `kSecMatchLimitAll` enumeration exists.

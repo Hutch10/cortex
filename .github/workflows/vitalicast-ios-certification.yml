@@ -38,4 +38,5 @@ jobs:
         working-directory: ./apps/vitalicast-ios-shell/ios/App
         run: |
           xcodebuild -workspace App.xcworkspace -scheme App -sdk iphonesimulator clean build
-          xcodebuild test -workspace App.xcworkspace -scheme App -destination 'platform=iOS Simulator,name=iPhone 15'
+          DEST_UDID=$(xcrun simctl list devices available | grep "iPhone" | grep -E -o '[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}' | head -n 1)
+          xcodebuild test -workspace App.xcworkspace -scheme App -destination "platform=iOS Simulator,id=${DEST_UDID}"

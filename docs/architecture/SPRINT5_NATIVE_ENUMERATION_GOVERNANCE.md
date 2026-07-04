@@ -217,3 +217,28 @@ ative_authoritative enabled.
 - No production `SecItemCopyMatching` was implemented.
 - No `SecItemUpdate` / `SecItemDelete` paths exist.
 - New CI run required to execute probes.
+
+
+## Sprint 5 Phase 4C: Simulator Destination Corrective Action
+
+### CI Run Details
+- **Prior Run Classification:** `SIMULATOR_DESTINATION_FAILURE`
+- **Build Status:** Passed
+- **Test Status:** Did not execute probes
+- **Exact Error:** `Unable to find a device matching the provided destination specifier`
+- **Issue:** The hardcoded `iPhone 15` destination was unavailable on the macos-latest runner.
+
+### Probe Outcomes
+- All probe outcomes remain **Not Run**.
+- No Keychain compatibility conclusion has been drawn.
+- Production enumeration remains **blocked**.
+- Native provider remains `unsupported`/fail-closed.
+
+### Corrective Action Status
+- **Corrective Action Attempted:** Updated the `.github/workflows/vitalicast-ios-certification.yml` CI workflow to dynamically resolve the first available iPhone simulator UDID using `xcrun simctl list devices available` instead of hardcoding a specific device name.
+- **Next Step:** A new CI run has been triggered to execute the tests on the dynamically resolved destination.
+
+### Guard Assertions
+- No production Swift/TS/TSX behavior changed.
+- No `SecItemUpdate` / `SecItemDelete` added.
+- No `native_authoritative` enabled.

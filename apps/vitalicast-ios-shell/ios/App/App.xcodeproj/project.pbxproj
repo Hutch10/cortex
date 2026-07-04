@@ -308,7 +308,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = VitalicastSecureStorageTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MACH_O_TYPE = mh_bundle;
 				PACKAGE_TYPE = "com.apple.package-type.wrapper";
@@ -474,7 +473,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = VitalicastSecureStorageTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MACH_O_TYPE = mh_bundle;
 				PACKAGE_TYPE = "com.apple.package-type.wrapper";

@@ -265,3 +265,26 @@ ative_authoritative enabled.
 - Production Swift behavior remains unchanged.
 - No `SecItemUpdate` / `SecItemDelete` paths exist.
 - No `native_authoritative` enabled.
+
+
+## Sprint 5 Phase 4E: XCTest Info.plist Corrective Action
+
+### CI Run Details
+- **Prior Run Classification:** `TEST_TARGET_PRODUCT_FIXED_BUT_INFOPLIST_MISSING`
+- **Exact Error:** `Build input file cannot be found: VitalicastSecureStorageTests/Info.plist`
+- **Issue:** The XCTest target was looking for a physical `Info.plist` file which did not exist.
+
+### Probe Outcomes
+- All probe outcomes remain **Not Run**.
+- No Keychain compatibility conclusion has been drawn.
+- Production enumeration remains **blocked**.
+- Native provider remains `unsupported`/fail-closed.
+
+### Corrective Action Status
+- **Corrective Action Attempted:** Used the `xcodeproj` Ruby gem to remove the `INFOPLIST_FILE` build setting from the test target and ensured `GENERATE_INFOPLIST_FILE` is set to `YES`. This allows Xcode to dynamically generate the required Info.plist during the build.
+- **Next Step:** A new CI run has been triggered to execute the tests.
+
+### Guard Assertions
+- Production Swift behavior remains unchanged.
+- No `SecItemUpdate` / `SecItemDelete` paths exist.
+- No `native_authoritative` enabled.

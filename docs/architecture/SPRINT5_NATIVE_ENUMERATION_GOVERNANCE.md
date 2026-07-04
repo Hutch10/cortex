@@ -242,3 +242,26 @@ ative_authoritative enabled.
 - No production Swift/TS/TSX behavior changed.
 - No `SecItemUpdate` / `SecItemDelete` added.
 - No `native_authoritative` enabled.
+
+
+## Sprint 5 Phase 4D: XCTest Product Bundle Corrective Action
+
+### CI Run Details
+- **Prior Run Classification:** `TEST_TARGET_LINKED_BUT_BUILD_FAILED`
+- **Exact Error:** `Multiple commands produce App.app/PlugIns/.xctest`
+- **Issue:** The XCTest target product bundle name was blank/malformed in `project.pbxproj`, leading to a collision/missing product file.
+
+### Probe Outcomes
+- All probe outcomes remain **Not Run**.
+- No Keychain compatibility conclusion has been drawn.
+- Production enumeration remains **blocked**.
+- Native provider remains `unsupported`/fail-closed.
+
+### Corrective Action Status
+- **Corrective Action Attempted:** Used the `xcodeproj` Ruby gem to set the test target's product reference name, path, and build settings (`PRODUCT_NAME`, `PRODUCT_MODULE_NAME`, `PRODUCT_BUNDLE_IDENTIFIER`, `WRAPPER_EXTENSION`, `MACH_O_TYPE`, `PACKAGE_TYPE`, `GENERATE_INFOPLIST_FILE`) to properly produce `VitalicastSecureStorageTests.xctest`.
+- **Next Step:** A new CI run has been triggered to execute the tests with the corrected product naming.
+
+### Guard Assertions
+- Production Swift behavior remains unchanged.
+- No `SecItemUpdate` / `SecItemDelete` paths exist.
+- No `native_authoritative` enabled.

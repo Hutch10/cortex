@@ -23,7 +23,7 @@ class VitalicastSecureStorageTests: XCTestCase {
             "createdAt": "2026-07-04T00:00:00Z",
             "payloadHash": "dummyhash"
         ], success: { result, _ in
-            XCTAssertNotNil(result?.data["success"])
+            XCTAssertNotNil(result?.data?["success"])
         }, error: { error in
             XCTFail("Create failed: \(String(describing: error?.message))")
         })
@@ -59,7 +59,7 @@ class VitalicastSecureStorageTests: XCTestCase {
         let readCall = CAPPluginCall(callbackId: "3", options: [
             "storageKey": "vitalicast_canonical_\(uuid)"
         ], success: { result, _ in
-            XCTAssertEqual(result?.data["value"] as? String, "{\"test\":true,\"fixture\":\"first\"}")
+            XCTAssertEqual(result?.data?["value"] as? String, "{\"test\":true,\"fixture\":\"first\"}")
         }, error: { error in
             XCTFail("Read failed: \(String(describing: error?.message))")
         })
@@ -88,7 +88,7 @@ class VitalicastSecureStorageTests: XCTestCase {
             "canonicalRecordHash": "canonicalHash",
             "addendumHash": "addendumHash"
         ], success: { result, _ in
-            XCTAssertNotNil(result?.data["success"])
+            XCTAssertNotNil(result?.data?["success"])
         }, error: { error in
             XCTFail("Addendum append failed: \(String(describing: error?.message))")
         })
@@ -98,7 +98,7 @@ class VitalicastSecureStorageTests: XCTestCase {
         let readCanonical = CAPPluginCall(callbackId: "3", options: [
             "storageKey": "vitalicast_canonical_\(canonicalUuid)"
         ], success: { result, _ in
-            XCTAssertEqual(result?.data["value"] as? String, "{\"test\":true,\"fixture\":\"canonical\"}")
+            XCTAssertEqual(result?.data?["value"] as? String, "{\"test\":true,\"fixture\":\"canonical\"}")
         }, error: { error in
             XCTFail("Read failed: \(String(describing: error?.message))")
         })
@@ -108,7 +108,7 @@ class VitalicastSecureStorageTests: XCTestCase {
         let readAddendum = CAPPluginCall(callbackId: "4", options: [
             "storageKey": "vitalicast_addendum_\(canonicalUuid)_\(addendumUuid)"
         ], success: { result, _ in
-            XCTAssertEqual(result?.data["value"] as? String, "{\"test\":true,\"fixture\":\"addendum\"}")
+            XCTAssertEqual(result?.data?["value"] as? String, "{\"test\":true,\"fixture\":\"addendum\"}")
         }, error: { error in
             XCTFail("Read failed: \(String(describing: error?.message))")
         })
@@ -121,7 +121,7 @@ class VitalicastSecureStorageTests: XCTestCase {
         let readCall = CAPPluginCall(callbackId: "1", options: [
             "storageKey": "vitalicast_canonical_\(uuid)"
         ], success: { result, _ in
-            XCTAssertTrue(result?.data["value"] is NSNull)
+            XCTAssertTrue(result?.data?["value"] is NSNull)
         }, error: { error in
             XCTFail("Read should have resolved with NSNull instead of failing")
         })

@@ -363,3 +363,30 @@ ative_authoritative enabled.
 - Production Swift behavior remains unchanged.
 - No `SecItemUpdate` / `SecItemDelete` paths exist.
 - No `native_authoritative` enabled.
+
+
+## Sprint 5 Phase 4I: CAPPlugin Result Optional-Chaining Corrective Action
+
+### CI Run Details
+- **Prior Run Classification:** `TEST_COMPILE_FAILURE` / `CAPPLUGIN_RESULT_OPTIONAL_UNWRAP`
+- **Issue:** The test target could not compile because `PluginCallResultData` is optional and requires explicit unwrapping.
+
+### Corrective Action Status
+- **Corrective Action Attempted:** Replaced all instances of `result?.data[...]` with `result?.data?[...]` in `VitalicastSecureStorageTests.swift`.
+- **Constraint Checklist:** 
+  - No force unwraps introduced.
+  - Assertions unchanged in intent.
+  - Probe semantics unchanged.
+  - App dependency warning remains observed and unmodified (no project dependency graph changes made).
+- **Next Step:** A new CI run has been triggered to execute the tests. 
+
+### Probe Outcomes
+- All probe outcomes remain **Not Run**.
+- No Keychain behavior conclusion has been drawn.
+- Production enumeration remains **blocked**.
+- Native provider remains `unsupported`/fail-closed.
+
+### Guard Assertions
+- Production Swift behavior remains unchanged.
+- No `SecItemUpdate` / `SecItemDelete` paths exist.
+- No `native_authoritative` enabled.

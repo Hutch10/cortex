@@ -143,3 +143,33 @@ Future implementation is blocked until GG approves:
 - XCTest vectors must be approved.
 - Native provider must remain unsupported until CI passes.
 - Docs must be updated with exact CI run after implementation.
+
+
+## Sprint 5 Phase 3: Omitted Service Behavior Probe
+
+### Probe Purpose
+To determine how iOS Keychain handles generic-password items created without `kSecAttrService` using an XCTest behavior probe. This does not authorize production enumeration.
+
+### Exact Probes Implemented
+1. **Legacy Creation:** Creates item without service.
+2. **Omitted Service Exact Read:** Reads item without service (Baseline).
+3. **Final Service Exact Read:** Reads exact item using `com.vitalicast.archive` service.
+4. **Bundle ID Exact Read:** Reads exact item using the app bundle ID.
+5. **Bundle ID Attributes-Only Bounded Enumeration:** Queries attributes using bundle ID service.
+6. **Omitted Service Attributes-Only Probe:** Unbounded generic password attribute query for dynamic test account.
+
+### Dummy Unrelated-Service Isolation Probe
+- Implemented and asserts that `com.vitalicast.unrelated_probe` item does not appear in `com.vitalicast.archive` final-service enumeration.
+
+### Governance Outcomes Matrix
+- **Outcome A:** Omitted-service records are accessible via bundle ID service. (Implication: Explicit service allowlist may include bundle ID if approved.)
+- **Outcome B:** Omitted-service records require omitted-service query. (Implication: Legacy omitted-service records remain exact-read-only; production enumeration covers only future service-tagged records.)
+- **Outcome C:** Omitted-service records are not safely enumerable. (Implication: Same as Outcome B.)
+- **Baseline Failure Policy:** If omitted-service exact read fails, Keychain probe is inconclusive and Phase 4 implementation remains blocked.
+
+### Status
+- Native provider remains `unsupported` until later implementation passes CI.
+- No production enumeration added.
+- No `SecItemUpdate`/`SecItemDelete` added.
+- No `delete`/`update`/`clear`/`reset` added.
+- Static guards confirm absence of all forbidden mutation methods.

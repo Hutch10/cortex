@@ -288,3 +288,56 @@ ative_authoritative enabled.
 - Production Swift behavior remains unchanged.
 - No `SecItemUpdate` / `SecItemDelete` paths exist.
 - No `native_authoritative` enabled.
+
+
+## Sprint 5 Phase 4F: XCTest Capacitor Compile Dependency Corrective Action
+
+### CI Run Details
+- **App Build:** Passed
+- **XCTest target and generated Info.plist:** Succeeded
+- **Probes Executed:** No
+- **Classification:** `TEST_COMPILE_FAILURE` / `CAPACITOR_SEARCH_PATH_MISSING`
+- **Exact Error:** `error: compilation search paths unable to resolve module dependency: 'Capacitor'`
+
+### Capacitor Dependency Analysis
+- **Import Analysis:** `import Capacitor` is genuinely required. The test file explicitly relies on the `CAPPluginCall` symbol to invoke the plugin APIs (`plugin.createSecureRecord`, `plugin.readSecureRecord`, etc.) for tests inherited from Sprint 4.
+- **Specific Lines:** `CAPPluginCall` is heavily used starting at line 20 (`let call = CAPPluginCall(callbackId: "1", options: ...)`).
+- **Corrective Action:** None taken. Xcode `FRAMEWORK_SEARCH_PATHS` were deliberately not guessed or added to prevent broad/brittle config pollution. We must resolve the Capacitor XCTest linkage deterministically.
+
+### Probe Outcomes
+- All probe outcomes remain **Not Run**.
+- No Keychain compatibility conclusion has been drawn.
+- Production enumeration remains **blocked**.
+- Native provider remains `unsupported`/fail-closed.
+
+### Guard Assertions
+- Production Swift behavior remains unchanged.
+- No `SecItemUpdate` / `SecItemDelete` paths exist.
+- No `native_authoritative` enabled.
+
+
+## Sprint 5 Phase 4G: CocoaPods XCTest Search-Path Integration
+
+### CI Run Details
+- **Prior Run Classification:** `TEST_COMPILE_FAILURE` / `CAPACITOR_SEARCH_PATH_MISSING`
+- **App Build:** Passed
+- **XCTest Configuration:** target/product/generated Info.plist passed
+- **Dependency Proof:** `CAPPluginCall` usage in `VitalicastSecureStorageTests.swift` confirms Capacitor is a genuine test dependency.
+
+### Corrective Action Status
+- **Corrective Action Attempted:** Edited `ios/App/Podfile` to nest `target 'VitalicastSecureStorageTests' do inherit! :search_paths end` within the main `App` target.
+- **Dependency Mechanism:** CocoaPods test-target search-path inheritance.
+- **Rejections:** Manual `FRAMEWORK_SEARCH_PATHS` mapping and SPM injection were explicitly rejected to prevent configuration pollution and dual-dependency mechanisms.
+- **Next Step:** A new CI run has been triggered. The CI workflow's `npx cap sync ios` will perform the `pod install` dynamically to generate the CocoaPods workspace and xcconfig links for the test target before running xcodebuild.
+
+### Probe Outcomes
+- All probe outcomes remain **Not Run**.
+- No Keychain compatibility conclusion has been drawn.
+- Production enumeration remains **blocked**.
+- Native provider remains `unsupported`/fail-closed.
+
+### Guard Assertions
+- Production Swift behavior remains unchanged.
+- No `SecItemUpdate` / `SecItemDelete` paths exist.
+- No `native_authoritative` enabled.
+- Test probe semantics remain unchanged.

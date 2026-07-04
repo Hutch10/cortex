@@ -5,6 +5,8 @@ import Security
 @objc(VitalicastSecureStoragePlugin)
 public class VitalicastSecureStoragePlugin: CAPPlugin {
     
+    private static let archiveService = "com.vitalicast.archive"
+    
     @objc func isAvailable(_ call: CAPPluginCall) {
         call.resolve(["available": true])
     }
@@ -67,23 +69,86 @@ public class VitalicastSecureStoragePlugin: CAPPlugin {
             return
         }
         
-        let query: [String: Any] = [
+        // FIRST: canonical exact-service read
+        let canonicalQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecAttrService as String: Self.archiveService,
+            kSecReturnData as String: kCFBooleanTrue!,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        
+        var canonicalDataTypeRef: AnyObject?
+        let canonicalStatus = SecItemCopyMatching(canonicalQuery as CFDictionary, &canonicalDataTypeRef)
+        
+        if canonicalStatus == errSecSuccess, let data = canonicalDataTypeRef as? Data, let value = String(data: data, encoding: .utf8) {
+            call.resolve(["value": value])
+            return
+        } else if canonicalStatus != errSecItemNotFound {
+            call.reject("Failed to read secure record, OSStatus: \(canonicalStatus)")
+            return
+        }
+        
+        // SECOND: legacy exact compatibility read
+        let legacyQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: storageKey,
             kSecReturnData as String: kCFBooleanTrue!,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
         
+        var legacyDataTypeRef: AnyObject?
+        let legacyStatus = SecItemCopyMatching(legacyQuery as CFDictionary, &legacyDataTypeRef)
+        
+        if legacyStatus == errSecSuccess, let data = legacyDataTypeRef as? Data, let value = String(data: data, encoding: .utf8) {
+            call.resolve(["value": value])
+        } else if legacyStatus == errSecItemNotFound {
+            call.resolve(["value": NSNull()])
+        } else {
+            call.reject("Failed to read secure record, OSStatus: \(legacyStatus)")
+        }
+    }
+    
+    @objc func listArchiveStorageKeys(_ call: CAPPluginCall) {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: Self.archiveService,
+            kSecReturnData as String: kCFBooleanFalse!,
+            kSecReturnAttributes as String: kCFBooleanTrue!,
+            kSecMatchLimit as String: kSecMatchLimitAll
+        ]
+        
         var dataTypeRef: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
         
-        if status == errSecSuccess, let data = dataTypeRef as? Data, let value = String(data: data, encoding: .utf8) {
-            call.resolve(["value": value])
-        } else if status == errSecItemNotFound {
-            call.resolve(["value": NSNull()])
-        } else {
-            call.reject("Failed to read secure record, OSStatus: \(status)")
+        if status == errSecItemNotFound {
+            call.resolve(["keys": []])
+            return
+        } else if status != errSecSuccess {
+            call.reject("Failed to list archive keys, OSStatus: \(status)")
+            return
         }
+        
+        var validAccounts = Set<String>()
+        
+        if let items = dataTypeRef as? [[String: Any]] {
+            for item in items {
+                if let account = item[kSecAttrAccount as String] as? String {
+                    if account.hasPrefix("vitalicast_canonical_") || account.hasPrefix("vitalicast_addendum_") {
+                        validAccounts.insert(account)
+                    }
+                }
+            }
+        } else if let item = dataTypeRef as? [String: Any] {
+            if let account = item[kSecAttrAccount as String] as? String {
+                if account.hasPrefix("vitalicast_canonical_") || account.hasPrefix("vitalicast_addendum_") {
+                    validAccounts.insert(account)
+                }
+            }
+        }
+        
+        let sortedKeys = validAccounts.sorted()
+        call.resolve(["keys": sortedKeys])
     }
     
     private func addKeychainItem(key: String, value: String) -> OSStatus {
@@ -94,6 +159,7 @@ public class VitalicastSecureStoragePlugin: CAPPlugin {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
+            kSecAttrService as String: Self.archiveService,
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         ]

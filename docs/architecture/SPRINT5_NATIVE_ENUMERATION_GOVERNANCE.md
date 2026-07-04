@@ -636,3 +636,35 @@ O. unsupported mutation APIs remain absent
 - Production Swift behavior currently unchanged.
 - No `SecItemUpdate` / `SecItemDelete` / `deleteSecureRecord` / `updateSecureRecord` paths exist.
 - No `kSecMatchLimitAll` omitted-service broad enumeration exists.
+
+
+## Sprint 5 Phase 5D: Production Native Archive Contract Implementation
+
+### Context
+- **Basis:** Phase 5B Outcome B1
+- **Contract Commit:** `5fe435e` (Sprint 5 Phase 5C)
+- **Canonical Service Constant:** `private static let archiveService = "com.vitalicast.archive"`
+
+### Implementation Details
+- **New Writes:** Canonical and addendum writes strictly use `kSecAttrService = com.vitalicast.archive`.
+- **Exact Read Order (Canonical-First):** 
+  1. `com.vitalicast.archive` exact query (`kSecMatchLimitOne`).
+  2. Legacy compatibility fallback query with `kSecAttrService` omitted (`kSecMatchLimitOne`).
+- **Canonical Precedence:** The canonical item takes precedence; if both exist under the exact same account, canonical is returned. The legacy item is preserved.
+- **Bounded Archive-Service-Only Enumeration:** Query limited to `com.vitalicast.archive` and `kSecReturnAttributes = true`, `kSecReturnData = false`, `kSecMatchLimitAll`.
+- **Consumed Attributes:** Extracts only `kSecAttrAccount`.
+- **Prefix Filtering:** Explicitly includes only `vitalicast_canonical_` or `vitalicast_addendum_`.
+- **Unknown-Account Exclusion:** Rejected individually without failing the entire query. No logging/telemetry.
+- **Deduplication:** Uses `Set<String>` to prevent duplicates.
+- **Sorting:** Results are sorted lexicographically before returning.
+- **Zero-Payload Enumeration:** Payload extraction logic explicitly omitted from enumeration.
+- **Failure Semantics:** `errSecItemNotFound` translates to an empty keys array. Any other error rejects/fails closed.
+
+### Test Coverage and Governance
+- **Mandatory Regression Tests (A–O):** Implemented in `VitalicastSecureStorageTests.swift`.
+- **Static Production Query Inventory:** 
+  - `SecItemCopyMatching` usage strictly maps to (A) canonical exact read, (B) legacy fallback, and (C) bounded enumeration.
+  - `kSecMatchLimitAll` usage strictly maps to bounded enumeration.
+- **Mutation Guards:** Statically verified clean (no `SecItemUpdate`, `SecItemDelete`, `deleteSecureRecord`, `updateSecureRecord`, `clear`, `reset`, `repair`).
+- **Provider Status:** Returns `unsupported` externally pending CI certification.
+- **native_authoritative:** STILL BLOCKED pending remote macOS CI results and Phase 5E promotion audit.

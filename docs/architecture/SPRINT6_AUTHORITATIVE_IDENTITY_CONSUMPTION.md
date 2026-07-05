@@ -160,3 +160,14 @@ Allow the certified `native_authoritative` identity list to drive the Vitalicast
 - no Swift changes
 - no bridge changes
 - no mutation
+## Sprint 6 Phase 2A - Regression Closure & Test Matrix
+- Vitest ESM module resolution error for Node environment fixed by converting vitest config to `.mts`.
+- Added JSDOM to frontend test environment configuration for browser DOM emulation.
+- Downward pinned `jsdom` to version `^24` to avoid `css-color`/`css-calc` ESM module conflicts with Vitest inside JSDOM.
+- Added explicit coverage for all Phase 2 implementation gates (H, I, Q, R, S, T) directly inside `LibrarySelectionShell.test.tsx`.
+- Confirmed list render does not call `readSecureRecord`.
+- Confirmed unselected records are never hydrated.
+- Confirmed payload viewers, structural parsers, and renderers are not invoked during list render.
+- Confirmed addenda remain independent without fabricated parent grouping.
+- Vitest frontend tests successfully passed.
+

@@ -1,112 +1,78 @@
 # User-Requested Deletion, Disposition, and Immutable History Architecture Investigation
 
 ## Phase 1 — Terminology Inventory
-* **Delete / Erasure / Destruction**: Hard physical removal of bytes from custody. Currently unimplemented in Beta 2 archive readers/writers.
+* **Custody Removal**: Source material is removed from the defined Vitalicast-controlled active custody scope under the documented disposition operation. We do not use the term "physical destruction" as Vitalicast cannot prove media zeroization or removal from all OS backups/caches.
 * **Withdrawal**: A user assertion that prior material is retracted. Historically honest, preserves original.
 * **Hide**: UI-layer visibility suppression.
 * **Immutable / Canonical**: Sprint 6 concept ensuring source records are not silently rewritten.
-* **Purge / Disposition**: Broader lifecycle terms covering custody and state changes.
+* **Disposition**: Broader lifecycle term covering custody, state changes, and intent.
 
 ## Phase 2 — Separate Deletion Dimensions
-1. **Visibility**: Hidden vs visible in normal UI.
-2. **Logical Archive Membership**: Active vs dispositioned.
-3. **Physical Retention**: Bytes exist vs destroyed.
-4. **Cryptographic Accessibility**: Decryptable vs key destroyed.
-5. **Historical Assertion**: Silent void vs explicit tombstone.
-6. **Reference Resolution**: Resolvable vs dangling.
-7. **Derivation Dependency**: Source identifiable vs source lost.
-8. **Export Presence**: Included vs excluded.
-9. **Prior Copy Status**: Retrievable vs unreachable (independent of Vitalicast).
-10. **Legal Retention**: Custodian obligation vs user sovereignty.
+1. **Disposition Intent**: User requests removal, visibility change, or withdrawal.
+2. **Custody Result (Availability)**: Source material no longer available through the defined active archive custody boundary.
+3. **Erasure Assurance**: What can actually be established about underlying retained representations (e.g., OS backups, wear leveling, caches).
+4. **Historical Assertion**: Silent void vs explicit tombstone.
+5. **Reference Resolution**: Resolvable vs dangling.
+6. **Derivation Dependency**: Source identifiable vs source lost.
 
 ## Phase 3 — User Intent Model
 * A. "I don't want to see this anymore" -> Visibility suppression (Hide).
-* B. "Remove this from active archive" -> Logical disposition.
+* B. "Remove this from active archive" -> Controlled Custody Disposition.
 * C. "Correct a mistake" -> Grade B Addendum (Correction).
-* D. "Regret recording" -> Withdrawal (Grade B assertion) or Destruction.
-* E. "Permanently destroy" -> Hard Physical Deletion with Tombstone.
+* D. "Regret recording" -> Withdrawal (Grade B assertion) or Custody Removal.
+* E. "Permanently destroy" -> Custody Removal (Erasure Assurance is limited).
 * F. "Exclude from analysis" -> Analysis Exclusion.
 * G. "Exclude from exports" -> Export Exclusion.
-* H. "Nobody later reads this" -> Destruction.
+* H. "Nobody later reads this" -> Custody Removal + Warning regarding independent copies.
 * I. "Evidence of withdrawal" -> Withdrawal.
-* J. "Act as though this never existed" -> Silent Canonical Rewrite (Conflicts with constitution).
-* K. "Delete everything" -> Archive-Wide Destruction.
 
 ## Phase 4 — Candidate Disposition Models
-1. **Hard Physical Deletion**: Violates implicit assumptions if silent, breaks citations, but fulfills strict sovereignty. Requires a tombstone to maintain historical honesty.
-2. **Tombstone**: Preserves identity and historical fact of disposition without retaining source material. Truthful, privacy-preserving.
+1. **Controlled Custody Disposition**: Source material is removed from active Vitalicast-controlled custody. Erasure Assurance cannot guarantee media zeroization.
+2. **Tombstone**: A tombstone minimizes retained source content while preserving selected historical identity/disposition metadata. Tombstones and surviving relationships may themselves reveal sensitive metadata. Minimum retained data: portable entry identity, disposition fact, disposition time.
 3. **Withdrawal**: Preserves source but asserts retraction.
-4. **Hide**: Deceptive if treated as deletion.
-5. **Analysis/Export Exclusion**: Valid for controlling use without destroying history.
-6. **Cryptographic Erasure**: Not reliable without granular per-entry keys.
-7. **Archive-Wide Destruction**: Destroys local/cloud custody.
-8. **Silent Canonical Rewrite**: Rejected. Conflicts with Vitalicast's historical honesty principle.
+4. **Cryptographic Erasure**: Not reliable without granular per-entry keys.
 
 ## Phase 5 — Grade-Specific Disposition
-* **Grade A (Source)**: Physical deletion (with tombstone) permitted. Withdrawal permitted.
-* **Grade B (Addendum)**: Physical deletion permitted (tombstones).
-* **Grade C (Derived)**: Physical deletion permitted. Source deletion impairs reproducibility.
-* **Grade D (External)**: Physical deletion permitted.
-* Grades are not truth, they are provenance. Sovereignty applies to custody of all grades.
+* **Grade A (Source)**: Custody removal permitted. Withdrawal permitted.
+* **Grade B (Addendum)**: Custody removal permitted.
+* **Grade C (Derived)**: Custody removal permitted. Source custody removal impairs reproducibility.
+* **Grade D (External)**: Custody removal permitted.
+* Grades are not truth, they are provenance.
 
 ## Phase 6 — Correction Versus Deletion
-"Correction" requires preserving the mistaken Grade A source and appending a Grade B correction/retraction. Retraction does not prove the original was false, just that the user withdrew the assertion. Deleting Grade A to "correct" history is a canonical rewrite and is prohibited.
+"Correction" requires preserving the mistaken Grade A source and appending a Grade B correction/retraction. Retraction does not prove the original was false, just that the user withdrew the assertion. A Grade B withdrawal is independently referenceable archive material and therefore requires portable entry identity. The relationship between withdrawal and prior source remains dependent on the unresolved relationship assertion identity model.
 
-## Phase 7 — Portable Identity Interaction
-Hard deletion must leave a tombstone that preserves the urn:vitalicast:entry:v1:<UUID> identity. Citations point to the dispositioned identity (dangling). Re-importing an old export restores the content under the original identity, creating a conflict if the current archive holds a tombstone.
+## Phase 7 — Identity vs Disposition Conflicts
+* **Identity Conflict**: Same portable entry identity + different authoritative source content. Concerns entity/content disagreement.
+* **Disposition Reintroduction Conflict**: A valid prior copy of a source entry is reintroduced into an archive state that contains a disposition assertion or tombstone for that entry. Concerns custody/availability policy disagreement across archive histories.
 
-## Phase 8 — Citation and Relationship Interaction
-Citations to a destroyed target become dangling references. The identity survives in the tombstone, allowing the system to disclose "Target Unavailable/Dispositioned." Citations are not silently rewritten.
+## Phase 8 — Reimport and Resurrection Semantics
+When an old export containing a pre-disposition source is imported into an archive with a tombstone:
+The archive preserves source historical validity, disposition assertion validity, import provenance, and marks the state as an unresolved current custody/disposition conflict.
 
 ## Phase 9 — Grade C Reproducibility Conflict
-If Grade C analysis D cites Grade A record B, and B is destroyed:
-D remains. B is physically destroyed (tombstone). D's citations remain. The original derivation cannot be fully reproduced. State: REPRODUCIBILITY_IMPAIRED_SOURCE_DISPOSITIONED. Historical analyses remain historical artifacts.
+Historical Grade C artifacts are not silently recomputed when a cited source later becomes unavailable due to disposition. The Grade C artifact enters REPRODUCIBILITY_IMPAIRED_SOURCE_DISPOSITIONED. This condition is scope-aware; the source may still exist in a prior independent export.
 
 ## Phase 10 — Export and Prior Copy Reality
-Vitalicast cannot destroy copies outside its custody. The promise is limited to "Current Vitalicast-Controlled Custody." It is impossible to guarantee "permanently deleted everywhere."
+Availability and disposition states are assertions within a defined archive/custody scope and do not imply global absence from all prior independent copies.
 
-## Phase 11 — Cryptographic Erasure Analysis
-Vitalicast does not currently employ per-entry key isolation capable of granular cryptographic erasure. Cryptographic erasure is fragile for long-term portable archives.
+## Phase 11 — Mandatory Tombstone vs Full Destruction
+* **Model A - Mandatory Tombstone**: Source content removed from custody. Portable identity and minimal disposition evidence remain.
+* **Model B - Full Destruction**: Source material and local disposition metadata removed completely.
+Determining if Model A is constitutionally required or if Model B is constitutionally permissible requires interpreting the Constitution beyond current text. Classified as: MANDATORY_TOMBSTONE_RETENTION_VS_FULL_USER_DESTRUCTION_UNRESOLVED. This requires more research.
 
-## Phase 12 — Legal and Ethical Boundary
-User-policy disposition is architecturally separate from external legal retention/erasure obligations.
+## Phase 12 — Minimum Durable Abstraction
+1. **Archive Entry**: Historical material with portable identity.
+2. **Disposition Assertion**: Authorized historical statement about intended treatment.
+3. **Custody / Availability State**: Current source availability under an explicitly defined archive/custody scope, including the known Erasure Assurance.
+4. **Reference Resolution State**: Whether a reference can resolve within the current context.
+(Erasure assurance is integrated into Custody State.)
 
-## Phase 13 — Threat and Abuse Model
-Abusive deletion, regret, and accidental deletion require explicit states (SOURCE_DISPOSITIONED, DISPOSITION_CONFLICT). Repeated delete/import cycles cause explicit identity conflicts. Merges that reintroduce dispositioned content against a tombstone trigger conflict isolation.
+## Phase 13 — Public Promise Test
+New disposition commitment: "User-requested disposition will be represented honestly. Vitalicast will distinguish withdrawal, visibility changes, custody-scoped source removal, and stronger erasure operations according to the effect actually completed. Vitalicast will not describe material as destroyed beyond the scope and assurance supported by the applicable disposition contract."
 
-## Phase 14 — Failure Semantics
-Explicit states required:
-* DISPOSITION_COMPLETE
-* DISPOSITION_INCOMPLETE
-* DISPOSITION_CONFLICT
-* SOURCE_UNAVAILABLE
-* SOURCE_DISPOSITIONED
-* REPRODUCIBILITY_IMPAIRED_SOURCE_DISPOSITIONED
-
-## Phase 15 — Public Promise Test
-New disposition commitment required: "User-requested disposition will be represented honestly; Vitalicast will not describe hidden, withdrawn, unavailable, or partially erased material as though it never existed unless the applicable destruction contract explicitly defines and successfully completes that effect."
-
-## Phase 16 — Minimum Durable Abstraction
-1. **Archive Entry**: Historical material + Portable Identity
-2. **Disposition Assertion**: User-authorized statement about custody/availability.
-3. **Availability State**: Sourced from custody vs tombstone.
-4. **Reference State**: Resolvable vs Dangling.
-
-## Phase 17 — Recommendation
-**PRIMARY RECOMMENDATION**: Tombstone-Backed Physical Destruction + Grade B Withdrawal.
-* Sovereignty is honored via physical removal.
-* History is honored via tombstones (preserving entry identity).
-* Correction is handled via withdrawal (retaining source).
-* Grade C analyses gracefully degrade to REPRODUCIBILITY_IMPAIRED_SOURCE_DISPOSITIONED.
-* No silent canonical rewrites.
-* Explicit states handle partial failure and import conflicts.
-
-**SECONDARY ALTERNATIVE**: Pure Cryptographic Erasure (rejected due to missing granular key architecture).
-**REJECTED**: Silent Canonical Rewrite, Pure Hide.
-
-**ARCHITECTURE CHALLENGE**
-* Archive exists on two devices. Device 1 deletes entry (creates tombstone). Device 2 is offline. Devices merge: Tombstone conflicts with surviving Source. System flags DISPOSITION_CONFLICT.
-* Export is reimported: Source bytes restored against tombstone. DISPOSITION_CONFLICT.
+## Phase 14 — Threat and Abuse Model
+Abusive deletion, regret, and accidental deletion require explicit states (SOURCE_DISPOSITIONED, DISPOSITION_REINTRODUCTION_CONFLICT). Threat of a tombstone leaking metadata is acknowledged. Threat of incomplete media zeroization is handled by limiting erasure assurance claims to custody removal.
 
 ## Decision Classification
-USER_DISPOSITION_ARCHITECTURE_DECISION_READY
+USER_DISPOSITION_ARCHITECTURE_REQUIRES_MORE_RESEARCH

@@ -13,7 +13,7 @@
 * **Implementation Status:** Explicitly deferred pending further Stage 1 evaluations and Beta 3 authorization.
 
 ### User-Requested Deletion and Disposition
-* **Selected Contract:** Tombstone-Backed Physical Destruction + Grade B Withdrawal
-* **Rationale:** Avoids silent canonical rewrite while honoring user sovereignty over physical bytes.
-* **Failure Semantics:** Explicit conflict isolation for reimported dispositioned material. Dangling citations explicitly recognized as SOURCE_DISPOSITIONED.
-* **Implementation Status:** Explicitly deferred pending further Stage 1 evaluations and Beta 3 authorization.
+* **Selected Contract:** Controlled Custody Disposition (Custody Removal) + Grade B Withdrawal
+* **Rationale:** Avoids silent canonical rewrite while honoring user sovereignty over physical custody. Uses a minimum durable abstraction: Archive Entry, Disposition Assertion, Custody/Availability State, Reference Resolution State. 
+* **Failure Semantics:** Explicit DISPOSITION_REINTRODUCTION_CONFLICT isolation for reimported dispositioned material. Dangling citations explicitly recognized as SOURCE_DISPOSITIONED. Availability states are assertions within a defined archive/custody scope.
+* **Implementation Status:** Explicitly deferred pending further Stage 1 evaluations, Beta 3 authorization, and resolution of MANDATORY_TOMBSTONE_RETENTION_VS_FULL_USER_DESTRUCTION_UNRESOLVED.

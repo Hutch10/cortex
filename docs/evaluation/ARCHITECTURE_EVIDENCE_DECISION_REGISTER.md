@@ -18,6 +18,5 @@
 | Self-describing manifests | Beta 3 Planning | N/A | Untested | NOT_TESTED | Unimplemented in Beta 2 | N/A | None | N/A |
 | Public Stability Promise | Beta 3 Planning | N/A | Untested | NOT_TESTED | Unimplemented in Beta 2 | N/A | None | N/A |
 | Portable archive entry identity | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | URN-Prefixed RFC UUIDv4 | N/A | None | Deferred |
-| Deletion/immutability reconciliation | Beta 3 Planning | N/A | Untested | DECISION_READY_IMPLEMENTATION_DEFERRED | Unimplemented in Beta 2 | N/A | None | N/A |
+| Tombstone vs Full Destruction | Beta 3 Planning | N/A | Investigated | MANDATORY_TOMBSTONE_RETENTION_VS_FULL_USER_DESTRUCTION_UNRESOLVED | Requires constitutional policy decision beyond current text | N/A | Model A vs Model B | Blocks Disposition |
 | Relationship Assertion Identity | Beta 3 Planning | N/A | Untested | RELATIONSHIP_ASSERTION_IDENTITY_MODEL_UNRESOLVED | Deferred pending architecture resolution | N/A | Should durable archive relationships have independent IDs? | N/A |
-

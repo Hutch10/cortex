@@ -6,14 +6,13 @@ The architecture synchronizes around five durable foundations:
 2. **Archive Relationships**: A narrow conceptual relationship layer equivalent to `appended_to`, `cites`, and `derived_from`.
 3. **Integrity Attestations**: Verification mechanism defining the target identity, algorithm, canonicalization, and digest.
 4. **Portability and Archive Identity**: Separation of runtime exact-read identity (storageKey) from the portable permanent archive entry identity.
-5. **Self-Describing Export**: The archive remains fully intelligible without the current Vitalicast application or cloud services.
+5. **Self-Describing Export**: The archive must preserve sufficient format, provenance, manifest, and contract documentation to support independent interpretation without dependence on current Vitalicast services.
 
 ## Grade A Canonical Source Record
 A Grade A source record encompasses user-authored source material after sealing.
-The architecture implements a **record stance** property:
+The architecture implements a **record stance** property for explicit future writers:
 - `observational`
 - `prospective` (A first-class stance oriented toward a future or unresolved state)
-- `unspecified` (for legacy material where appropriate)
 
 Descriptive kinds (e.g., intention, goal, prediction) are secondary vocabulary. Vitalicast does not implement an eight-object taxonomy or taxonomy engine.
 
@@ -21,13 +20,13 @@ Descriptive kinds (e.g., intention, goal, prediction) are secondary vocabulary. 
 A prospective stance does not automatically certify that the record existed before the eventual outcome. The architecture explicitly separates capture time, seal time, user-asserted reference time, and eventual event time. There is no "prospective truth" semantics.
 
 ## Beta 2 Legacy Classification
-Existing Beta 2 source records remain unchanged. The architecture forbids retroactive semantic reclassification, keyword-based taxonomic inference, or mass-upgrades of legacy Beta 2 payloads. Beta 2 source material remains source material under Grade A provenance rules with an unspecified stance.
+Existing Beta 2 source records remain unchanged. The architecture forbids retroactive semantic reclassification, keyword-based taxonomic inference, or mass-upgrades of legacy Beta 2 payloads. Beta 2 source material remains source material under Grade A provenance rules. The absence of a stance field in a legacy certified schema must not be represented as though the archived payload explicitly contained `stance: "unspecified"`. Instead, use a reader compatibility state equivalent to `not_present_in_source_schema`. Do not rewrite Beta 2 payloads, do not inject a stance field into legacy payloads, and do not infer an observational or prospective stance. Do not treat compatibility state as archived source content.
 
 ## Relationships & First-Class Citations
 Later outcomes or reflections remain append-only Grade B material related via a neutral `appended_to` relationship. 
 First-Class Citations identify the citing archive entry, the cited portable archive entry identity, relationship kind, and creation context. 
 Scope prioritizes whole-entry citation. No character-offset or JSON Pointer citation is required initially.
-Causal relationships (e.g. `outcome_of`) are explicitly not required core relationships.
+Causal relationships (e.g. `outcome_of`) are explicitly not required core relationships. Citations are archive relationships, they are not assigned a Preservation Grade themselves.
 
 ## Integrity and Canonical Hashing
 Constitutional Invariant: Alteration of preserved archival material must be independently detectable.
@@ -45,5 +44,8 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 ## Architecture Weaknesses & Simplifications
 * **Simplification**: Removed the eight-object taxonomy (intention, goal, etc.) as distinct archive root classes, replacing it with a single "prospective" stance on Grade A records.
 * **Simplification**: Removed complex causal relationships (`outcome_of`); standardized on `appended_to`, `cites`, and `derived_from`.
-* **Weakness/Deferred Decision**: The specific portable archive-level identity (independent of `storageKey`) remains an unresolved prerequisite architecture decision that must survive export and device change.
-* **Migration Hazard**: Future implementations must be extremely careful to avoid implicit classification of "unspecified" Beta 2 records.
+* **Migration Hazard**: Future implementations must be extremely careful to avoid implicit classification of `not_present_in_source_schema` Beta 2 legacy records into formal stance types.
+
+## Deferred Decision Register
+1. `PORTABLE_ARCHIVE_ENTRY_IDENTITY_UNRESOLVED`: Portable citation/export identity independent of storageKey.
+2. `USER_REQUESTED_DELETION_AND_IMMUTABLE_HISTORY_POLICY_UNRESOLVED`: Reconciliation of sovereignty/disposition with sealed history, citations, and integrity attestations.

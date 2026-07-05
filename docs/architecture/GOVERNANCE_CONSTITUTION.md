@@ -10,8 +10,8 @@ Vitalicast exists to preserve lived experience with verifiable integrity, giving
 Vitalicast preserves statements in their historical context; it does not promote the propositions within those statements to fact.
 
 ## Constitutional Principles
-1. **User Sovereignty**: Users retain enduring ownership and ultimate authority over their archive.
-2. **Observational Fidelity**: Lived experiences and source statements are preserved exactly as observed or authored.
+1. **User Sovereignty**: Individuals retain enduring control over access, custody, portability, and authorized disposition of their archive, subject to transparent preservation rules that never silently misrepresent historical material.
+2. **Observational Fidelity**: Vitalicast preserves user-authored source records as historical statements and does not silently rewrite their substantive content.
 3. **Transparent Derivation**: Any algorithmic analysis or insight generated from source material must remain non-canonical, explicit in its methods, and clearly distinguishable from source material.
 4. **Explicit Provenance**: Every entry in the archive must possess clear lineage and boundaries.
 5. **Explainability**: Archival relationships and structures must remain comprehensible independently of opaque mechanisms.
@@ -25,7 +25,7 @@ A grade describes provenance and preservation relationship, not truth, accuracy,
 * **Grade D**: Externally sourced or imported material preserved with explicit source provenance and acquisition context.
 
 ## Public Stability Promise
-This is a narrow governance commitment to guarantee the durability of the Life Archive.
+This governance commitment defines preservation and compatibility behaviors Vitalicast commits to uphold.
 1. Original archived source material will not be silently rewritten.
 2. Later user additions remain distinguishable from original source material.
 3. Derived analyses remain distinguishable from canonical source material.

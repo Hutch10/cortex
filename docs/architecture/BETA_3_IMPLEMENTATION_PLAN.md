@@ -10,16 +10,17 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 * **Requirement**: Must not rely on `storageKey`, date matching, display labels, or list position.
 
 ## Phase 2: Prospective Stance Schema
-* Introduce `stance` (observational | prospective | unspecified) to Grade A payload schemas.
-* Ensure backward compatibility for Beta 2 records (fail-closed fallback to unspecified).
+* Introduce `stance` (observational | prospective) to Grade A payload schemas.
+* Ensure backward compatibility for Beta 2 records using a reader compatibility state equivalent to `not_present_in_source_schema`.
 * Implement strict schema compatibility registry rules without retroactively upgrading legacy payloads.
 
 ## Phase 3: Archive Relationships (Grade B)
 * Introduce the neutral `appended_to` relationship.
 * Ensure appending does not rewrite the referenced source or alter the source's integrity attestations.
 
-## Phase 4: First-Class Citations (Grade C)
+## Phase 4: First-Class Citation Relationships
 * Implement whole-entry citation relationships (`cites`, `derived_from`).
+* Citation is an archive relationship. Grade C derivations require explicit citations to source material under the citation relationship contract. A citation does not become Grade C merely because a Grade C derivation uses it. Preservation Grades classify provenance/material boundaries, not relationship objects.
 
 ## Phase 5: Integrity Attestation Mechanism
 * Evolve the canonical hashing implementation to explicitly store algorithm identity and authoritative representation identity.
@@ -32,3 +33,7 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 ## Phase 7: Self-Describing Export
 * Implement independent export formats that bundle required manifest documentation.
 * Verify export intelligibility without active Vitalicast cloud or proprietary framework access.
+
+## Deferred Decision Register
+1. `PORTABLE_ARCHIVE_ENTRY_IDENTITY_UNRESOLVED`: Portable citation/export identity independent of storageKey.
+2. `USER_REQUESTED_DELETION_AND_IMMUTABLE_HISTORY_POLICY_UNRESOLVED`: Reconciliation of sovereignty/disposition with sealed history, citations, and integrity attestations.

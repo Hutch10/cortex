@@ -695,3 +695,18 @@ O. unsupported mutation APIs remain absent
 ## Phase 5D1 Governance Correction
 - **Result:** FALSE PASS REVOKED
 - **Notes:** The previous Phase 5D CI certification (28723898845) on commit 092b086 is revoked. Test G was incorrectly inverted to accept legacy fallback collision with an unrelated service. The mandatory production contract remains: An unrelated explicit-service-only payload MUST NOT be returned by an omitted-service fallback legacy read. Because it currently IS returned, the production Swift implementation is unsafe. We are now running Phase 5D1 to probe whether attributes returned from an account-only exact query identify the actual matched service.
+
+
+## Sprint 5 Phase 5D1B — Returned-Service Identity Matrix Completion
+- b531ad7 restored mandatory Test G
+- run 28724193372 failed Test G as expected
+- the existing Phase 5D1 probe passed
+- the existing probe proved explicit unrelated-service identity visibility only
+- it did not test true omitted-service legacy identity
+- Phase 5D1 was therefore partial/incomplete
+- Outcome D1-A was not assigned
+- Phase 5D2 remained blocked
+- Phase 5D1B completes Scenarios A through D
+- native provider remains unsupported/fail-closed
+- native_authoritative remains blocked
+- Phase 5E remains blocked

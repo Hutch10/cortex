@@ -624,46 +624,193 @@ class VitalicastSecureStorageTests: XCTestCase {
         plugin.readSecureRecord(readCall!)
     }
     
-    func testPhase5D1_Probe_LegacyFallbackReturnedServiceIdentity() {
-        let uuid = UUID().uuidString
-        let storageKey = "vitalicast_canonical_\(uuid)"
-        
-        // 1. Create an unrelated item explicitly
-        let unrelatedData = "{\"identity\":\"unrelated_probe\"}".data(using: .utf8)!
-        let createUnrelatedQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: storageKey,
-            kSecAttrService as String: "com.vitalicast.unrelated.probe",
-            kSecValueData as String: unrelatedData,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-        ]
-        SecItemAdd(createUnrelatedQuery as CFDictionary, nil)
-        
-        // 2. Perform an omitted-service read requesting attributes
+    func performOmittedServiceAttributesAndDataQuery(for account: String) -> (status: OSStatus, result: Any?) {
         let readQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: storageKey,
+            kSecAttrAccount as String: account,
             kSecReturnData as String: kCFBooleanTrue!,
             kSecReturnAttributes as String: kCFBooleanTrue!,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
-        
         var dataTypeRef: AnyObject?
         let status = SecItemCopyMatching(readQuery as CFDictionary, &dataTypeRef)
-        
-        XCTAssertEqual(status, errSecSuccess, "Omitted-service read should succeed because the unrelated item exists")
-        
-        if let resultDict = dataTypeRef as? [String: Any] {
-            let service = resultDict[kSecAttrService as String] as? String
-            // We just want to probe what it returns. If it returns com.vitalicast.unrelated.probe, we print or assert it.
-            // Since we know the probe will be run in CI, we will assert equality so if it passes, we know it returns the service!
-            XCTAssertEqual(service, "com.vitalicast.unrelated.probe", "PROBE: Omitted-service read attributes should contain the actual matched service identity")
-            
-            let account = resultDict[kSecAttrAccount as String] as? String
-            XCTAssertEqual(account, storageKey)
-        } else {
-            XCTFail("PROBE FAILED: Expected dictionary return when kSecReturnAttributes is true")
+        return (status, dataTypeRef)
+    }
+
+    func classifyResult(_ dataTypeRef: Any?) -> (shape: String, serviceIdentity: String, payloadIdentity: String) {
+        guard let dict = dataTypeRef as? [String: Any] else {
+            if dataTypeRef is Data {
+                return ("DATA_ONLY", "NO_RESULT", "NO_RESULT")
+            } else if dataTypeRef is [[String: Any]] {
+                return ("ARRAY_OF_ATTRIBUTES", "NO_RESULT", "NO_RESULT")
+            } else if dataTypeRef == nil {
+                return ("NO_RESULT", "NO_RESULT", "NO_RESULT")
+            } else {
+                return ("OTHER_RESULT_SHAPE", "NO_RESULT", "NO_RESULT")
+            }
         }
+        
+        let shape = "ATTRIBUTE_DICTIONARY"
+        let serviceIdentity: String
+        if let service = dict[kSecAttrService as String] as? String {
+            if service == "" {
+                serviceIdentity = "SERVICE_ATTRIBUTE_EMPTY"
+            } else if service == "com.vitalicast.archive" {
+                serviceIdentity = "SERVICE_ATTRIBUTE_CANONICAL"
+            } else if service == "com.vitalicast.unrelated.probe" {
+                serviceIdentity = "SERVICE_ATTRIBUTE_UNRELATED"
+            } else {
+                serviceIdentity = "SERVICE_ATTRIBUTE_OTHER"
+            }
+        } else {
+            serviceIdentity = "SERVICE_ATTRIBUTE_ABSENT"
+        }
+        
+        let payloadIdentity: String
+        if let data = dict[kSecValueData as String] as? Data, let str = String(data: data, encoding: .utf8) {
+            if str.contains("legacy_payload") {
+                payloadIdentity = "LEGACY_MATCH"
+            } else if str.contains("canonical_payload") {
+                payloadIdentity = "CANONICAL_MATCH"
+            } else if str.contains("unrelated_probe") {
+                payloadIdentity = "UNRELATED_MATCH"
+            } else {
+                payloadIdentity = "OTHER_MATCH"
+            }
+        } else {
+            payloadIdentity = "NO_RESULT"
+        }
+        
+        return (shape, serviceIdentity, payloadIdentity)
+    }
+
+    func testPhase5D1_LegacyFallbackReturnedServiceIdentityMatrix() {
+        // Scenario A
+        let uuidA = UUID().uuidString
+        let accountA = "vitalicast_legacy_\(uuidA)"
+        let legacyPayloadA = "{\"identity\":\"legacy_payload\"}".data(using: .utf8)!
+        let queryA: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: accountA,
+            kSecValueData as String: legacyPayloadA,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        let createStatusA = SecItemAdd(queryA as CFDictionary, nil)
+        XCTAssertEqual(createStatusA, errSecSuccess)
+        let resA = performOmittedServiceAttributesAndDataQuery(for: accountA)
+        let classA = classifyResult(resA.result)
+        print("PHASE5D1_A_STATUS=\(resA.status)")
+        print("PHASE5D1_A_RESULT_SHAPE=\(classA.shape)")
+        print("PHASE5D1_A_SERVICE_IDENTITY=\(classA.serviceIdentity)")
+        print("PHASE5D1_A_PAYLOAD_IDENTITY=\(classA.payloadIdentity)")
+        
+        // Scenario B
+        let uuidB = UUID().uuidString
+        let accountB = "vitalicast_legacy_\(uuidB)"
+        let unrelatedPayloadB = "{\"identity\":\"unrelated_probe\"}".data(using: .utf8)!
+        let queryB: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: accountB,
+            kSecAttrService as String: "com.vitalicast.unrelated.probe",
+            kSecValueData as String: unrelatedPayloadB,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        let createStatusB = SecItemAdd(queryB as CFDictionary, nil)
+        XCTAssertEqual(createStatusB, errSecSuccess)
+        let resB = performOmittedServiceAttributesAndDataQuery(for: accountB)
+        let classB = classifyResult(resB.result)
+        print("PHASE5D1_B_STATUS=\(resB.status)")
+        print("PHASE5D1_B_RESULT_SHAPE=\(classB.shape)")
+        print("PHASE5D1_B_SERVICE_IDENTITY=\(classB.serviceIdentity)")
+        print("PHASE5D1_B_PAYLOAD_IDENTITY=\(classB.payloadIdentity)")
+        
+        // Scenario C
+        let uuidC = UUID().uuidString
+        let accountC = "vitalicast_legacy_\(uuidC)"
+        let legacyPayloadC = "{\"identity\":\"legacy_payload\"}".data(using: .utf8)!
+        let queryCLegacy: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: accountC,
+            kSecValueData as String: legacyPayloadC,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        let createStatusCLegacy = SecItemAdd(queryCLegacy as CFDictionary, nil)
+        XCTAssertEqual(createStatusCLegacy, errSecSuccess)
+
+        let unrelatedPayloadC = "{\"identity\":\"unrelated_probe\"}".data(using: .utf8)!
+        let queryCUnrelated: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: accountC,
+            kSecAttrService as String: "com.vitalicast.unrelated.probe",
+            kSecValueData as String: unrelatedPayloadC,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        let createStatusCUnrelated = SecItemAdd(queryCUnrelated as CFDictionary, nil)
+        XCTAssertEqual(createStatusCUnrelated, errSecSuccess)
+
+        var classificationC = ""
+        var lastServiceIdentity = ""
+        var stable = true
+
+        for i in 0..<5 {
+            let res = performOmittedServiceAttributesAndDataQuery(for: accountC)
+            let c = classifyResult(res.result)
+            
+            if i == 0 {
+                lastServiceIdentity = c.serviceIdentity
+            } else {
+                if c.serviceIdentity != lastServiceIdentity {
+                    stable = false
+                }
+            }
+        }
+
+        if !stable {
+            classificationC = "MIXED_RESULTS"
+        } else {
+            if lastServiceIdentity == "SERVICE_ATTRIBUTE_ABSENT" {
+                classificationC = "STABLE_LEGACY_SERVICE_ABSENT"
+            } else if lastServiceIdentity == "SERVICE_ATTRIBUTE_EMPTY" {
+                classificationC = "STABLE_LEGACY_SERVICE_EMPTY"
+            } else if lastServiceIdentity == "SERVICE_ATTRIBUTE_UNRELATED" {
+                classificationC = "STABLE_UNRELATED"
+            } else {
+                classificationC = "STABLE_LEGACY_SERVICE_OTHER"
+            }
+        }
+        print("PHASE5D1_C_REPEAT_CLASSIFICATION=\(classificationC)")
+        
+        // Scenario D
+        let uuidD = UUID().uuidString
+        let accountD = "vitalicast_canonical_\(uuidD)"
+        let canonicalPayloadD = "{\"identity\":\"canonical_payload\"}".data(using: .utf8)!
+        let queryDCanonical: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: accountD,
+            kSecAttrService as String: "com.vitalicast.archive",
+            kSecValueData as String: canonicalPayloadD,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        let createStatusDCanonical = SecItemAdd(queryDCanonical as CFDictionary, nil)
+        XCTAssertEqual(createStatusDCanonical, errSecSuccess)
+
+        let unrelatedPayloadD = "{\"identity\":\"unrelated_probe\"}".data(using: .utf8)!
+        let queryDUnrelated: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: accountD,
+            kSecAttrService as String: "com.vitalicast.unrelated.probe",
+            kSecValueData as String: unrelatedPayloadD,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        let createStatusDUnrelated = SecItemAdd(queryDUnrelated as CFDictionary, nil)
+        XCTAssertEqual(createStatusDUnrelated, errSecSuccess)
+
+        let resD = performOmittedServiceAttributesAndDataQuery(for: accountD)
+        let classD = classifyResult(resD.result)
+        print("PHASE5D1_D_STATUS=\(resD.status)")
+        print("PHASE5D1_D_RESULT_SHAPE=\(classD.shape)")
+        print("PHASE5D1_D_SERVICE_IDENTITY=\(classD.serviceIdentity)")
+        print("PHASE5D1_D_PAYLOAD_IDENTITY=\(classD.payloadIdentity)")
     }
     
     func testPhase5D_H_CanonicalAttributesOnlyEnumerationReturnsCanonicalKey() {

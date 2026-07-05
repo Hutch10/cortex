@@ -134,3 +134,29 @@ Allow the certified `native_authoritative` identity list to drive the Vitalicast
 
 ## Final Decision
 **SPRINT_6_OBJECTIVE_APPROVED**
+
+## Sprint 6 Phase 2 — Authoritative Identity Browser Integration
+- Sprint 6 objective approved at dd4c8c3
+- native_authoritative list is consumed as identity only
+- provider raw-key labels removed/neutralized if applicable
+- neutral display label policy
+- separate canonical/addendum ordinals
+- original provider order preserved
+- ordinals are display-only and nonpersistent
+- internal selection remains storageKey-based
+- exact-read boundary unchanged
+- no list-time payload hydration
+- no parent grouping for addenda
+- selected storageKey remains local state only
+- refresh clears selection
+- no URL/query/history storageKey exposure
+- authoritative empty wording remains bounded
+- unsupported path remains fail-closed
+- browser remains dev_non_authoritative_fallback
+- verification remains independent
+- tests implemented
+- TypeScript result: PASS
+- frontend test result: Vitest environment error (Skipped)
+- no Swift changes
+- no bridge changes
+- no mutation

@@ -26,3 +26,10 @@ Vitalicast is infrastructure for trustworthy personal records.
 * **SCHEMA EVOLUTION:** Identity unchanged.
 * **FAILURE:** Missing, malformed, unsupported-scheme, or conflicting identity conditions fail explicitly.
 * **Implementation Status:** Explicitly deferred.
+
+## User-Requested Deletion and Disposition
+* **Selected Contract:** Tombstone-Backed Physical Destruction + Grade B Withdrawal.
+* **Rationale:** Reconciles User Sovereignty over physical custody with Immutable History. Physical bytes are destroyed on request, but a tombstone preserves the historical fact of the entry's existence, retaining the portable entry identity. Mistakes are corrected via Withdrawal (Grade B assertion) rather than silent canonical rewrite.
+* **Failure Semantics:** Explicit states are required (DISPOSITION_COMPLETE, DISPOSITION_CONFLICT, SOURCE_DISPOSITIONED, REPRODUCIBILITY_IMPAIRED_SOURCE_DISPOSITIONED). Conflicts arising from merges with offline surviving copies trigger explicit isolation.
+* **Public Promise:** "User-requested disposition will be represented honestly; Vitalicast will not describe hidden, withdrawn, unavailable, or partially erased material as though it never existed unless the applicable destruction contract explicitly defines and successfully completes that effect."
+* **Implementation Status:** Explicitly deferred.

@@ -18,5 +18,6 @@
 | Self-describing manifests | Beta 3 Planning | N/A | Untested | NOT_TESTED | Unimplemented in Beta 2 | N/A | None | N/A |
 | Public Stability Promise | Beta 3 Planning | N/A | Untested | NOT_TESTED | Unimplemented in Beta 2 | N/A | None | N/A |
 | Portable archive entry identity | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | URN-Prefixed RFC UUIDv4 | N/A | None | Deferred |
-| Deletion/immutability reconciliation | Beta 3 Planning | N/A | Untested | USER_REQUESTED_DELETION_AND_IMMUTABLE_HISTORY_POLICY_UNRESOLVED | Unimplemented in Beta 2 | N/A | None | N/A |
+| Deletion/immutability reconciliation | Beta 3 Planning | N/A | Untested | DECISION_READY_IMPLEMENTATION_DEFERRED | Unimplemented in Beta 2 | N/A | None | N/A |
 | Relationship Assertion Identity | Beta 3 Planning | N/A | Untested | RELATIONSHIP_ASSERTION_IDENTITY_MODEL_UNRESOLVED | Deferred pending architecture resolution | N/A | Should durable archive relationships have independent IDs? | N/A |
+

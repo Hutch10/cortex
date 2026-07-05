@@ -599,7 +599,7 @@ class VitalicastSecureStorageTests: XCTestCase {
         plugin.readSecureRecord(readCall!)
     }
     
-    func testPhase5D_G_UnrelatedServiceCollidesWithLegacyFallbackRead() {
+    func testPhase5D_G_UnrelatedServiceNotReturnedByCanonicalExactRead() {
         let uuid = UUID().uuidString
         let storageKey = "vitalicast_canonical_\(uuid)"
         
@@ -616,13 +616,54 @@ class VitalicastSecureStorageTests: XCTestCase {
         let readCall = CAPPluginCall(callbackId: "2", options: [
             "storageKey": storageKey
         ], success: { result, _ in
-            let val = result?.data?["value"] as? String
-            XCTAssertEqual(val, "{\"identity\":\"unrelated\"}", "Test G: Unrelated service collides with omitted-service legacy fallback")
+            XCTAssertTrue(result?.data?["value"] is NSNull, "Test G: Unrelated service should return NSNull")
         }, error: { error in
             XCTFail("Test G failed")
         })
         
         plugin.readSecureRecord(readCall!)
+    }
+    
+    func testPhase5D1_Probe_LegacyFallbackReturnedServiceIdentity() {
+        let uuid = UUID().uuidString
+        let storageKey = "vitalicast_canonical_\(uuid)"
+        
+        // 1. Create an unrelated item explicitly
+        let unrelatedData = "{\"identity\":\"unrelated_probe\"}".data(using: .utf8)!
+        let createUnrelatedQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecAttrService as String: "com.vitalicast.unrelated.probe",
+            kSecValueData as String: unrelatedData,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        SecItemAdd(createUnrelatedQuery as CFDictionary, nil)
+        
+        // 2. Perform an omitted-service read requesting attributes
+        let readQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecReturnData as String: kCFBooleanTrue!,
+            kSecReturnAttributes as String: kCFBooleanTrue!,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(readQuery as CFDictionary, &dataTypeRef)
+        
+        XCTAssertEqual(status, errSecSuccess, "Omitted-service read should succeed because the unrelated item exists")
+        
+        if let resultDict = dataTypeRef as? [String: Any] {
+            let service = resultDict[kSecAttrService as String] as? String
+            // We just want to probe what it returns. If it returns com.vitalicast.unrelated.probe, we print or assert it.
+            // Since we know the probe will be run in CI, we will assert equality so if it passes, we know it returns the service!
+            XCTAssertEqual(service, "com.vitalicast.unrelated.probe", "PROBE: Omitted-service read attributes should contain the actual matched service identity")
+            
+            let account = resultDict[kSecAttrAccount as String] as? String
+            XCTAssertEqual(account, storageKey)
+        } else {
+            XCTFail("PROBE FAILED: Expected dictionary return when kSecReturnAttributes is true")
+        }
     }
     
     func testPhase5D_H_CanonicalAttributesOnlyEnumerationReturnsCanonicalKey() {

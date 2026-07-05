@@ -690,3 +690,8 @@ O. unsupported mutation APIs remain absent
 - **Commit:** 092b086
 - **CI Run:** 28723898845
 - **Notes:** Test G was corrected to match the Legacy fallback collision semantics proven in Phase 5B. The CI build is now fully green, certifying the production Swift bounded enumeration semantics.
+
+
+## Phase 5D1 Governance Correction
+- **Result:** FALSE PASS REVOKED
+- **Notes:** The previous Phase 5D CI certification (28723898845) on commit 092b086 is revoked. Test G was incorrectly inverted to accept legacy fallback collision with an unrelated service. The mandatory production contract remains: An unrelated explicit-service-only payload MUST NOT be returned by an omitted-service fallback legacy read. Because it currently IS returned, the production Swift implementation is unsafe. We are now running Phase 5D1 to probe whether attributes returned from an account-only exact query identify the actual matched service.

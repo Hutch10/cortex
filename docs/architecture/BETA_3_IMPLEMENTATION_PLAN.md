@@ -14,6 +14,6 @@
 
 ### User-Requested Deletion and Disposition
 * **Selected Contract:** Controlled Custody Disposition (Custody Removal) + Grade B Withdrawal
-* **Rationale:** Avoids silent canonical rewrite while honoring user sovereignty over physical custody. Uses a minimum durable abstraction: Archive Entry, Disposition Assertion, Custody/Availability State, Reference Resolution State. 
+* **Rationale:** Avoids silent canonical rewrite while honoring user sovereignty over physical custody. Uses a minimum durable abstraction: Archive Entry, Disposition Assertion, Custody/Availability State, Reference Resolution State. The Two-Scope Model ensures referential integrity via minimal tombstones for referenced entries, while permitting full removal for unreferenced entries and archive-wide destruction.
 * **Failure Semantics:** Explicit DISPOSITION_REINTRODUCTION_CONFLICT isolation for reimported dispositioned material. Dangling citations explicitly recognized as SOURCE_DISPOSITIONED. Availability states are assertions within a defined archive/custody scope.
-* **Implementation Status:** Explicitly deferred pending further Stage 1 evaluations, Beta 3 authorization, and resolution of MANDATORY_TOMBSTONE_RETENTION_VS_FULL_USER_DESTRUCTION_UNRESOLVED.
+* **Implementation Status:** Explicitly deferred pending further Stage 1 evaluations and Beta 3 authorization.

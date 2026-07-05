@@ -1,0 +1,34 @@
+# Beta 3 Implementation Plan
+
+## Implementation Gate
+**STATUS**: Beta 2 remains explicitly frozen.
+**GATE**: `BETA_2_STAGE_1_EVIDENCE_REVIEW_COMPLETE`
+No Beta 3 implementation is authorized until Stage 1 evaluation evidence review is fully complete.
+
+## Phase 1: Portable Archive Identity
+* **Deferred**: Define the portable, export-surviving archive identity.
+* **Requirement**: Must not rely on `storageKey`, date matching, display labels, or list position.
+
+## Phase 2: Prospective Stance Schema
+* Introduce `stance` (observational | prospective | unspecified) to Grade A payload schemas.
+* Ensure backward compatibility for Beta 2 records (fail-closed fallback to unspecified).
+* Implement strict schema compatibility registry rules without retroactively upgrading legacy payloads.
+
+## Phase 3: Archive Relationships (Grade B)
+* Introduce the neutral `appended_to` relationship.
+* Ensure appending does not rewrite the referenced source or alter the source's integrity attestations.
+
+## Phase 4: First-Class Citations (Grade C)
+* Implement whole-entry citation relationships (`cites`, `derived_from`).
+
+## Phase 5: Integrity Attestation Mechanism
+* Evolve the canonical hashing implementation to explicitly store algorithm identity and authoritative representation identity.
+* Implement hash agility to allow multiple attestations over time.
+
+## Phase 6: Provenance Inspector & Archive Health
+* Implement Archive Health as a strict diagnostic interface (pass/fail for structural/integrity rules).
+* Implement Provenance Inspector purely as a read-only visualizer over the explicit relationship graph.
+
+## Phase 7: Self-Describing Export
+* Implement independent export formats that bundle required manifest documentation.
+* Verify export intelligibility without active Vitalicast cloud or proprietary framework access.

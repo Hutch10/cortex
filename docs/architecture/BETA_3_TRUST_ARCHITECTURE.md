@@ -1,60 +1,28 @@
 # Beta 3 Trust Architecture
 
-## Foundation Model
-The architecture synchronizes around five durable foundations:
-1. **Archive Material / Source Content**: Preserved user source records, addenda, derivations, and external/imported material under explicit provenance boundaries (Grades A-D).
-2. **Archive Relationships**: A narrow conceptual relationship layer equivalent to `appended_to`, `cites`, and `derived_from`.
-3. **Integrity Attestations**: Verification mechanism defining the target identity, algorithm, canonicalization, and digest.
-4. **Portability and Archive Identity**: Separation of runtime exact-read identity (storageKey) from the portable permanent archive entry identity.
-5. **Self-Describing Export**: The archive must preserve sufficient format, provenance, manifest, and contract documentation to support independent interpretation without dependence on current Vitalicast services.
-
-## Grade A Canonical Source Record
-A Grade A source record encompasses user-authored source material after sealing.
-The architecture implements a **record stance** property for explicit future writers:
-- `observational`
-- `prospective` (A first-class stance oriented toward a future or unresolved state)
-
-Descriptive kinds (e.g., intention, goal, prediction) are secondary vocabulary. Vitalicast does not implement an eight-object taxonomy or taxonomy engine.
-
-## Temporal Honesty
-A prospective stance does not automatically certify that the record existed before the eventual outcome. The architecture explicitly separates capture time, seal time, user-asserted reference time, and eventual event time. There is no "prospective truth" semantics.
-
-## Beta 2 Legacy Classification
-Existing Beta 2 source records remain unchanged. The architecture forbids retroactive semantic reclassification, keyword-based taxonomic inference, or mass-upgrades of legacy Beta 2 payloads. Beta 2 source material remains source material under Grade A provenance rules. The absence of a stance field in a legacy certified schema must not be represented as though the archived payload explicitly contained `stance: "unspecified"`. Instead, use a reader compatibility state equivalent to `not_present_in_source_schema`. Do not rewrite Beta 2 payloads, do not inject a stance field into legacy payloads, and do not infer an observational or prospective stance. Do not treat compatibility state as archived source content.
-
-## Relationships & First-Class Citations
-Later outcomes or reflections remain append-only Grade B material related via a neutral `appended_to` relationship. 
-First-Class Citations identify the citing archive entry, the cited portable archive entry identity, relationship kind, and creation context. 
-Scope prioritizes whole-entry citation. No character-offset or JSON Pointer citation is required initially.
-Causal relationships (e.g. `outcome_of`) are explicitly not required core relationships. Citations are archive relationships, they are not assigned a Preservation Grade themselves.
-
-## Integrity and Canonical Hashing
-Constitutional Invariant: Alteration of preserved archival material must be independently detectable.
-The architecture explicitly defines:
-* Authoritative representation or bytes
-* Integrity algorithm identity
-* Canonicalization identity
-* Digest
-Hash agility guarantees append-only attestation evolution; old attestations are never erased to upgrade cryptography. The architecture avoids silently normalizing source content just to obtain a hash.
-
-## Archive Health & Provenance Inspector
-* **Archive Health**: A derived diagnostic checking explicit conditions (e.g., integrity checks passed/failed, unresolved citations). It does not issue composite trust scores, completion percentages, or penalize "unfulfilled commitments".
-* **Provenance Inspector**: A read-only derived view. It reads explicit archived provenance and relationship information and does not become a second authority that invents its own lineage interpretation.
-
-## Architecture Weaknesses & Simplifications
-* **Simplification**: Removed the eight-object taxonomy (intention, goal, etc.) as distinct archive root classes, replacing it with a single "prospective" stance on Grade A records.
-* **Simplification**: Removed complex causal relationships (`outcome_of`); standardized on `appended_to`, `cites`, and `derived_from`.
-* **Migration Hazard**: Future implementations must be extremely careful to avoid implicit classification of `not_present_in_source_schema` Beta 2 legacy records into formal stance types.
-
-## Deferred Decision Register
-1. `PORTABLE_ARCHIVE_ENTRY_IDENTITY_UNRESOLVED`: Portable citation/export identity independent of storageKey.
-2. `USER_REQUESTED_DELETION_AND_IMMUTABLE_HISTORY_POLICY_UNRESOLVED`: Reconciliation of sovereignty/disposition with sealed history, citations, and integrity attestations.
+## Foundation
+Vitalicast is infrastructure for trustworthy personal records.
 
 ## Portable Archive Entry Identity
-* **Selected Contract:** URN-Prefixed Random Opaque Identifier (e.g., urn:vitalicast:entry:v1:<UUIDv4>).
-* **Rationale:** Opaque identifiers ensure statistical global uniqueness with perfect offline capability, no metadata leakage (privacy preservation), and zero merge/collision issues across independent archives. The URN prefix ensures 50-year interpretability without requiring external schemas.
-* **Failure Semantics:** 
-  * Missing ID: Fail explicitly, cannot be cited.
-  * Duplicate ID/Identical Content: Deduplicate transparently.
-  * Duplicate ID/Different Content: Critical failure, isolate and conflict. Do not automatically merge.
+* **SCHEME IDENTITY:** italicast-entry-id-v1
+* **REFERENCE SERIALIZATION:** urn:vitalicast:entry:v1:<RFC UUIDv4 canonical textual representation>
+* **ENTITY SEMANTICS:** Identifies one historical archive-entry entity.
+* **UNIQUENESS MODEL:** Statistical global uniqueness under correct UUIDv4 generation.
+* **GENERATION AUTHORITY:** Local/offline generation permitted using a conforming sufficiently strong random source.
+* **CONTENT RELATIONSHIP:** Entry identity is independent of content digest.
+* **TEMPORAL SEMANTICS:** None.
+* **ORDERING SEMANTICS:** None.
+* **USER SEMANTICS:** None.
+* **DEVICE SEMANTICS:** None.
+* **COPY:** Identity preserved.
+* **CLONE:** Existing entry identities preserved; newly created entries receive new identities under the scheme.
+* **IMPORT:** Portable identity preserved when source identity is trusted as an archival assertion; import provenance remains separately preserved.
+* **MERGE:** 
+  * Same ID + entry-equivalent authoritative content: identity-equivalent material; preserve all non-identical surrounding archival context.
+  * Same ID + differing authoritative content: explicit unresolved identity conflict.
+* **PARTIAL EXPORT:** Identity preserved.
+* **CITATION:** Whole-entry citations reference portable entry identity.
+* **HASH EVOLUTION:** Identity unchanged.
+* **SCHEMA EVOLUTION:** Identity unchanged.
+* **FAILURE:** Missing, malformed, unsupported-scheme, or conflicting identity conditions fail explicitly.
 * **Implementation Status:** Explicitly deferred.

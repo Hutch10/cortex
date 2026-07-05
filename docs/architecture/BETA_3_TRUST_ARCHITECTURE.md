@@ -49,3 +49,12 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 ## Deferred Decision Register
 1. `PORTABLE_ARCHIVE_ENTRY_IDENTITY_UNRESOLVED`: Portable citation/export identity independent of storageKey.
 2. `USER_REQUESTED_DELETION_AND_IMMUTABLE_HISTORY_POLICY_UNRESOLVED`: Reconciliation of sovereignty/disposition with sealed history, citations, and integrity attestations.
+
+## Portable Archive Entry Identity
+* **Selected Contract:** URN-Prefixed Random Opaque Identifier (e.g., urn:vitalicast:entry:v1:<UUIDv4>).
+* **Rationale:** Opaque identifiers ensure statistical global uniqueness with perfect offline capability, no metadata leakage (privacy preservation), and zero merge/collision issues across independent archives. The URN prefix ensures 50-year interpretability without requiring external schemas.
+* **Failure Semantics:** 
+  * Missing ID: Fail explicitly, cannot be cited.
+  * Duplicate ID/Identical Content: Deduplicate transparently.
+  * Duplicate ID/Different Content: Critical failure, isolate and conflict. Do not automatically merge.
+* **Implementation Status:** Explicitly deferred.

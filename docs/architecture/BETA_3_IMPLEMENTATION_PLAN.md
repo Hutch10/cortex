@@ -37,3 +37,10 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 ## Deferred Decision Register
 1. `PORTABLE_ARCHIVE_ENTRY_IDENTITY_UNRESOLVED`: Portable citation/export identity independent of storageKey.
 2. `USER_REQUESTED_DELETION_AND_IMMUTABLE_HISTORY_POLICY_UNRESOLVED`: Reconciliation of sovereignty/disposition with sealed history, citations, and integrity attestations.
+
+## Deferred Implementations
+### Portable Archive Entry Identity
+* **Selected Contract:** URN-Prefixed Random Opaque Identifier (urn:vitalicast:entry:v1:<UUID>)
+* **Rationale:** Maximizes portability, offline capabilities, and 50-year interpretability while avoiding metadata leakage or merge conflicts.
+* **Failure Semantics:** Missing ID fails explicitly; exact duplicate deduplicates; conflicting content for same ID raises explicit failure.
+* **Implementation Status:** Explicitly deferred pending further Stage 1 evaluations and Beta 3 authorization.

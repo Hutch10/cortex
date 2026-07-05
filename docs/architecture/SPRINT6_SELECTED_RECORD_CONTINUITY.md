@@ -110,3 +110,37 @@ Q. No mutation APIs introduced.
 - Concurrency optimization
 - Payload comparison or addendum grouping
 - Mutation, export, sync, telemetry, medical logic
+
+## Sprint 6 Phase 4 — Selected-Record Continuity Regression Certification
+
+- Phase 3 decision: PHASE_3_LIFECYCLE_PASS
+- Existing isCancelled exact-read guard preserved
+- Generation-counter redesign not performed
+- Neutral selected detail label carried into RecordDetailShell
+- storageKey remains the internal exact-record identity
+- Neutral label is display-only
+- Raw storageKey removed from user-facing detail context
+- No URL/query/history storageKey exposure
+- No persistence added
+- Tests A-M implemented for exact-read lifecycle and stale-result behavior
+- Tests N-O implemented for URL/detail-context safety
+- Tests P-Q implemented for authority/mutation boundaries
+- Deferred Promise race tests implemented for stale success and stale error
+- Prior-payload reset verified
+- Not-found transition verified
+- Read-error payload-view reset verified
+- Verification reset/stale boundary verified
+- Rapid A -> B -> C convergence verified
+- Strict Mode duplicate invocation classified as guarded
+- S6-13 through S6-24 evidence mapping completed
+- Provider/list minimization unchanged
+- No Swift changes
+- No bridge changes
+- No provider authority changes
+- No mutation
+
+Frontend commit: abc732552bcda31cf25d4fedb099ede10cb15b57
+Outer pointer commit requiring remote certification: 1222c4ef86ccf27fea267cc70db7ada69a31c1b8
+
+Final classification pending fresh remote iOS certification.
+

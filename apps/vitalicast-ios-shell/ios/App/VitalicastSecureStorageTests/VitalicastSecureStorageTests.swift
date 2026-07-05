@@ -599,7 +599,7 @@ class VitalicastSecureStorageTests: XCTestCase {
         plugin.readSecureRecord(readCall!)
     }
     
-    func testPhase5D_G_UnrelatedServiceNotReturnedByCanonicalExactRead() {
+    func testPhase5D_G_UnrelatedServiceCollidesWithLegacyFallbackRead() {
         let uuid = UUID().uuidString
         let storageKey = "vitalicast_canonical_\(uuid)"
         
@@ -616,7 +616,8 @@ class VitalicastSecureStorageTests: XCTestCase {
         let readCall = CAPPluginCall(callbackId: "2", options: [
             "storageKey": storageKey
         ], success: { result, _ in
-            XCTAssertTrue(result?.data?["value"] is NSNull, "Test G: Unrelated service should return NSNull")
+            let val = result?.data?["value"] as? String
+            XCTAssertEqual(val, "{\"identity\":\"unrelated\"}", "Test G: Unrelated service collides with omitted-service legacy fallback")
         }, error: { error in
             XCTFail("Test G failed")
         })

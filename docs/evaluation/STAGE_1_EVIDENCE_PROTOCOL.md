@@ -7,7 +7,7 @@ Audit and synchronize the Vitalicast Beta 2 Stage 1 evaluation methodology so th
 Stage 1 evaluates user understanding of trust-critical mechanics. It does not test engagement, retention, or satisfaction scoring.
 
 ## Stage 1 Hypothesis Matrix
-The previously established five-point Stage 1 Hypothesis Matrix includes the following active hypotheses:
+STAGE_1_FIVE_HYPOTHESIS_BASELINE_FORMALIZED_AT_COMMIT_88b5a29`n`nThe five-point Stage 1 Hypothesis Matrix includes the following active hypotheses:
 
 1. **Capture**: Users understand what has been recorded.
 2. **Sealing / Locking**: Users understand that original source material reaches a preservation boundary and is not silently rewritten afterward.
@@ -104,3 +104,33 @@ Could this user's archive remain understandable enough that the user or a techni
 10. Receives an explicit founder architecture decision.
 
 Until those conditions are met, `BETA_2_STAGE_1_EVIDENCE_REVIEW_COMPLETE = FALSE`. No implementation task is authorized by the evidence protocol.
+
+
+## Field Package Authority
+The explicit authority chain for Stage 1 evidence collection is:
+
+`STAGE_1_EVIDENCE_PROTOCOL.md`
+|
+v
+`STAGE_1_OBSERVER_FIELD_GUIDE.md`
+|
+v
+`STAGE_1_EVIDENCE_LOG_TEMPLATE.md`
+|
+v
+Actual observation records
+|
+v
+Stage 1 evidence review artifact
+|
+v
+Founder architecture decision
+
+* The evidence protocol defines methodology.
+* The observer field guide defines session conduct.
+* The evidence log template defines capture structure.
+* Actual observations contain evidence.
+* The final evidence review issues hypothesis decisions.
+
+Do not let the field guide redefine architectural hypotheses.
+Do not let individual evidence logs change decision rules.

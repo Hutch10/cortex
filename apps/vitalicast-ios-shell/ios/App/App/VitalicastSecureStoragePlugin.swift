@@ -94,19 +94,39 @@ public class VitalicastSecureStoragePlugin: CAPPlugin {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: storageKey,
             kSecReturnData as String: kCFBooleanTrue!,
+            kSecReturnAttributes as String: kCFBooleanTrue!,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
         
         var legacyDataTypeRef: AnyObject?
         let legacyStatus = SecItemCopyMatching(legacyQuery as CFDictionary, &legacyDataTypeRef)
         
-        if legacyStatus == errSecSuccess, let data = legacyDataTypeRef as? Data, let value = String(data: data, encoding: .utf8) {
+        if legacyStatus == errSecSuccess {
+            guard let resultDict = legacyDataTypeRef as? [String: Any],
+                  let payloadData = resultDict[kSecValueData as String] as? Data,
+                  let value = String(data: payloadData, encoding: .utf8) else {
+                call.reject("Failed to parse legacy fallback result")
+                return
+            }
+            
+            if !isOmittedServiceIdentity(resultDict[kSecAttrService as String]) {
+                call.resolve(["value": NSNull()])
+                return
+            }
+            
             call.resolve(["value": value])
         } else if legacyStatus == errSecItemNotFound {
             call.resolve(["value": NSNull()])
         } else {
             call.reject("Failed to read secure record, OSStatus: \(legacyStatus)")
         }
+    }
+    
+    private func isOmittedServiceIdentity(_ service: Any?) -> Bool {
+        guard let serviceString = service as? String else {
+            return true
+        }
+        return serviceString.isEmpty
     }
     
     @objc func listArchiveStorageKeys(_ call: CAPPluginCall) {

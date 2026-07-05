@@ -918,4 +918,111 @@ class VitalicastSecureStorageTests: XCTestCase {
     func testPhase5D_O_UnsupportedMutationAPIsRemainAbsent() {
         XCTAssertTrue(true, "Test O: Static guard passed")
     }
+
+    func testPhase5D2_P_LegacyPlusUnrelatedSameAccountReturnsLegacy() {
+        let uuid = UUID().uuidString
+        let storageKey = "vitalicast_canonical_\(uuid)"
+        
+        let legacyData = "{\"identity\":\"legacy\"}".data(using: .utf8)!
+        let createLegacyQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecValueData as String: legacyData,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        SecItemAdd(createLegacyQuery as CFDictionary, nil)
+        
+        let unrelatedData = "{\"identity\":\"unrelated\"}".data(using: .utf8)!
+        let createUnrelatedQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecAttrService as String: "com.vitalicast.unrelated",
+            kSecValueData as String: unrelatedData,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        SecItemAdd(createUnrelatedQuery as CFDictionary, nil)
+        
+        let readCall = CAPPluginCall(callbackId: "2", options: [
+            "storageKey": storageKey
+        ], success: { result, _ in
+            let val = result?.data?["value"] as? String
+            XCTAssertEqual(val, "{\"identity\":\"legacy\"}", "Legacy plus unrelated same-account still returns legacy")
+        }, error: { error in
+            XCTFail("Test failed")
+        })
+        
+        plugin.readSecureRecord(readCall!)
+    }
+    
+    func testPhase5D2_Q_CanonicalPlusUnrelatedNoLegacyReturnsCanonical() {
+        let uuid = UUID().uuidString
+        let storageKey = "vitalicast_canonical_\(uuid)"
+        
+        let canonicalData = "{\"identity\":\"canonical\"}".data(using: .utf8)!
+        let createCanonicalQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecAttrService as String: "com.vitalicast.archive",
+            kSecValueData as String: canonicalData,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        SecItemAdd(createCanonicalQuery as CFDictionary, nil)
+        
+        let unrelatedData = "{\"identity\":\"unrelated\"}".data(using: .utf8)!
+        let createUnrelatedQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecAttrService as String: "com.vitalicast.unrelated",
+            kSecValueData as String: unrelatedData,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        SecItemAdd(createUnrelatedQuery as CFDictionary, nil)
+        
+        let readCall = CAPPluginCall(callbackId: "2", options: [
+            "storageKey": storageKey
+        ], success: { result, _ in
+            let val = result?.data?["value"] as? String
+            XCTAssertEqual(val, "{\"identity\":\"canonical\"}", "Canonical plus unrelated, no legacy: production canonical-first query returns canonical")
+        }, error: { error in
+            XCTFail("Test failed")
+        })
+        
+        plugin.readSecureRecord(readCall!)
+    }
+    
+    func testPhase5D2_R_ArchiveServiceItemNotAcceptedThroughLegacyFallback() {
+        let uuid = UUID().uuidString
+        let storageKey = "vitalicast_canonical_\(uuid)"
+        
+        let canonicalData = "{\"identity\":\"canonical\"}".data(using: .utf8)!
+        let createCanonicalQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecAttrService as String: "com.vitalicast.archive",
+            kSecValueData as String: canonicalData,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        SecItemAdd(createCanonicalQuery as CFDictionary, nil)
+        
+        let legacyQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: storageKey,
+            kSecReturnData as String: kCFBooleanTrue!,
+            kSecReturnAttributes as String: kCFBooleanTrue!,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(legacyQuery as CFDictionary, &dataTypeRef)
+        XCTAssertEqual(status, errSecSuccess)
+        
+        if let resultDict = dataTypeRef as? [String: Any] {
+            let service = resultDict[kSecAttrService as String] as? String
+            XCTAssertEqual(service, "com.vitalicast.archive")
+            let isOmitted = (service ?? "").isEmpty
+            XCTAssertFalse(isOmitted, "Archive service item must not be accepted through legacy fallback")
+        } else {
+            XCTFail("Expected dictionary")
+        }
+    }
 }

@@ -710,3 +710,26 @@ O. unsupported mutation APIs remain absent
 - native provider remains unsupported/fail-closed
 - native_authoritative remains blocked
 - Phase 5E remains blocked
+
+
+## Sprint 5 Phase 5D2 — Legacy Fallback Service-Identity Validation
+- run 28724534996
+- commit a264b1a
+- Phase 5D1B Outcome D1-A
+- Scenario A markers: PHASE5D1_A_STATUS=0, PHASE5D1_A_RESULT_SHAPE=ATTRIBUTE_DICTIONARY, PHASE5D1_A_SERVICE_IDENTITY=SERVICE_ATTRIBUTE_EMPTY, PHASE5D1_A_PAYLOAD_IDENTITY=LEGACY_MATCH
+- Scenario B markers: PHASE5D1_B_STATUS=0, PHASE5D1_B_RESULT_SHAPE=ATTRIBUTE_DICTIONARY, PHASE5D1_B_SERVICE_IDENTITY=SERVICE_ATTRIBUTE_UNRELATED, PHASE5D1_B_PAYLOAD_IDENTITY=UNRELATED_MATCH
+- Scenario C marker: PHASE5D1_C_REPEAT_CLASSIFICATION=STABLE_LEGACY_SERVICE_EMPTY
+- Scenario D markers: PHASE5D1_D_STATUS=0, PHASE5D1_D_RESULT_SHAPE=ATTRIBUTE_DICTIONARY, PHASE5D1_D_SERVICE_IDENTITY=SERVICE_ATTRIBUTE_CANONICAL, PHASE5D1_D_PAYLOAD_IDENTITY=CANONICAL_MATCH
+- true legacy returned empty service identity
+- explicit-service matches exposed explicit service identities
+- returned attributes permit legacy-vs-explicit distinction in certified CI environment
+- production legacy fallback changed to request attributes + data
+- payload accepted only when service identity is absent or empty
+- explicit/nonempty returned service maps to neutral not-found
+- no additional service query
+- no broad enumeration
+- no mutation
+- canonical precedence preserved
+- native provider remains unsupported/fail-closed pending certification
+- native_authoritative remains blocked
+- Phase 5E remains blocked until Phase 5D2 CI passes

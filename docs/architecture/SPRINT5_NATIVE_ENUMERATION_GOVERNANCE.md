@@ -683,3 +683,10 @@ O. unsupported mutation APIs remain absent
 - Phase 5D remains uncertified pending fresh macOS CI
 - native provider remains unsupported/fail-closed
 - native_authoritative remains blocked
+
+
+## Phase 5D Commit-Integrity Corrective Action
+- **Result:** PASS
+- **Commit:** 092b086
+- **CI Run:** 28723898845
+- **Notes:** Test G was corrected to match the Legacy fallback collision semantics proven in Phase 5B. The CI build is now fully green, certifying the production Swift bounded enumeration semantics.

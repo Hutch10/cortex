@@ -733,3 +733,24 @@ O. unsupported mutation APIs remain absent
 - native provider remains unsupported/fail-closed pending certification
 - native_authoritative remains blocked
 - Phase 5E remains blocked until Phase 5D2 CI passes
+
+
+## Sprint 5 Phase 5F — Native Archive Provider Authority Promotion
+- certified Phase 5D2 run 28725209448
+- certified commit c692c8d
+- PASS_PRODUCTION_CONTRACT_CERTIFIED
+- Phase 5E audit decision PROMOTION_PASS
+- successful native bounded identity enumeration now reports native_authoritative
+- native bridge error path remains unsupported/fail-closed
+- browser provider remains dev_non_authoritative_fallback
+- native_authoritative is scoped only to enumerable canonical/addendum storage-key identities in com.vitalicast.archive
+- legacy omitted-service cohort remains exact-read-only and non-enumerable
+- authority does not imply completeness
+- authority does not imply payload validation
+- authority does not imply verification
+- authority does not imply hash checking
+- authority does not imply schema recognition
+- no production Swift changes
+- no Keychain query changes
+- no mutation
+- no payload hydration

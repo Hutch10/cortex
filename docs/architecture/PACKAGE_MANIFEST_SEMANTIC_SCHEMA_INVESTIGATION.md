@@ -74,11 +74,11 @@ Versioned controlled vocabulary.
 Path is transport addressing only. Duplicate paths prohibited. Absolute paths, `.` and `..` forbidden. Backslashes normalized. Not a semantic identity.
 
 ## 12. Semantic Uniqueness Keys
-*   **Entry material**: `portableEntryIdentity + logicalRole`
+*   **Entry material**: `portableEntryIdentity + logicalRole + manifestLocalReference`
 *   **Relationship artifact**: `assertionIdentity`
-*   **Tombstone**: `portableEntryIdentity`
-*   **Integrity attestation**: `subjectReference + algorithm + scope + canonicalization`
-*   **Provenance/Unsupported**: `packageRelativePath`
+*   **Tombstone**: `portableEntryIdentity` (Minimal state, historical disposition assertions require separate assertionIdentity)
+*   **Integrity attestation**: `attestationEventIdentity`
+*   **Provenance/Unsupported**: `manifestLocalReference`
 
 ## 13. Multi-Representation Rule
 Multiple records may bind to one `portableEntryIdentity` if and only if they use distinct `logicalRoles` (e.g., primary vs thumbnail). A derived preview NEVER substitutes for primary entry material. Authority is determined by the entry artifact's grade, not the transport role.
@@ -145,3 +145,4 @@ None.
 
 ## 30. Final Architecture Classification
 **PACKAGE_MANIFEST_SEMANTIC_SCHEMA_DECISION_READY**
+

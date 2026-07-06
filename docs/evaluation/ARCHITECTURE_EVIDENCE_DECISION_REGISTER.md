@@ -29,3 +29,5 @@
 
 | Package Manifest Semantic Schema | Beta 3 Planning | N/A | Investigated | PACKAGE_MANIFEST_SEMANTIC_SCHEMA_DECISION_READY | Hybrid Tagged Union Record Model + No Self-Inventory (Model R5 + M1) | N/A | None | Deferred |
 
+| Manifest Artifact Reference and Multiplicity | Beta 3 Planning | N/A | Investigated | MANIFEST_ARTIFACT_REFERENCE_MULTIPLICITY_DECISION_READY | Manifest-Local Reference + Explicit Assertion Identity (Model M4 + I4) | N/A | None | Deferred |
+

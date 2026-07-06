@@ -58,11 +58,17 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 * **Rationale:** Ensures manifest inventory array collections are deterministically sorted to avoid fragile JSON serialization differences. The canonical manifest digest establishes internal consistency, making path/role modifications detectable upon comparison. The digest acts as a Comparison-Only metric; anchoring it inside the manifest creates self-reference, and anchoring it externally creates infinite regress without PKI. Internal consistency is sufficient for Vitalicast's preservation mission.
 * **Failure Semantics:** Fails closed as UNSUPPORTED on unknown future schemas where array normalization cannot be safely guaranteed.
 * **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
+### Package Manifest Semantic Schema
+* **Selected Contract:** Hybrid Tagged Union Record Model + No Self-Inventory (Model R5 + M1).
+* **Rationale:** Tagged records distinctly define required fields and a distinct semantic uniqueness key based on artifact category (entry material, relationship, tombstone, etc.). The manifest limits its authority to direct transport binding (mapping physical material to role and identity) while delegating historical, disposition, and relationship claims to independently preserved evidence artifacts. The manifest does not inventory itself.
+* **Failure Semantics:** Duplicate logical-set records are schema-invalid (not silently deduplicated). Physical presence of unmanifested artifacts confers zero manifest authority, preventing unverified claims from hijacking import authority.
+* **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
 ### Package Identity and Export Lineage
 * **Selected Contract:** Package Identity Not Required (Model A).
 * **Rationale:** Package identity is intentionally rejected to prevent accidental creation of a centralized export ledger. A centralized ledger of export events violates the Two-Scope disposition policy by forcing the retention of metadata that leaks the past existence of fully disposed unreferenced entries. A package is a physical transport envelope. It possesses no historical entity identity; its digest establishes only physical representation equality. Historical archive authority is proven by entry provenance, not by tracking package operations.
 * **Failure Semantics:** Re-exports and partial exports may yield equal or distinct representation digests depending on exact material and metadata. The architecture makes no attempt to track a unified "export lineage graph." A digest citation establishes only that a specific representation was observed, not an entity identity.
 * **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
+
 
 
 

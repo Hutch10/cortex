@@ -27,3 +27,5 @@
 
 | Comparison-Only Manifest Digest Authority | Beta 3 Planning | N/A | Investigated | COMPARISON_ONLY_MANIFEST_DIGEST_AUTHORITY_CLOSED | Manifest authority is Comparison-Only (Model A4) | N/A | None | Deferred |
 
+| Package Manifest Semantic Schema | Beta 3 Planning | N/A | Investigated | PACKAGE_MANIFEST_SEMANTIC_SCHEMA_DECISION_READY | Hybrid Tagged Union Record Model + No Self-Inventory (Model R5 + M1) | N/A | None | Deferred |
+

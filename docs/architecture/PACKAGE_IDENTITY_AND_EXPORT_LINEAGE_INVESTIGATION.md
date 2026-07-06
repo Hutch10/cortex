@@ -29,9 +29,9 @@ Determine whether Vitalicast export packages require a portable package identity
 * **E.** Transport preserve identity? **YES**.
 * **F.** Changing outer FS metadata preserve? **YES**.
 * **G.** Changing compression preserve identity? **TERMINOLOGY IMPRECISE**. Changing compression yields a distinct physical representation digest..
-* **H.** Manifest regeneration create new package identity? **TERMINOLOGY IMPRECISE**. It creates a distinct representation digest..
-* **I.** Re-export same state create new package identity? **TERMINOLOGY IMPRECISE**. It generates a distinct representation digest. (timestamps or new signatures change bytes).
-* **J.** Re-export after unrelated entry disposed create new package identity? **TERMINOLOGY IMPRECISE**. It generates a distinct representation digest..
+* **H.** Manifest regeneration create new package identity? **TERMINOLOGY IMPRECISE**. It may yield an equal or distinct representation digest..
+* **I.** Re-export same state create new package identity? **TERMINOLOGY IMPRECISE**. It may yield an equal or distinct representation digest. (timestamps or new signatures change bytes).
+* **J.** Re-export after unrelated entry disposed create new package identity? **TERMINOLOGY IMPRECISE**. It may yield an equal or distinct representation digest..
 * **K.** Partial export require own package identity? **NO** (it just has a different manifest digest).
 * **L.** Two packages contain same entry set but different identities? **TERMINOLOGY IMPRECISE**. Same entry set, differing representation digests. (exported at different times).
 * **M.** Two packages same identity but differing bytes? **TERMINOLOGY IMPRECISE**. Same representation digest with differing bytes is impossible (assuming collision resistance). (impossible if content-addressed; if random ID, yes, which is dangerous).
@@ -40,7 +40,7 @@ Determine whether Vitalicast export packages require a portable package identity
 * **P.** Import preserve source package identity? **AUTHORITY OVERCLAIM**. The observed representation digest survives as a provenance record. It is not an identity..
 * **Q.** Clone preserve source package identity? **TERMINOLOGY IMPRECISE**. Clones initialize from entries; future exports yield distinct representation digests. (clones generate new packages).
 * **R.** Merge preserve source package identities? **TERMINOLOGY IMPRECISE**. Merge may optionally preserve source representation digests as provenance..
-* **S.** Merged output receive new package identity? **TERMINOLOGY IMPRECISE**. Merged output yields a distinct representation digest. (it is a new set of bytes).
+* **S.** Merged output receive new package identity? **TERMINOLOGY IMPRECISE**. Merged output may yield an equal or distinct representation digest. (it is a new set of bytes).
 * **T.** Inferred from archive identity + timestamp? **NO** (partial exports can occur simultaneously).
 * **U.** Inferred from manifest digest? **AUTHORITY OVERCLAIM**. Manifest digest establishes canonical-content equality, not package identity..
 * **V.** Package identity can be content-addressed? **CONTRADICTS MODEL A**. Physical integrity is content-addressed. Package identity is explicitly rejected..
@@ -106,4 +106,5 @@ Do not generate random UUIDs for exports. Do not track `exportId`. Use content d
 
 ## 19. Final Architecture Classification
 **PACKAGE_IDENTITY_NOT_REQUIRED_DECISION_READY**
+
 

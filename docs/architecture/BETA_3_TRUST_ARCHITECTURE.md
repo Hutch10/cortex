@@ -86,5 +86,6 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 ## Package Identity and Export Lineage
 * **Selected Contract:** Package Identity Not Required (Model A).
 * **Rationale:** Export packages are transient transport vessels. Package identity is intentionally rejected to prevent the creation of backdoor global tracking identifiers and historical ledgers. Tracking export lineage conflicts with the Two-Scope disposition policy (full destruction of unreferenced entries) by potentially leaking metadata about omitted materials. Historical archive authority remains safely bound to archive entries and their relationships, not to the packages that transported them.
-* **Failure Semantics:** Exact copies of a package yield equivalent physical representation digests, proving only physical representation equality. Changes to a package (e.g., omitting a disposed entry) yield a completely distinct representation digest. A digest establishes no historical entity sameness, ancestry, or lineage; it solely verifies representation equivalence.
+* **Failure Semantics:** Exact copies of a package yield equivalent physical representation digests, proving only physical representation equality. Changes to a package (e.g., omitting a disposed entry) may yield an equal or distinct representation digest depending on the exact material and metadata. A digest establishes no historical entity sameness, ancestry, or lineage; it solely verifies representation equivalence.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
+

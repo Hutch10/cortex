@@ -25,14 +25,14 @@ The substantive rejection of random package identity (Model A) is upheld. The ph
 Prior answers improperly used "identity" to describe integrity/content equivalence:
 * **C. Exact copy preserve identity?** -> `TERMINOLOGY_IMPRECISE`. Correction: An exact copy produces *representation equality*. It does not preserve identity because package identity does not exist.
 * **G. Changing compression preserve identity?** -> `TERMINOLOGY_IMPRECISE`. Correction: Changing compression produces a different *physical representation digest*, though it may retain logical inventory equivalence.
-* **H. Manifest regeneration create new package identity?** -> `TERMINOLOGY_IMPRECISE`. Correction: It creates a new *representation digest*.
-* **I. Re-export create new package identity?** -> `TERMINOLOGY_IMPRECISE`. Correction: It generates a new *representation digest*.
-* **J. Disposition re-export create new package identity?** -> `TERMINOLOGY_IMPRECISE`. Correction: It generates a new *representation digest*.
+* **H. Manifest regeneration create new package identity?** -> `TERMINOLOGY_IMPRECISE`. Correction: It may yield an equal or distinct representation digest depending on the serialization contract.
+* **I. Re-export create new package identity?** -> `TERMINOLOGY_IMPRECISE`. Correction: It may yield an equal or distinct representation digest depending on the material and metadata.
+* **J. Disposition re-export create new package identity?** -> `TERMINOLOGY_IMPRECISE`. Correction: It may yield an equal or distinct representation digest depending on the material and metadata.
 * **L. Same entry set but different identities.** -> `TERMINOLOGY_IMPRECISE`. Correction: Same entry set but different *representation digests*.
 * **M. Same identity but differing bytes impossible.** -> `TERMINOLOGY_IMPRECISE`. Correction: Same *representation digest* with differing bytes is impossible (assuming collision resistance).
 * **P. Source package digest remains static / source package identity survives.** -> `AUTHORITY_OVERCLAIM`. Correction: The *observed representation digest* survives as a provenance record. It is not an identity.
 * **R. Merge preserves source package identities as provenance digests.** -> `TERMINOLOGY_IMPRECISE`. Correction: Merge may preserve source *representation digests* as provenance.
-* **S. Merged output receives new package identity.** -> `TERMINOLOGY_IMPRECISE`. Correction: Merged output yields a distinct *representation digest*.
+* **S. Merged output receives new package identity.** -> `TERMINOLOGY_IMPRECISE`. Correction: Merged output may yield an equal or distinct representation digest depending on the inputs and metadata.
 * **U. Package identity inferred from manifest digest.** -> `AUTHORITY_OVERCLAIM`. Correction: Manifest digest establishes *canonical-content equality* of the manifest, not package identity.
 * **V. Package identity can be content-addressed.** -> `CONTRADICTS_MODEL_A`. Correction: Physical integrity is content-addressed. Package identity is explicitly rejected.
 * **W. Unsupported future structures retain identity.** -> `TERMINOLOGY_IMPRECISE`. Correction: They retain *representation equality* through physical digests.
@@ -84,3 +84,4 @@ However, if the system mandates the retention of P1's *manifest* as a Grade D ar
 
 ## 15. Final Precision Classification
 **PACKAGE_DIGEST_IDENTITY_PRECISION_CLOSED**
+

@@ -21,4 +21,4 @@
 | User Disposition Architecture | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | Two-Scope Model Policy E | N/A | None | Deferred |
 | Relationship Assertion Identity | Beta 3 Planning | N/A | Untested | RELATIONSHIP_ASSERTION_IDENTITY_MODEL_UNRESOLVED | Deferred pending architecture resolution | N/A | Should durable archive relationships have independent IDs? | N/A |
 | Manifest Historical Authority | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | Model C (Package Manifest Only) | N/A | None | Deferred |
-| Package Identity and Export Lineage | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | Package Identity Not Required (Model A) | N/A | None | Deferred |
+| Package Identity and Export Lineage | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | Package Identity Not Required (Model A) | N/A | Physical vs Canonical digest scope unresolved | Deferred |

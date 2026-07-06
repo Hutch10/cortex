@@ -52,3 +52,9 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 * **Rationale:** Historical archive authority remains distributed across entries, disposition assertions, and relationship artifacts. A central Historical Archive Ledger creates conflict with the Two-Scope disposition policy (specifically the full destruction of unreferenced entries). Package manifests act exclusively as point-in-time, package-scoped inventories that explicitly support partial exports and omit unreferenced dispositioned material without falsifying history.
 * **Failure Semantics:** Omission of a file means it is not in the package, not that it never existed. The architecture does not guess missing pieces or reconstruct deleted history based on export manifest absences.
 * **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
+
+### Package Identity and Export Lineage
+* **Selected Contract:** Package Identity Not Required (Model A).
+* **Rationale:** Package identity is intentionally rejected to prevent accidental creation of a centralized export ledger. A centralized ledger of export events violates the Two-Scope disposition policy by forcing the retention of metadata that leaks the past existence of fully disposed unreferenced entries. A package is a physical transport envelope identified solely by its content digest. Historical archive authority is proven by entry provenance, not by tracking package operations.
+* **Failure Semantics:** Re-exports and partial exports generate new packages with distinct content digests. The architecture makes no attempt to track a unified "export lineage graph."
+* **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.

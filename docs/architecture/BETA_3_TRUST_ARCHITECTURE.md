@@ -82,3 +82,9 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 * **Rationale:** Historical archive authority is fully distributed across archive entries, disposition assertions, relationship assertions, and integrity attestations. A central immutable Historical Archive Ledger contradicts the Two-Scope disposition policy allowing unreferenced material destruction. A Package Manifest acts merely as a current package inventory, explicitly supporting partial exports and making no claims of complete life history.
 * **Failure Semantics:** Missing files mean they are not in the package, not that they never existed. Re-exports omit unreferenced dispositioned material without rewriting history.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
+
+## Package Identity and Export Lineage
+* **Selected Contract:** Package Identity Not Required (Model A).
+* **Rationale:** Export packages are transient transport vessels. Package identity is intentionally rejected to prevent the creation of backdoor global tracking identifiers and historical ledgers. Tracking export lineage conflicts with the Two-Scope disposition policy (full destruction of unreferenced entries) by potentially leaking metadata about omitted materials. Historical archive authority remains safely bound to archive entries and their relationships, not to the packages that transported them.
+* **Failure Semantics:** Exact copies of a package share the same canonical physical content digest. Changes to a package (e.g. omitting a disposed entry) create a new package with a new digest. No historical lineage connects the old and new package.
+* **Implementation Status:** Architecture decision ready; implementation deferred.

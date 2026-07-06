@@ -77,7 +77,7 @@ Path is transport addressing only. Duplicate paths prohibited. Absolute paths, `
 *   **Entry material**: `portableEntryIdentity + logicalRole + manifestLocalReference`
 *   **Relationship artifact**: `assertionIdentity`
 *   **Tombstone**: `portableEntryIdentity` (Minimal state, historical disposition assertions require separate assertionIdentity)
-*   **Integrity attestation**: `attestationEventIdentity`
+*   **Integrity attestation**: `assertionIdentity`
 *   **Provenance/Unsupported**: `manifestLocalReference`
 
 ## 13. Multi-Representation Rule
@@ -145,4 +145,5 @@ None.
 
 ## 30. Final Architecture Classification
 **PACKAGE_MANIFEST_SEMANTIC_SCHEMA_DECISION_READY**
+
 

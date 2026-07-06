@@ -21,7 +21,7 @@ Determine the minimum portable reference model required for manifest records to 
 *   **Material component/reference**: `MANIFEST_LOCAL_REFERENCE_SUFFICIENT`. Identifies one intentionally inventoried material representation.
 *   **Relationship assertion identity**: `EXISTING_IDENTITY_REUSED`. Refers to one historical relationship assertion artifact.
 *   **Disposition assertion/tombstone identity**: `PORTABLE_IDENTITY_REQUIRED`. Refers to one disposition assertion or minimal tombstone.
-*   **Integrity attestation assertion/event identity**: `PORTABLE_IDENTITY_REQUIRED`. Refers to one digest creation/verification event.
+*   **Integrity attestation assertion/assertion identity**: `PORTABLE_IDENTITY_REQUIRED`. Refers to one digest creation/verification event.
 *   **Provenance artifact reference**: `MANIFEST_LOCAL_REFERENCE_SUFFICIENT`. Refers to one provenance artifact.
 *   **Unsupported artifact reference**: `MANIFEST_LOCAL_REFERENCE_SUFFICIENT`. Allows inventory without semantic interpretation.
 
@@ -58,7 +58,7 @@ They are distinct artifact categories.
 One entry may have multiple disposition assertions (e.g., corrections or multiple removal events). Therefore, `portableEntryIdentity` alone is insufficient as a uniqueness key. A disposition assertion must use its own assertion identity. A minimal tombstone, however, is a derived state artifact; its uniqueness may be bound to the entry, provided historical assertions remain separately identifiable.
 
 ## 13. Integrity Attestation Multiplicity
-PASS and FAIL verifications for the exact same digest context may coexist historically. Therefore, `subjectReference + digest context` is insufficient. An explicit attestation assertion/event identity (Model I4) is required.
+PASS and FAIL verifications for the exact same digest context may coexist historically. Therefore, `subjectReference + digest context` is insufficient. An explicit attestation assertion/assertion identity (Model I4) is required.
 
 ## 14. Current Digest Observation vs Integrity History
 Manifest per-material digest observations are current package inventory fields. They are not historical attestation events. Export does not automatically create integrity-history artifacts. This prevents the manifest from recreating an integrity ledger.
@@ -88,7 +88,7 @@ Unsupported artifacts require a manifest-local reference to safely inventory ide
 *   **Same-key conflict**: Two records claim the same semantic slot (e.g., identical manifest-local ID) but disagree on fields.
 *   **Valid multiplicity**: Multiple records concern the same subject but possess distinct manifest-local or assertion identities.
 *   **Corrective relation**: A later artifact explicitly references an earlier one via its assertion identity.
-*   **Verification-history coexistence**: Failed and successful attestations possess distinct event identities.
+*   **Verification-history coexistence**: Failed and successful attestations possess distinct assertion identities.
 
 ## 20. Adversarial Tests A–O
 *   A (Three attachments): Valid multiplicity via distinct manifest-local references.
@@ -98,7 +98,7 @@ Unsupported artifacts require a manifest-local reference to safely inventory ide
 *   E (Exact duplicate assertion ID): Duplicate (`SCHEMA_INVALID`).
 *   F (Two tombstones for E1): Schema invalid (minimal state). (Two disposition assertions are valid).
 *   G (Disposition correction): Valid corrective relation.
-*   H (PASS and FAIL coexist): Valid verification-history coexistence via distinct event identities.
+*   H (PASS and FAIL coexist): Valid verification-history coexistence via distinct assertion identities.
 *   I (Two PASS events): Valid multiplicity.
 *   J (Attestation without ID): `SCHEMA_INVALID`.
 *   K (Two provenance from one source): Valid via distinct manifest-local references.
@@ -117,7 +117,7 @@ Manifest is a transport artifact. Historical authority resides in entries, dispo
 None.
 
 ## 24. Primary Recommendation
-**MODEL M4** (Entry + role + manifest-local material reference) and **MODEL I4** (Explicit attestation event identity). Introduce a manifest-local record reference for intra-manifest disambiguation to preserve multiplicity, while requiring globally portable assertion identities for all historical attestations, dispositions, and relationships.
+**MODEL M4** (Entry + role + manifest-local material reference) and **MODEL I4** (Explicit assertion identity). Introduce a manifest-local record reference for intra-manifest disambiguation to preserve multiplicity, while requiring globally portable assertion identities for all historical attestations, dispositions, and relationships.
 
 ## 25. Secondary Alternative
 Portable component identities for everything (rejected due to package identity leakage and historical overreach).
@@ -133,3 +133,4 @@ Manifest parsers must accept multiple material attachments for the same entry/ro
 
 ## 29. Final Architecture Classification
 **MANIFEST_ARTIFACT_REFERENCE_MULTIPLICITY_DECISION_READY**
+

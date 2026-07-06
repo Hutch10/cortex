@@ -31,3 +31,5 @@
 
 | Manifest Artifact Reference and Multiplicity | Beta 3 Planning | N/A | Investigated | MANIFEST_ARTIFACT_REFERENCE_MULTIPLICITY_DECISION_READY | Manifest-Local Reference + Explicit Assertion Identity (Model M4 + I4) | N/A | None | Deferred |
 
+| Tombstone Minimal State and Assertion Identity | Beta 3 Planning | N/A | Investigated | TOMBSTONE_MINIMAL_STATE_ASSERTION_IDENTITY_DECISION_READY | Canonical Minimal Absence-State (Model T2) | N/A | None | Deferred |
+

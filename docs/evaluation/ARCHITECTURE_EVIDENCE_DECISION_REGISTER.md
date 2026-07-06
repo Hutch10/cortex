@@ -37,3 +37,5 @@
 
 | Availability Conflict Observation Authority | Beta 3 Planning | N/A | Investigated | AVAILABILITY_CONFLICT_OBSERVATION_AUTHORITY_CLOSED | Conflict state plus observation artifact (Model C4) | N/A | None | Deferred |
 
+| Portable Entry State Conflict Orphan Reconciliation | Beta 3 Planning | N/A | Investigated | ORPHAN_PORTABLE_ENTRY_STATE_ARCHITECTURE_RECONCILED | Delete as scratch/orphan (Model R1) | N/A | None | Deferred |
+

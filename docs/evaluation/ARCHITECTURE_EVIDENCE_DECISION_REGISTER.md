@@ -25,3 +25,5 @@
 | Package Digest Scope and Canonicalization | Beta 3 Planning | N/A | Investigated | PACKAGE_DIGEST_SCOPE_CANONICALIZATION_DECISION_READY | Model C (Canonical manifest digest + per-material digests) | N/A | None | Deferred |
 | Manifest Canonicalization and Digest Anchor | Beta 3 Planning | N/A | Investigated | MANIFEST_CANONICALIZATION_DIGEST_ANCHOR_DECISION_READY | Schema-Normalized Projection + Comparison-Only Anchor | N/A | None | Deferred |
 
+| Comparison-Only Manifest Digest Authority | Beta 3 Planning | N/A | Investigated | COMPARISON_ONLY_MANIFEST_DIGEST_AUTHORITY_CLOSED | Manifest authority is Comparison-Only (Model A4) | N/A | None | Deferred |
+

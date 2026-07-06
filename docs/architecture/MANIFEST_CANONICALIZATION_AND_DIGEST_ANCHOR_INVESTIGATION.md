@@ -30,7 +30,7 @@ The requirement for a canonical manifest digest remains accepted. The details of
 Inventory arrays are conceptually sets. The JSON array ordering possesses NO semantic authority. Normalization into a stable total order is required before calculating the canonical manifest digest.
 
 ## 7. Duplicate/Cardinality Semantics
-Duplicates are prohibited within these logical sets. Canonicalization schema validation must deduplicate strictly byte-identical records or fail verification as invalid schema. Cardinality has no independent semantic meaning beyond the presence of the unique records.
+Duplicates are prohibited within these logical sets. Canonicalization schema validation MUST fail verification as invalid schema upon encountering any duplicate logical-set record, rather than silently deduplicating it. Cardinality has no independent semantic meaning beyond the presence of the unique records.
 
 ## 8. Canonicalization Models
 *   **MODEL C1 — Raw RFC 8785 / JCS only**: Insufficient. JCS sorts keys but preserves array ordering. Semantically unordered arrays would hash differently based on arbitrary JSON array emission order.
@@ -76,7 +76,7 @@ The trust boundary is **Internal Consistency Only**. Vitalicast's architecture v
 *   **C. Modify manifest paths**: `DETECTED` (Canonical digest comparison mismatch).
 *   **E. Add unmanifested file**: Ignored (Internal manifest completeness holds; extra files are not part of the inventory).
 *   **H. Reorder manifest inventory records**: `SEMANTICALLY_EQUIVALENT` (Sorted by C2 normalization, digest remains identical).
-*   **I. Duplicate an inventory record**: Handled by C2 deduplication or schema rejection.
+*   **I. Duplicate an inventory record**: DETECTED as schema-invalid (silent deduplication is prohibited).
 *   **L. Unknown future artifact**: `UNSUPPORTED`.
 *   **M. Known algorithm with unknown canonicalization contract**: `UNSUPPORTED`.
 *   **N. Conflicting attestations**: Both preserved under sanctity of failure.
@@ -117,3 +117,4 @@ Do not implement a self-referential manifest digest field. Sort all inventory ar
 
 ## 27. Final Architecture Classification
 **MANIFEST_CANONICALIZATION_DIGEST_ANCHOR_DECISION_READY**
+

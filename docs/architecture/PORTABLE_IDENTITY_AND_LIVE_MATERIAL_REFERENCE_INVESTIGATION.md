@@ -35,7 +35,7 @@ To support conflict portability across archives without granting entity identity
 **MODEL M6 — Portable material component identity**. One intentionally inventoried material component possesses a portable opaque material identity (`portableMaterialIdentity`) identifying the immutable representation artifact.
 
 ## 9. Material Identity/Reference Scope
-Applies to **all intentionally inventoried physical payload artifacts** (entry primary material, attachments, etc.) that can participate in relationships or conflict observations.
+Applies exclusively to **entry material**. It does NOT apply to assertion artifacts, observation artifacts, provenance, or unsupported artifacts, which rely on their respective semantic identities or manifest-local references.
 
 ## 10. Material Identity vs Representation Digest
 *   `portableMaterialIdentity`: Identifies the immutable material representation artifact.

@@ -43,3 +43,5 @@
 
 | Portable Identifier Namespace & Occurrence | Beta 3 Planning | N/A | Investigated | PORTABLE_IDENTIFIER_MATERIAL_OCCURRENCE_PRECISION_CLOSED | Application-specific identifier (vitalicast:domain:v1:uuidv4); portableMaterialIdentity appears exactly once per manifest | N/A | None | Deferred |
 
+| Immutable Material & Contextual Binding | Beta 3 Planning | N/A | Investigated | IMMUTABLE_MATERIAL_CONTEXTUAL_BINDING_DECISION_READY | Material identity intrinsic to bytes + entry binding (Model M3). Role and media type are contextual. Portable material identity restricted to entry material. | N/A | None | Deferred |
+

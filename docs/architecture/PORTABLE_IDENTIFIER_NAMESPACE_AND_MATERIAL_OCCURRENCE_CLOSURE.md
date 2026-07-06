@@ -93,9 +93,9 @@ Because Model O1 dictates that a `portableMaterialIdentity` appears exactly once
 *   **B** (Same identity, digest, diff path): `SAME_KEY_CONFLICT` (Violates Model O1 single-occurrence rule).
 *   **C** (Same identity, diff digest): `MATERIAL_IDENTITY_CONFLICT` (Violates immutable identity rule).
 *   **D** (Same identity, diff byte length): `MATERIAL_IDENTITY_CONFLICT`.
-*   **E** (Same identity, diff media type): `MATERIAL_IDENTITY_CONFLICT`.
-*   **F** (Same identity, diff entry identity): `MATERIAL_IDENTITY_CONFLICT`.
-*   **G** (Same identity, diff logical role): `MATERIAL_IDENTITY_CONFLICT`.
+*   **E** (Same identity, diff media type): `VALID_CONTEXTUAL_VARIATION` (Media type is a contextual binding, but note Model O1 restricts reuse within one manifest).
+*   **F** (Same identity, diff entry identity): `MATERIAL_IDENTITY_CONFLICT` (Violates entry-bound material identity model).
+*   **G** (Same identity, diff logical role): `VALID_CONTEXTUAL_VARIATION` (Role is a contextual binding).
 *   **H** (Diff identities, equal digest, same entry/role): `VALID` (e.g., two distinct attachments that happen to have identical bytes).
 *   **I** (Diff identities, equal digest, diff entries): `VALID`.
 *   **J** (Same path, diff material identities): `SCHEMA_INVALID` (Path collision).

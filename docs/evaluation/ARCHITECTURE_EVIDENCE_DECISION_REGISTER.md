@@ -20,3 +20,4 @@
 | Portable archive entry identity | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | URN-Prefixed RFC UUIDv4 | N/A | None | Deferred |
 | User Disposition Architecture | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | Two-Scope Model Policy E | N/A | None | Deferred |
 | Relationship Assertion Identity | Beta 3 Planning | N/A | Untested | RELATIONSHIP_ASSERTION_IDENTITY_MODEL_UNRESOLVED | Deferred pending architecture resolution | N/A | Should durable archive relationships have independent IDs? | N/A |
+| Manifest Historical Authority | Beta 3 Planning | N/A | Untested | MANIFEST_HISTORICAL_AUTHORITY_MODEL_UNRESOLVED | Deferred pending architecture resolution | N/A | Is the manifest a current index or a historical ledger? | N/A |

@@ -84,8 +84,8 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 
 ## Manifest Artifact Reference and Multiplicity
-* **Selected Contract:** Manifest-Local Reference + Explicit Assertion Identity (Model M4 + I4).
-* **Rationale:** A manifest must support valid multiplicity without collapsing legitimate records or inventing unsupportable globally portable component identities. Material components (e.g., multiple attachments sharing a role) utilize a manifest-local record reference. Historical assertions (relationships, dispositions, attestations) require a globally portable assertion identity. The subject of an assertion and the assertion itself are distinct entities. A failed integrity verification history must coexist with later successful verifications without being collapsed into a single digest-context slot.
+* **Selected Contract:** Portable Material Identity + Explicit Assertion Identity (Model M4 + I4).
+* **Rationale:** A manifest must support valid multiplicity without collapsing legitimate records. Material components utilize a globally portable `portableMaterialIdentity` which appears exactly once per manifest (Model O1). Historical assertions (relationships, dispositions, attestations) require a globally portable assertion identity. The subject of an assertion and the assertion itself are distinct entities. A failed integrity verification history must coexist with later successful verifications without being collapsed into a single digest-context slot. Non-portable artifacts (provenance, unsupported) use a manifest-local record reference.
 * **Failure Semantics:** Two records claiming the exact same semantic slot (e.g., same assertion ID, or same manifest-local reference) but differing in fields result in a SCHEMA_INVALID same-key conflict. Valid multiple observations utilize distinct identities/references.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 ## Tombstone Minimal State and Assertion Identity
@@ -115,8 +115,8 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 
 ## Portable Identity Syntax and Live Material Reference
-* **Selected Contract:** URN-prefixed UUIDv4 (`urn:vitalicast:<domain>:v1:<uuidv4>`) + Portable Material Identity (Model M6).
-* **Rationale:** Identifiers must establish distinct domains without leaking creation time or risking domain collision. The accepted identity domains are `entry`, `assertion`, `observation`, and `material`. To accurately cite a specific live material representation involved in a cross-archive conflict, the component receives a portable opaque material identity (`portableMaterialIdentity`) distinct from its manifest-local transport addressing. The `defer` conflict-resolution semantic creates no resolution assertion, leaving the conflict unresolved without generating a hidden ledger.
+* **Selected Contract:** Application-specific identifier (`vitalicast:<domain>:v1:<uuidv4>`) + Portable Material Identity (Model E2 + O1).
+* **Rationale:** Identifiers must establish distinct domains without leaking creation time or risking domain collision. Since `vitalicast` is not a registered URN namespace, the architecture uses an application-specific identifier string, not a standards-valid URN. The accepted identity domains are `entry`, `assertion`, `observation`, and `material`. To accurately cite a specific live material representation involved in a cross-archive conflict, the component receives a portable opaque material identity (`portableMaterialIdentity`). The schema enforces that a material identity appears exactly once per manifest. The `defer` conflict-resolution semantic creates no resolution assertion, leaving the conflict unresolved without generating a hidden ledger.
 * **Failure Semantics:** Substituting an identity across domains (e.g., using `assertionIdentity` where `portableEntryIdentity` is expected) is structurally detectable and strictly schema-invalid.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 

@@ -41,3 +41,5 @@
 
 | Portable Identity & Live Material Reference | Beta 3 Planning | N/A | Investigated | PORTABLE_IDENTITY_LIVE_MATERIAL_REFERENCE_DECISION_READY | portableMaterialIdentity for live material reference; URN UUIDv4 syntax | N/A | None | Deferred |
 
+| Portable Identifier Namespace & Occurrence | Beta 3 Planning | N/A | Investigated | PORTABLE_IDENTIFIER_MATERIAL_OCCURRENCE_PRECISION_CLOSED | Application-specific identifier (vitalicast:domain:v1:uuidv4); portableMaterialIdentity appears exactly once per manifest | N/A | None | Deferred |
+

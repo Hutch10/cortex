@@ -55,7 +55,7 @@ Selected. `portableMaterialIdentity` identifies one immutable representation art
 ## 13. Portable Encoding Models
 *   **ENCODING E1 (Plain UUID)**: Rejected. Ambiguous domains.
 *   **ENCODING E2 (Domain-prefixed opaque tokens)**: Rejected. Lacks strict namespace structure.
-*   **ENCODING E3 (Vitalicast URNs)**: Selected.
+*   **ENCODING E3 (Vitalicast application-specific identifier)**: Selected. Uses `vitalicast:<domain>:v1:<uuidv4>`.
 *   **ENCODING E4 (HTTPS identifiers)**: Rejected. Implies network dependency.
 *   **ENCODING E5 (Content-addressed)**: Rejected. Falsified by distinct byte-identical artifacts.
 
@@ -63,17 +63,17 @@ Selected. `portableMaterialIdentity` identifies one immutable representation art
 Selected **UUIDv4 random** string generation to prevent timestamp leakage, sequential sorting side-channels, or digest identity regressions.
 
 ## 15. Selected Encoding Framework
-**ENCODING E3 — Vitalicast URNs** backed by random UUIDv4.
+**ENCODING E3 — Vitalicast application-specific identifier** backed by random UUIDv4.
 
 ## 16. Exact Syntax Grammar
-*   Format: `urn:vitalicast:<domain>:v1:<uuidv4>`
+*   Format: `vitalicast:<domain>:v1:<uuidv4>`
 *   `<domain>` must be exactly one of: `entry`, `assertion`, `observation`, `material`.
 *   `<uuidv4>` must be standard RFC 4122 lowercase canonical textual representation (e.g., `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).
 *   Strictly case-sensitive (all lowercase).
 *   No whitespace, no percent-encoding, no Unicode.
 
 ## 17. Cross-Domain Substitution Test
-Structurally detectable and strictly `SCHEMA_INVALID`. The domain token explicitly prevents using an `assertionIdentity` where a `portableEntryIdentity` is required.
+Structurally detectable and strictly `DOMAIN_INVALID`. The domain token explicitly prevents using an `assertionIdentity` where a `portableEntryIdentity` is required.
 
 ## 18. Conflict Live-Material Reference Rule
 A conflict observation artifact strictly cites the `portableMaterialIdentity` and the `representationDigest` of the live material artifact to explicitly bind the observation to the exact material representation.
@@ -85,13 +85,13 @@ Conflict semantic equivalence requires:
 *   Same entry, same material identity, differing digest: `CORRUPT/INVALID` (material identity is immutable).
 
 ## 20. Material Multiplicity Correction
-`portableMaterialIdentity` becomes the semantic uniqueness key for material artifact instances globally, while `manifestLocalReference` remains strictly for **intra-manifest record addressing**. Both are retained to distinguish physical file locations in a transport package from historical artifact identity.
+`portableMaterialIdentity` uniquely identifies the immutable material artifact. The schema enforces that a `portableMaterialIdentity` appears exactly once per manifest. `manifestLocalReference` uniquely identifies one manifest inventory record for non-portable artifacts.
 
 ## 21. Assertion Identity Syntax
-`urn:vitalicast:assertion:v1:<uuidv4>`
+`vitalicast:assertion:v1:<uuidv4>`
 
 ## 22. Observation Identity Syntax
-`urn:vitalicast:observation:v1:<uuidv4>`
+`vitalicast:observation:v1:<uuidv4>`
 
 ## 23. Assertion Identity Semantics
 Identifies one independently authored assertion artifact. Exact copies preserve identity. A corrective assertion requires a *new* `assertionIdentity` targeting the original.
@@ -107,7 +107,7 @@ No resolution assertion artifact is created. The conflict remains unresolved, pr
 Random UUIDv4 embedded in URNs leaks no creation time, geographic location, source archive, or export cadence.
 
 ## 27. 2076 Archivist Test
-The URN prefix explicitly identifies the scheme, domain, and version, ensuring the 2076 archivist can reliably distinguish an entry from a material artifact or an assertion without Vitalicast code.
+The prefix explicitly identifies the scheme, domain, and version, ensuring the 2076 archivist can reliably distinguish an entry from a material artifact or an assertion without Vitalicast code.
 
 ## 28. Surviving Assumptions
 Manifest-local references remain valid for intra-manifest array addressing. Digest equality proves byte equality, not component identity. No package identity, no export-event identity.
@@ -116,7 +116,7 @@ Manifest-local references remain valid for intra-manifest array addressing. Dige
 Path canonicalization/Unicode semantics and precise role vocabulary remain unresolved, but they are localized to schema expression and do not block the core identity authority closed here.
 
 ## 30. Primary Recommendation
-URN-prefixed UUIDv4 for all portable identities.
+Application-specific `vitalicast:` prefix for all portable identities.
 
 ## 31. Secondary Alternative
 Pure UUIDv4 strings.

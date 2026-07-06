@@ -54,8 +54,8 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 * **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
 
 ### Manifest Artifact Reference and Multiplicity
-* **Selected Contract:** Manifest-Local Reference + Explicit Assertion Identity (Model M4 + I4).
-* **Rationale:** Material components use manifest-local references to allow multiplicity (e.g., multiple attachments for one entry). Historical assertions (attestations, dispositions, relationships) require globally portable assertion identities, as the subject identity alone cannot differentiate multiple historical events (e.g. failed vs successful verification, or corrective addenda).
+* **Selected Contract:** Portable Material Identity + Explicit Assertion Identity (Model M4 + I4).
+* **Rationale:** Material components use `portableMaterialIdentity` to uniquely identify the material representation artifact. The schema enforces that it appears exactly once per manifest. Historical assertions (attestations, dispositions, relationships) require globally portable assertion identities, as the subject identity alone cannot differentiate multiple historical events (e.g. failed vs successful verification, or corrective addenda). Non-portable artifacts (provenance, unsupported) use a manifest-local record reference.
 * **Failure Semantics:** Duplicate usage of a semantic uniqueness key with differing data creates a same-key conflict, which is schema-invalid.
 * **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
 ### Tombstone Minimal State and Assertion Identity
@@ -85,8 +85,8 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 * **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
 
 ### Portable Identity Syntax and Live Material Reference
-* **Selected Contract:** URN-prefixed UUIDv4 (`urn:vitalicast:<domain>:v1:<uuidv4>`) + Portable Material Identity (Model M6).
-* **Rationale:** Random URN-prefixed UUIDv4 strings explicitly establish distinct identity domains (`entry`, `assertion`, `observation`, `material`) without leaking metadata. A portable opaque material identity (`portableMaterialIdentity`) is assigned to intentionally inventoried material components to allow conflict observations to explicitly cite the specific live material representation involved in a cross-archive conflict, surviving independently of manifest-local transport addressing. The `defer` resolution creates no assertion artifact.
+* **Selected Contract:** Application-specific identifier (`vitalicast:<domain>:v1:<uuidv4>`) + Portable Material Identity (Model E2 + O1).
+* **Rationale:** Random application-specific strings explicitly establish distinct identity domains (`entry`, `assertion`, `observation`, `material`) without leaking metadata, whilst avoiding unregistered URN claims. A portable opaque material identity (`portableMaterialIdentity`) is assigned to intentionally inventoried material components to allow conflict observations to explicitly cite the specific live material representation involved in a cross-archive conflict. The schema enforces that a material identity appears exactly once per manifest. The `defer` resolution creates no assertion artifact.
 * **Failure Semantics:** Identity domain mismatch (e.g. `assertionIdentity` instead of `portableEntryIdentity`) is structurally detectable and strictly schema-invalid.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 

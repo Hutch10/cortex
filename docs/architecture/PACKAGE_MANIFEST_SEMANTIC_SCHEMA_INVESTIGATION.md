@@ -76,7 +76,7 @@ Versioned controlled vocabulary.
 Path is transport addressing only. Duplicate paths prohibited. Absolute paths, `.` and `..` forbidden. Backslashes normalized. Not a semantic identity.
 
 ## 12. Semantic Uniqueness Keys
-*   **Entry material**: `portableMaterialIdentity` (globally) and `manifestLocalReference` (intra-manifest duplicate disambiguation)
+*   **Entry material**: `portableMaterialIdentity`
 *   **Relationship artifact**: `assertionIdentity`
 *   **Tombstone**: `portableEntryIdentity` (Minimal state, historical disposition assertions require separate assertionIdentity)
 *   **Integrity attestation**: `assertionIdentity`

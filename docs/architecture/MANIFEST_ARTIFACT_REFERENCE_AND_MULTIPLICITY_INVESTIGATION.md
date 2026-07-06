@@ -41,10 +41,10 @@ Determine the minimum portable reference model required for manifest records to 
 A single portable entry may legitimately possess multiple material representations sharing the same `logicalRole` (e.g., three original image attachments). The previous key collapses them.
 
 ## 8. Material Component/Reference Models
-**MODEL M4 (Entry + role + material artifact reference)** is originally selected. However, this is later amended: a distinct `portableMaterialIdentity` is required for globally identifying the immutable material representation artifact, while a manifest-local reference remains required for distinguishing intra-manifest duplicate inclusion (e.g., identical bytes at different paths).
+**MODEL M4 (Entry + role + portable material identity)** is selected. A distinct `portableMaterialIdentity` is required for globally identifying the immutable material representation artifact. The prior `manifestLocalReference` is removed for material components, as the schema enforces that a `portableMaterialIdentity` appears exactly once per manifest.
 
 ## 9. Manifest-Local Reference Challenge
-Historical architecture initially assumed no cross-package material component citation was required. However, the subsequent **Availability Conflict Observation** architecture requires a portable conflict artifact to explicitly cite the specific live material representation involved in a conflict. Therefore, an opaque, globally portable `portableMaterialIdentity` is required for intentionally inventoried material components. The manifest-local reference remains exclusively for intra-manifest transport addressing.
+Historical architecture initially assumed no cross-package material component citation was required. However, the subsequent **Availability Conflict Observation** architecture requires a portable conflict artifact to explicitly cite the specific live material representation involved in a conflict. Therefore, an opaque, globally portable `portableMaterialIdentity` is required for intentionally inventoried material components. The manifest-local reference remains exclusively for intra-manifest transport addressing of non-portable artifacts (e.g. provenance, unsupported).
 
 ## 10. Relationship Assertion Multiplicity
 Multiple distinct assertions may concern the same entities (e.g., multiple citations, or an addendum correcting an earlier assertion). Relationship assertion identity inherently supports this multiplicity.
@@ -75,7 +75,7 @@ Unsupported artifacts require a manifest-local reference to safely inventory ide
 ## 18. Multiplicity Matrices
 | Artifact category | Multiple per entry/subject? | Repeated observations valid? | Corrective artifacts valid? | Failed/Later Success coexist? | Distinct assertion reference? |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Entry material | YES | N/A | YES | N/A | Manifest-Local |
+| Entry material | YES | N/A | YES | N/A | Portable Material |
 | Relationship | YES | YES | YES | N/A | YES (Portable) |
 | Disposition | YES | YES | YES | N/A | YES (Portable) |
 | Tombstone | NO (Minimal state) | N/A | N/A | N/A | NO (Entry-bound) |
@@ -117,10 +117,10 @@ Manifest is a transport artifact. Historical authority resides in entries, dispo
 None.
 
 ## 24. Primary Recommendation
-**MODEL M4** (Entry + role + manifest-local material reference + portable material identity) and **MODEL I4** (Explicit assertion identity). Introduce a `portableMaterialIdentity` for cross-archive citation of material representation artifacts, alongside a manifest-local record reference for intra-manifest transport disambiguation. Require globally portable assertion/observation identities for all historical attestations, dispositions, relationships, and conflicts.
+**MODEL M4** (Entry + role + portable material identity) and **MODEL I4** (Explicit assertion identity). Introduce a `portableMaterialIdentity` for cross-archive citation of material representation artifacts, ensuring it appears exactly once per manifest. Retain a manifest-local record reference for intra-manifest transport disambiguation of non-portable artifacts only. Require application-specific portable assertion/observation identities for all historical attestations, dispositions, relationships, and conflicts.
 
 ## 25. Secondary Alternative
-Portable component identities alone (rejected due to inability to distinguish same-component multi-path transport packaging).
+Portable component identities alongside manifest-local references for material components (rejected due to unnecessary complexity).
 
 ## 26. Rejected Models
 MODEL I1 (Digest-context key), MODEL M1 (One material per entry per role).

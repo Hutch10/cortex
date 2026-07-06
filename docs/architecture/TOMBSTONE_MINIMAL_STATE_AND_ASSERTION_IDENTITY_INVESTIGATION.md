@@ -71,13 +71,7 @@ Cloning an archive copies the portable entry subject state (the tombstone). It d
 *   **Tombstone vs Identical Tombstone**: Collapses to one state.
 *   **Tombstone vs Differing Schema Version**: Coexistence of structural representation, identical semantic state.
 *   **Tombstone vs Disposition/Relationship Assertions**: Assertions merge normally as distinct artifacts; tombstone state remains minimal.
-*   **Tombstone vs Live Grade A Material**: *UNRESOLVED*. What happens when one archive has a tombstone and another has live entry material for the same portable entry identity reveals a separate merge-authority prerequisite. This architecture explicitly leaves this conflict resolution unresolved rather than silently resurrecting disposed material or destroying available material.
-
-## 14. Relationship Behavior
-Relationships continue to reference the `portableEntryIdentity`. They do not reference a tombstone identity. The tombstone does not list relationships, know why it exists, or leak relationship counts.
-
-## 15. Disposition Assertion Identity
-*   **Disposition subject**: `portableEntryIdentity` E1.
+*   **Tombstone vs Live Grade A Material**: Creates an unresolved availability conflict artifact preserving both states. Neither state automatically wins, pending explicit user/operator resolution.*   **Disposition subject**: `portableEntryIdentity` E1.
 *   **Disposition assertion artifact**: A detailed historical event record detailing disposition reasons and times.
 *   **Disposition assertion identity**: The portable identity of that preserved assertion artifact.
 *   **Producing operation/event**: The real-world system operation that caused removal.
@@ -106,7 +100,7 @@ A common base semantic rule exists: **A portable assertion identity identifies o
 *   E (Two conflicting tombstones for E1): `SCHEMA_INVALID` (Same-key conflict on `portableEntryIdentity`).
 *   F (New tombstone per relationship): `SCHEMA_INVALID` (Violates single minimal state).
 *   G, H (Copy/Clone): Safely copies canonical minimal state.
-*   I (Merge tombstone with live material): *UNRESOLVED* (Requires separate merge-authority architecture).
+*   I (Merge tombstone with live material): Conflict generated. Active state becomes conflicted.
 *   J (Merge V1 and V2 tombstones): Coexist as representations, semantic state collapses safely.
 *   K, L (Assertion without tombstone, Tombstone without assertion): Valid and architecturally permitted.
 *   M (Tombstone given assertion ID): `SCHEMA_INVALID` (Tombstone is not an assertion).
@@ -120,7 +114,7 @@ The archivist knows E1 is referenced but unavailable. They cannot infer why, whe
 Manifest is a transport artifact. The Two-Scope disposition policy is maintained. Historical authority remains delegated.
 
 ## 23. Unresolved Dependencies
-Merge conflict resolution between a valid minimal tombstone and live entry material across two independent archives remains explicitly unresolved and requires a dedicated merge-authority architecture investigation.
+None.
 
 ## 24. Primary Recommendation
 **MODEL T2**. Define the tombstone strictly as the canonical minimal surviving subject state for an unavailable entry, occupying one semantic slot (`portableEntryIdentity`). Remove all historical metadata from tombstones. Define assertion identity generically as identifying the preserved assertion artifact, explicitly avoiding system event identity ontology.
@@ -141,3 +135,4 @@ Tombstone parsers must strictly reject extra fields. Tombstones cannot be used t
 
 ## 29. Final Architecture Classification
 **TOMBSTONE_MINIMAL_STATE_ASSERTION_IDENTITY_DECISION_READY**
+

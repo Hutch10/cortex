@@ -93,6 +93,11 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 * **Rationale:** A tombstone is strictly the canonical minimal surviving subject state for a referenced but unavailable portable entry, occupying exactly one semantic slot per entry (`portableEntryIdentity`). It is not a historical disposition assertion and must not accumulate historical metadata (e.g., disposition reason, time, actor). "Unavailable" does not silently mean "destroyed." Detailed disposition history resides only in separate disposition assertion artifacts identified by a globally portable `assertionIdentity`. The architecture defines `assertionIdentity` as identifying the preserved assertion artifact itself, deliberately avoiding the creation of a system-event ontology.
 * **Failure Semantics:** Adding prohibited historical fields to a tombstone destroys its canonical representation and renders it schema-invalid.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
+## Merge Authority and Conflict Resolution
+* **Selected Contract:** Conflict-Preserving Merge (Model M4) + Assertion-like Conflict Artifact (Model C4).
+* **Rationale:** A tombstone in one source and live material in another do not automatically override each other. Vitalicast prevents silent resurrection (tombstone replaced by live material without conflict) and silent destruction (live material replaced by tombstone without conflict). Both source states are preserved as an unresolved availability conflict artifact with its own `assertionIdentity`.
+* **Failure Semantics:** Unresolved conflicts block automatic active availability. Relationships to the entry resolve to the conflict state. Explicit user/operator resolution is required to restore or confirm disposition via a new assertion artifact.
+* **Implementation Status:** Architecture decision ready; implementation deferred.
 ## Manifest Canonicalization and Digest Anchor
 * **Selected Contract:** Schema-Normalized Projection + JCS + Comparison-Only Anchor (Model C2 + A4).
 * **Rationale:** A canonical manifest digest is required to prove canonical manifest-content equality, independent of fragile JSON serialization formatting. Manifest inventory arrays are semantically unordered and must be deterministically sorted by a schema-defined total order prior to canonical serialization. The canonical manifest digest is NOT anchored inside the manifest (avoiding self-reference) nor inside a detached envelope (avoiding infinite regress without PKI). It serves strictly as a comparison-only metric to verify internal consistency or compare equality against external provenance assertions.
@@ -108,6 +113,7 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 * **Rationale:** Export packages are transient transport vessels. Package identity is intentionally rejected to prevent the creation of backdoor global tracking identifiers and historical ledgers. Tracking export lineage conflicts with the Two-Scope disposition policy (full destruction of unreferenced entries) by potentially leaking metadata about omitted materials. Historical archive authority remains safely bound to archive entries and their relationships, not to the packages that transported them.
 * **Failure Semantics:** Exact copies of a package yield equivalent physical representation digests, proving only physical representation equality. Changes to a package (e.g., omitting a disposed entry) may yield an equal or distinct representation digest depending on the exact material and metadata. A digest establishes no historical entity sameness, ancestry, or lineage; it solely verifies representation equivalence.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
+
 
 
 

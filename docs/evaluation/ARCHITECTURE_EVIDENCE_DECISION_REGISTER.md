@@ -33,3 +33,5 @@
 
 | Tombstone Minimal State and Assertion Identity | Beta 3 Planning | N/A | Investigated | TOMBSTONE_MINIMAL_STATE_ASSERTION_IDENTITY_DECISION_READY | Canonical Minimal Absence-State (Model T2) | N/A | None | Deferred |
 
+| Merge Authority Tombstone Live Conflict | Beta 3 Planning | N/A | Investigated | MERGE_TOMBSTONE_LIVE_CONFLICT_DECISION_READY | Conflict-Preserving Merge (Model M4) + Assertion-like Conflict Artifact (Model C4) | N/A | None | Deferred |
+

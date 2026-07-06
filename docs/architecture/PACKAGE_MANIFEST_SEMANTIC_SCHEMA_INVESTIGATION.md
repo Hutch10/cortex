@@ -37,6 +37,7 @@ Define the minimum semantic record model required for a Vitalicast Package Manif
 *   **Relationship assertion**: MUST be inventoried. MUST bind to assertion identity. MUST have logical role. MUST carry digest.
 *   **Disposition/tombstone**: MUST be inventoried. MUST bind to entry identity. MUST carry digest.
 *   **Integrity attestation**: MUST be inventoried. MUST carry digest.
+*   **Availability conflict**: MUST be inventoried (if unresolved). MUST bind to assertion identity.
 *   **Provenance**: MAY be inventoried.
 *   **Manifest/control**: PROHIBITED from inventorying itself.
 *   **Human-readable documentation**: MUST be inventoried if intentionally included as payload.
@@ -78,6 +79,7 @@ Path is transport addressing only. Duplicate paths prohibited. Absolute paths, `
 *   **Relationship artifact**: `assertionIdentity`
 *   **Tombstone**: `portableEntryIdentity` (Minimal state, historical disposition assertions require separate assertionIdentity)
 *   **Integrity attestation**: `assertionIdentity`
+*   **Availability conflict**: `assertionIdentity`
 *   **Provenance/Unsupported**: `manifestLocalReference`
 
 ## 13. Multi-Representation Rule
@@ -145,5 +147,6 @@ None.
 
 ## 30. Final Architecture Classification
 **PACKAGE_MANIFEST_SEMANTIC_SCHEMA_DECISION_READY**
+
 
 

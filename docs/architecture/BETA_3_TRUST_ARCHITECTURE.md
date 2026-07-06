@@ -114,6 +114,12 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 * **Failure Semantics:** Exact copies of a package yield equivalent physical representation digests, proving only physical representation equality. Changes to a package (e.g., omitting a disposed entry) may yield an equal or distinct representation digest depending on the exact material and metadata. A digest establishes no historical entity sameness, ancestry, or lineage; it solely verifies representation equivalence.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 
+## Portable Identity Syntax and Live Material Reference
+* **Selected Contract:** URN-prefixed UUIDv4 (`urn:vitalicast:<domain>:v1:<uuidv4>`) + Portable Material Identity (Model M6).
+* **Rationale:** Identifiers must establish distinct domains without leaking creation time or risking domain collision. The accepted identity domains are `entry`, `assertion`, `observation`, and `material`. To accurately cite a specific live material representation involved in a cross-archive conflict, the component receives a portable opaque material identity (`portableMaterialIdentity`) distinct from its manifest-local transport addressing. The `defer` conflict-resolution semantic creates no resolution assertion, leaving the conflict unresolved without generating a hidden ledger.
+* **Failure Semantics:** Substituting an identity across domains (e.g., using `assertionIdentity` where `portableEntryIdentity` is expected) is structurally detectable and strictly schema-invalid.
+* **Implementation Status:** Architecture decision ready; implementation deferred.
+
 
 
 

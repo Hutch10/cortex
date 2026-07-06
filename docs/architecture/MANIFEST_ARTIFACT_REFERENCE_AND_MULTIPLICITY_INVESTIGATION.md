@@ -41,10 +41,10 @@ Determine the minimum portable reference model required for manifest records to 
 A single portable entry may legitimately possess multiple material representations sharing the same `logicalRole` (e.g., three original image attachments). The previous key collapses them.
 
 ## 8. Material Component/Reference Models
-**MODEL M4 (Entry + role + material artifact reference)** is selected. A distinct manifest-local material reference differentiates components.
+**MODEL M4 (Entry + role + material artifact reference)** is originally selected. However, this is later amended: a distinct `portableMaterialIdentity` is required for globally identifying the immutable material representation artifact, while a manifest-local reference remains required for distinguishing intra-manifest duplicate inclusion (e.g., identical bytes at different paths).
 
 ## 9. Manifest-Local Reference Challenge
-Historical architecture does not independently require cross-package material component citation. Portable entry identity and historical assertions handle cross-package links. A manifest-local reference is sufficient for material components, avoiding unnecessary globally portable component identities.
+Historical architecture initially assumed no cross-package material component citation was required. However, the subsequent **Availability Conflict Observation** architecture requires a portable conflict artifact to explicitly cite the specific live material representation involved in a conflict. Therefore, an opaque, globally portable `portableMaterialIdentity` is required for intentionally inventoried material components. The manifest-local reference remains exclusively for intra-manifest transport addressing.
 
 ## 10. Relationship Assertion Multiplicity
 Multiple distinct assertions may concern the same entities (e.g., multiple citations, or an addendum correcting an earlier assertion). Relationship assertion identity inherently supports this multiplicity.
@@ -117,10 +117,10 @@ Manifest is a transport artifact. Historical authority resides in entries, dispo
 None.
 
 ## 24. Primary Recommendation
-**MODEL M4** (Entry + role + manifest-local material reference) and **MODEL I4** (Explicit assertion identity). Introduce a manifest-local record reference for intra-manifest disambiguation to preserve multiplicity, while requiring globally portable assertion identities for all historical attestations, dispositions, and relationships.
+**MODEL M4** (Entry + role + manifest-local material reference + portable material identity) and **MODEL I4** (Explicit assertion identity). Introduce a `portableMaterialIdentity` for cross-archive citation of material representation artifacts, alongside a manifest-local record reference for intra-manifest transport disambiguation. Require globally portable assertion/observation identities for all historical attestations, dispositions, relationships, and conflicts.
 
 ## 25. Secondary Alternative
-Portable component identities for everything (rejected due to package identity leakage and historical overreach).
+Portable component identities alone (rejected due to inability to distinguish same-component multi-path transport packaging).
 
 ## 26. Rejected Models
 MODEL I1 (Digest-context key), MODEL M1 (One material per entry per role).

@@ -33,7 +33,7 @@ A conflict observation is a deterministic record, not an authored historical cla
 A portable conflict reference is REQUIRED because a resolution assertion may be created after import, or across archive/package boundaries, and must reliably identify the specific divergence being resolved.
 
 ## 10. Conflict Equivalence and Uniqueness
-Conflict semantic equivalence is defined by the `portableEntryIdentity` and the core conflicting states (the minimal tombstone state and the live material representation). However, to prevent a hidden merge-event ledger, repeated observations of the identically same unresolved source states for the same entry do NOT automatically create new historical conflict artifacts. 
+Conflict semantic equivalence is defined by the `portableEntryIdentity` and the core conflicting states (the minimal tombstone state and the live material representation, specifically identified by its `portableMaterialIdentity`). However, to prevent a hidden merge-event ledger, repeated observations of the identically same unresolved source states for the same entry do NOT automatically create new historical conflict artifacts. 
 
 ## 11. Repeated Conflict Observation Rule
 Evaluating identical unresolved source states repeatedly simply verifies the existing conflict observation. It does not generate new multiplicity. A new conflict artifact is only justified if new, distinct live material conflicts with the tombstone.
@@ -42,7 +42,8 @@ Evaluating identical unresolved source states repeatedly simply verifies the exi
 | Field | Authority |
 | :--- | :--- |
 | portableEntryIdentity | `REQUIRED` |
-| live material reference observed | `REQUIRED` |
+| portableMaterialIdentity observed | `REQUIRED` |
+| representation digest observed | `REQUIRED` |
 | tombstone subject state observed | `REQUIRED` |
 | merge contract identifier/version | `OPTIONAL` |
 | which source is historically correct | `PROHIBITED` |

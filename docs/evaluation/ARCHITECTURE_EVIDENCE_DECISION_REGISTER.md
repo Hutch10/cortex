@@ -39,3 +39,5 @@
 
 | Portable Entry State Conflict Orphan Reconciliation | Beta 3 Planning | N/A | Investigated | ORPHAN_PORTABLE_ENTRY_STATE_ARCHITECTURE_RECONCILED | Delete as scratch/orphan (Model R1) | N/A | None | Deferred |
 
+| Portable Identity & Live Material Reference | Beta 3 Planning | N/A | Investigated | PORTABLE_IDENTITY_LIVE_MATERIAL_REFERENCE_DECISION_READY | portableMaterialIdentity for live material reference; URN UUIDv4 syntax | N/A | None | Deferred |
+

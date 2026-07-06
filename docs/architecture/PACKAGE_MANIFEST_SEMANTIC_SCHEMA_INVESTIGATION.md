@@ -62,6 +62,7 @@ Define the minimum semantic record model required for a Vitalicast Package Manif
 *   **byte length**: `REQUIRED`.
 *   **representation digest algorithm/scope/value**: `REQUIRED`.
 *   **portable entry identity**: `CONDITIONALLY_REQUIRED` (Required for primary entry material and tombstones).
+*   **portable material identity**: `CONDITIONALLY_REQUIRED` (Required for intentionally inventoried material components).
 *   **artifact-specific portable reference**: `CONDITIONALLY_REQUIRED` (Required for relationship and attestation records).
 *   **schema/version**: `PROHIBITED_IN_MANIFEST` (per record). Handled at root package level.
 
@@ -75,7 +76,7 @@ Versioned controlled vocabulary.
 Path is transport addressing only. Duplicate paths prohibited. Absolute paths, `.` and `..` forbidden. Backslashes normalized. Not a semantic identity.
 
 ## 12. Semantic Uniqueness Keys
-*   **Entry material**: `portableEntryIdentity + logicalRole + manifestLocalReference`
+*   **Entry material**: `portableMaterialIdentity` (globally) and `manifestLocalReference` (intra-manifest duplicate disambiguation)
 *   **Relationship artifact**: `assertionIdentity`
 *   **Tombstone**: `portableEntryIdentity` (Minimal state, historical disposition assertions require separate assertionIdentity)
 *   **Integrity attestation**: `assertionIdentity`

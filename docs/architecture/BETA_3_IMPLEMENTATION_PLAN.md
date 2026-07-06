@@ -84,6 +84,12 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 * **Failure Semantics:** Re-exports and partial exports may yield equal or distinct representation digests depending on exact material and metadata. The architecture makes no attempt to track a unified "export lineage graph." A digest citation establishes only that a specific representation was observed, not an entity identity.
 * **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
 
+### Portable Identity Syntax and Live Material Reference
+* **Selected Contract:** URN-prefixed UUIDv4 (`urn:vitalicast:<domain>:v1:<uuidv4>`) + Portable Material Identity (Model M6).
+* **Rationale:** Random URN-prefixed UUIDv4 strings explicitly establish distinct identity domains (`entry`, `assertion`, `observation`, `material`) without leaking metadata. A portable opaque material identity (`portableMaterialIdentity`) is assigned to intentionally inventoried material components to allow conflict observations to explicitly cite the specific live material representation involved in a cross-archive conflict, surviving independently of manifest-local transport addressing. The `defer` resolution creates no assertion artifact.
+* **Failure Semantics:** Identity domain mismatch (e.g. `assertionIdentity` instead of `portableEntryIdentity`) is structurally detectable and strictly schema-invalid.
+* **Implementation Status:** Architecture decision ready; implementation deferred.
+
 
 
 

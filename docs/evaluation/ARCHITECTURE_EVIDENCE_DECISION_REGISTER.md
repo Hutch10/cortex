@@ -23,3 +23,5 @@
 | Manifest Historical Authority | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | Model C (Package Manifest Only) | N/A | None | Deferred |
 | Package Identity and Export Lineage | Beta 3 Planning | N/A | Investigated | DECISION_READY_IMPLEMENTATION_DEFERRED | Package Identity Not Required (Model A) | N/A | None | Deferred |
 | Package Digest Scope and Canonicalization | Beta 3 Planning | N/A | Investigated | PACKAGE_DIGEST_SCOPE_CANONICALIZATION_DECISION_READY | Model C (Canonical manifest digest + per-material digests) | N/A | None | Deferred |
+| Manifest Canonicalization and Digest Anchor | Beta 3 Planning | N/A | Investigated | MANIFEST_CANONICALIZATION_DIGEST_ANCHOR_DECISION_READY | Schema-Normalized Projection + Comparison-Only Anchor | N/A | None | Deferred |
+

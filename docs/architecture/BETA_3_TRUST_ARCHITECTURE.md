@@ -83,9 +83,15 @@ Hash agility guarantees append-only attestation evolution; old attestations are 
 * **Failure Semantics:** Missing files mean they are not in the package, not that they never existed. Re-exports omit unreferenced dispositioned material without rewriting history.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 
+## Manifest Canonicalization and Digest Anchor
+* **Selected Contract:** Schema-Normalized Projection + JCS + Comparison-Only Anchor (Model C2 + A4).
+* **Rationale:** A canonical manifest digest is required to prove canonical manifest-content equality, independent of fragile JSON serialization formatting. Manifest inventory arrays are semantically unordered and must be deterministically sorted by a schema-defined total order prior to canonical serialization. The canonical manifest digest is NOT anchored inside the manifest (avoiding self-reference) nor inside a detached envelope (avoiding infinite regress without PKI). It serves strictly as a comparison-only metric to verify internal consistency or compare equality against external provenance assertions.
+* **Failure Semantics:** Unknown future schemas fail closed (UNSUPPORTED) because their array ordering semantics cannot be safely normalized without the versioned contract.
+* **Implementation Status:** Architecture decision ready; implementation deferred.
 ## Package Identity and Export Lineage
 * **Selected Contract:** Package Identity Not Required (Model A).
 * **Rationale:** Export packages are transient transport vessels. Package identity is intentionally rejected to prevent the creation of backdoor global tracking identifiers and historical ledgers. Tracking export lineage conflicts with the Two-Scope disposition policy (full destruction of unreferenced entries) by potentially leaking metadata about omitted materials. Historical archive authority remains safely bound to archive entries and their relationships, not to the packages that transported them.
 * **Failure Semantics:** Exact copies of a package yield equivalent physical representation digests, proving only physical representation equality. Changes to a package (e.g., omitting a disposed entry) may yield an equal or distinct representation digest depending on the exact material and metadata. A digest establishes no historical entity sameness, ancestry, or lineage; it solely verifies representation equivalence.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
+
 

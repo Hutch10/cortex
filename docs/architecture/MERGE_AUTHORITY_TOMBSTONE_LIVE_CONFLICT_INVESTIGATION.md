@@ -45,7 +45,7 @@ Replacing live material with a tombstone (or deleting live material) without rec
 
 ## 8. Conflict Artifact Evaluation
 **MODEL C4 (Assertion-like Artifact)** is selected.
-The Availability Conflict is modeled as a preserved assertion artifact with its own globally portable `assertionIdentity`. It explicitly records that Source A supplied tombstone state and Source B supplied live material for `E1`. It avoids a global hidden ledger by remaining scoped to the entries it affects.
+The Availability Conflict is modeled as a preserved observation artifact with its own globally portable `portable observation identity`. It explicitly records that Source A supplied tombstone state and Source B supplied live material for `E1`. It avoids a global hidden ledger by remaining scoped to the entries it affects.
 
 ## 9. Active State Semantics
 During an unresolved conflict, the active archive state for `E1` becomes **unresolved/conflicted**. It is not treated as fully available, nor is it treated as fully disposed.
@@ -54,9 +54,9 @@ During an unresolved conflict, the active archive state for `E1` becomes **unres
 Existing relationships referencing `E1` resolve to the **conflict state**. They are blocked from blindly accessing the live material (preventing silent resurrection) and blocked from assuming permanent unavailability (preventing silent destruction). The relationships themselves are not rewritten.
 
 ## 11. Conflict Resolution Assertion
-When a user/operator resolves the conflict, the resolution is recorded as a **new assertion artifact** with its own `assertionIdentity`.
+When a user/operator resolves the conflict, the resolution is recorded as a **new observation artifact** with its own `portable observation identity`.
 *   It explicitly references the conflict artifact.
-*   The user may choose to: accept live material, retain tombstone, or preserve both as provenance.
+*   The user may choose to: accept live material, retain tombstone, 
 *   This ensures the resolution history is verifiable and does not silently overwrite the conflict history.
 
 ## 12. Import Scenarios
@@ -89,11 +89,11 @@ Cloning an archive preserves exactly the state present (live, tombstone, conflic
 If `E1` is in an unresolved conflict state and the user requests destruction:
 *   Live material is destroyed.
 *   Tombstone remains.
-*   Conflict artifact is superseded by a new disposition assertion.
+*   Conflict artifact is made inactive by a new disposition assertion.
 *   User Sovereignty successfully overrides the unresolved conflict.
 
 ## 16. Export After Conflict
-An export of an archive containing an unresolved conflict includes both the live material (quarantined/conflicted), the tombstone state, and the conflict assertion artifact. The package manifest accurately reflects the unresolved conflict without implying a resolution or inventing package lineage.
+An export of an archive containing an unresolved conflict includes both the live material (quarantined/conflicted), the tombstone state, and the conflict observation artifact. The package manifest accurately reflects the unresolved conflict without implying a resolution or inventing package lineage.
 
 ## 17. Privacy/Metadata Leakage Test
 Preserving conflict evidence leaks the fact that a divergence occurred across custody scopes. However, this is strictly necessary to prevent silent data loss or silent resurrection, maintaining the integrity of the archive. The user retains sovereignty to explicitly resolve the conflict and subsequently dispose of the evidence if authorized by policy.
@@ -113,7 +113,7 @@ Manifest is a transport artifact. The Two-Scope disposition policy is maintained
 None identified in this narrow scope.
 
 ## 21. Primary Recommendation
-**MODEL M4 (Conflict-preserving merge)** + **MODEL C4 (Assertion-like Conflict Artifact)**. Vitalicast must preserve conflicting live material and tombstone states as an unresolved availability conflict. Active state becomes conflicted. Relationships resolve to the conflict state. Resolution requires an explicit user-authorized resolution assertion artifact.
+**MODEL M4 (Conflict-preserving merge)** + **MODEL C4 (Observation Artifact)**. Vitalicast must preserve conflicting live material and tombstone states as an unresolved availability conflict. Active state becomes conflicted. Relationships resolve to the conflict state. Resolution requires an explicit user-authorized resolution observation artifact.
 
 ## 22. Secondary Alternative
 Model M5 (Block automatic merge). (Rejected due to degrading import usability for non-conflicting components).
@@ -130,3 +130,4 @@ Merge and import logic must be capable of generating conflict artifacts and quar
 
 ## 26. Final Architecture Classification
 **MERGE_TOMBSTONE_LIVE_CONFLICT_DECISION_READY**
+

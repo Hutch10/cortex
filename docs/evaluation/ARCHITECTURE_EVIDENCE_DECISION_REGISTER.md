@@ -35,3 +35,5 @@
 
 | Merge Authority Tombstone Live Conflict | Beta 3 Planning | N/A | Investigated | MERGE_TOMBSTONE_LIVE_CONFLICT_DECISION_READY | Conflict-Preserving Merge (Model M4) + Assertion-like Conflict Artifact (Model C4) | N/A | None | Deferred |
 
+| Availability Conflict Observation Authority | Beta 3 Planning | N/A | Investigated | AVAILABILITY_CONFLICT_OBSERVATION_AUTHORITY_CLOSED | Conflict state plus observation artifact (Model C4) | N/A | None | Deferred |
+

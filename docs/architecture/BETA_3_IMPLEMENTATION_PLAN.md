@@ -64,8 +64,8 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 * **Failure Semantics:** Adding extra metadata to a tombstone destroys its canonical representation, causing schema rejection. Merge conflict between a minimal tombstone and live entry material across two independent archives remains explicitly unresolved and requires a dedicated merge-authority architecture investigation.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 ### Merge Authority and Conflict Resolution
-* **Selected Contract:** Conflict-Preserving Merge (Model M4) + Assertion-like Conflict Artifact (Model C4).
-* **Rationale:** A conflict between a canonical minimal tombstone and live material does not result in automatic destruction or resurrection. Both states are preserved as an unresolved availability conflict artifact to prevent the silent loss of history or valid material.
+* **Selected Contract:** Conflict-Preserving Merge (Model M4) + Observation Artifact (Model C4).
+* **Rationale:** A conflict between a canonical minimal tombstone and live material does not result in automatic destruction or resurrection. Both states are preserved as an unresolved availability conflict observation artifact to prevent the silent loss of history or valid material.
 * **Failure Semantics:** Unresolved conflicts block the active state from being fully available or disposed. Relationships resolve to the conflict state. Resolution requires explicit user/operator intervention via a new resolution assertion.
 * **Implementation Status:** Architecture decision ready; implementation deferred.
 ### Manifest Canonicalization and Digest Anchor
@@ -83,6 +83,7 @@ No Beta 3 implementation is authorized until Stage 1 evaluation evidence review 
 * **Rationale:** Package identity is intentionally rejected to prevent accidental creation of a centralized export ledger. A centralized ledger of export events violates the Two-Scope disposition policy by forcing the retention of metadata that leaks the past existence of fully disposed unreferenced entries. A package is a physical transport envelope. It possesses no historical entity identity; its digest establishes only physical representation equality. Historical archive authority is proven by entry provenance, not by tracking package operations.
 * **Failure Semantics:** Re-exports and partial exports may yield equal or distinct representation digests depending on exact material and metadata. The architecture makes no attempt to track a unified "export lineage graph." A digest citation establishes only that a specific representation was observed, not an entity identity.
 * **Implementation Status:** Architecture decision ready; implementation deferred pending further Stage 1 evaluations and Beta 3 authorization.
+
 
 
 
